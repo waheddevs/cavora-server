@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+src/public/uploads/member/*
+!src/public/uploads/member/.gitkeep
+src/public/uploads/product/*
+!src/public/uploads/product/.gitkeep
+*.log
+.DS_Store

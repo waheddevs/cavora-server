@@ -1,0 +1,15 @@
+<% include includes/header %>
+
+<h1>Restaurant Login</h1>
+<form action="/admin/login" method="POST" class="auth_form">
+  <label for="memberNick">Nickname</label>
+  <input type="text" id="memberNick" name="memberNick" required />
+
+  <label for="memberPassword">Password</label>
+  <input type="password" id="memberPassword" name="memberPassword" required />
+
+  <button type="submit">Log in</button>
+</form>
+<p>No account yet? <a href="/admin/signup">Sign up</a></p>
+
+<% include includes/footer %>

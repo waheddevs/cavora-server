@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cavora Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="site_header">
+    <a class="brand" href="/admin">Cavora</a>
+    <nav>
+      <% if (member) { %>
+        <a href="/admin">Home</a>
+        <a href="/admin/products">Products</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/logout">Logout (<%= member.memberNick %>)</a>
+      <% } else { %>
+        <a href="/admin/login">Login</a>
+        <a href="/admin/signup">Signup</a>
+      <% } %>
+    </nav>
+  </header>
+  <main class="site_main">
