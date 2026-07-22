@@ -1,0 +1,2243 @@
+{
+  "tours": [
+    {
+      "_id": 1,
+      "slug": "ubud-cultural-rice-terrace-retreat",
+      "country": "Indonesia",
+      "place": "Ubud, Bali",
+      "title": "Ubud Cultural & Rice Terrace Retreat",
+      "location": "Ubud, Bali",
+      "type": "Cultural",
+      "priceCents": 89900,
+      "oldPriceCents": 109000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 128,
+      "durationDays": 5,
+      "maxGroupSize": 12,
+      "overview": "Discover the spiritual heart of Bali in Ubud, where emerald rice terraces cascade down the hillsides and centuries-old temples hide among the jungle. This retreat blends culture, nature and gentle adventure into an unforgettable island escape. You'll wake to the sound of birdsong in a private jungle villa, learn to cook authentic Balinese dishes from a local family, and walk the famous Tegallalang terraces before the crowds arrive. Between temple visits and waterfall treks, there is plenty of time to slow down, breathe, and let the island's calm rhythm work its magic. It is the perfect introduction to the soul of Bali.",
+      "highlights": [
+        "Sunrise walk through the Tegallalang rice terraces",
+        "Traditional Balinese cooking class with a local family",
+        "Sacred Monkey Forest and Ubud Palace tour",
+        "Visit to the Tirta Empul water temple",
+        "Optional yoga and wellness session"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Ubud",
+          "description": "Welcome transfer, check-in to a jungle villa and an evening walk through Ubud's art market."
+        },
+        {
+          "day": 2,
+          "title": "Rice Terraces & Temples",
+          "description": "Sunrise at Tegallalang, followed by Tirta Empul and Goa Gajah temple visits."
+        },
+        {
+          "day": 3,
+          "title": "Culture & Cuisine",
+          "description": "Balinese cooking class, silver-smithing workshop and a traditional dance performance."
+        },
+        {
+          "day": 4,
+          "title": "Jungle & Waterfalls",
+          "description": "Trek to Tibumana waterfall and a stop at the Sacred Monkey Forest."
+        },
+        {
+          "day": 5,
+          "title": "Departure",
+          "description": "Morning yoga, farewell breakfast and transfer to the airport."
+        }
+      ],
+      "included": [
+        "4 nights villa accommodation",
+        "Daily breakfast & 2 dinners",
+        "Private English-speaking guide",
+        "All entrance fees & activities",
+        "Airport transfers",
+        "Cooking class & materials"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & personal expenses",
+        "Tips & gratuities"
+      ],
+      "status": "PUBLISHED",
+      "featuredRank": 1,
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 2,
+      "slug": "uluwatu-cliffs-temple-sunset",
+      "country": "Indonesia",
+      "place": "Uluwatu, Bali",
+      "title": "Uluwatu Cliffs & Temple Sunset",
+      "location": "Uluwatu, Bali",
+      "type": "Beach",
+      "priceCents": 74900,
+      "oldPriceCents": 89000,
+      "currency": "USD",
+      "ratingAverage": 4.7,
+      "reviewCount": 96,
+      "durationDays": 4,
+      "maxGroupSize": 10,
+      "overview": "Perched on dramatic limestone cliffs above the Indian Ocean, Uluwatu is Bali at its most breathtaking. Chase world-class surf breaks, hidden beach clubs and a clifftop temple where the sun melts into the sea. Days here move to the tide — mornings on golden sand, lazy afternoons at cliff-edge pools, and evenings watching the mesmerising Kecak fire dance as the sky turns amber. Seafood is grilled fresh on the beach at Jimbaran, and the surf is legendary whether you're a beginner or a barrel-chasing pro. This is the glamorous, ocean-facing side of Bali.",
+      "highlights": [
+        "Uluwatu Temple sunset & Kecak fire dance",
+        "Padang Padang and Bingin beach hopping",
+        "Clifftop beach club afternoon",
+        "Optional surf lesson with local instructors",
+        "Fresh seafood dinner on Jimbaran Bay"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival & Jimbaran",
+          "description": "Transfer to a clifftop resort and a barefoot seafood dinner on Jimbaran Bay."
+        },
+        {
+          "day": 2,
+          "title": "Beaches & Surf",
+          "description": "Explore Padang Padang and Bingin beaches with an optional surf lesson."
+        },
+        {
+          "day": 3,
+          "title": "Temple & Fire Dance",
+          "description": "Uluwatu Temple at golden hour followed by the famous Kecak dance."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Leisurely morning and transfer to the airport."
+        }
+      ],
+      "included": [
+        "3 nights clifftop resort",
+        "Daily breakfast & 1 seafood dinner",
+        "Private guide & driver",
+        "Temple & performance tickets",
+        "Airport transfers",
+        "Beach club entry"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Surf lesson (optional)",
+        "Personal expenses & tips"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 3,
+      "slug": "nusa-penida-island-escape",
+      "country": "Indonesia",
+      "place": "Nusa Penida, Bali",
+      "title": "Nusa Penida Island Escape",
+      "location": "Nusa Penida, Bali",
+      "type": "Adventure",
+      "priceCents": 82000,
+      "oldPriceCents": 98000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 141,
+      "durationDays": 3,
+      "maxGroupSize": 12,
+      "overview": "A short boat ride from Bali lies Nusa Penida, an island of jagged cliffs, turquoise coves and the iconic T-Rex-shaped Kelingking Beach. This escape is made for adventurers chasing raw, untouched island beauty. You'll clamber down to hidden beaches, snorkel alongside gentle manta rays in crystal-clear water, and stand at viewpoints that look almost too dramatic to be real. The island is still wonderfully undeveloped, so expect bumpy roads, empty coves and jaw-dropping scenery at every turn. If you crave nature over nightlife, Nusa Penida delivers in spades.",
+      "highlights": [
+        "Kelingking Beach viewpoint",
+        "Snorkelling with manta rays at Manta Point",
+        "Angel's Billabong & Broken Beach",
+        "Crystal Bay sunset",
+        "Diamond Beach cliff descent"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Crossing to Nusa Penida",
+          "description": "Fast-boat transfer, island check-in and Crystal Bay sunset."
+        },
+        {
+          "day": 2,
+          "title": "West Island Wonders",
+          "description": "Kelingking Beach, Angel's Billabong and Broken Beach."
+        },
+        {
+          "day": 3,
+          "title": "Manta Snorkel & Return",
+          "description": "Morning snorkel with manta rays before the boat back to Bali."
+        }
+      ],
+      "included": [
+        "2 nights island bungalow",
+        "Daily breakfast",
+        "Return fast-boat transfers",
+        "Island tour & snorkelling gear",
+        "Local guide",
+        "All viewpoint fees"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Personal expenses & tips"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 4,
+      "slug": "mount-batur-sunrise-trek",
+      "country": "Indonesia",
+      "place": "Mount Batur, Bali",
+      "title": "Mount Batur Sunrise Trek",
+      "location": "Kintamani, Bali",
+      "type": "Adventure",
+      "priceCents": 69000,
+      "oldPriceCents": 82000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 112,
+      "durationDays": 3,
+      "maxGroupSize": 10,
+      "overview": "Summit an active volcano before dawn and watch the sun rise over Lake Batur and a sea of clouds below. This trek pairs pure adrenaline with Bali's volcanic highlands, natural hot springs and sweeping caldera views. You'll set off by headlamp in the small hours, climb to the 1,717-metre summit, and reach the top just as the first light spills across the horizon — breakfast is even cooked using volcanic steam. Afterwards, soothe tired legs in natural hot springs and sip some of the island's finest coffee at a highland plantation. It's a bucket-list morning you won't forget.",
+      "highlights": [
+        "Pre-dawn guided hike to Batur's 1,717m summit",
+        "Sunrise breakfast cooked by volcanic steam",
+        "Natural hot spring soak",
+        "Kintamani caldera viewpoint",
+        "Coffee plantation & Luwak tasting"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Kintamani",
+          "description": "Transfer to the highlands, caldera viewpoint and an early night before the trek."
+        },
+        {
+          "day": 2,
+          "title": "Sunrise Summit",
+          "description": "Pre-dawn climb, summit sunrise, then hot springs and a coffee plantation visit."
+        },
+        {
+          "day": 3,
+          "title": "Departure",
+          "description": "Relaxed breakfast and transfer back to the coast or airport."
+        }
+      ],
+      "included": [
+        "2 nights highland lodge",
+        "Daily breakfast & trek breakfast",
+        "Certified trekking guide",
+        "Headlamps & trekking poles",
+        "Hot spring & plantation entry",
+        "All transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Personal expenses & tips"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 5,
+      "slug": "paris-city-of-light-landmarks",
+      "country": "France",
+      "place": "Paris, France",
+      "title": "Paris: City of Light & Landmarks",
+      "location": "Paris, France",
+      "type": "Cultural",
+      "priceCents": 129000,
+      "oldPriceCents": 149000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 214,
+      "durationDays": 5,
+      "maxGroupSize": 14,
+      "overview": "Fall in love with Paris, a city where every street corner feels like a postcard and every meal is a small celebration. From the iron lace of the Eiffel Tower to the masterpieces of the Louvre, this tour captures the romance and grandeur of the French capital. You'll cruise the Seine at dusk, wander the artist-filled lanes of Montmartre, and linger in cafés watching the world drift by. There's time for haute-couture window shopping, buttery croissants, and an unforgettable evening beneath the sparkling tower. Paris rewards the curious — and this trip lets you savour every moment of it.",
+      "highlights": [
+        "Skip-the-line Eiffel Tower & summit access",
+        "Louvre Museum guided highlights tour",
+        "Evening Seine river dinner cruise",
+        "Montmartre & Sacré-Cœur walking tour",
+        "Day trip option to the Palace of Versailles"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Paris",
+          "description": "Transfer to a central hotel and an orientation stroll along the Champs-Élysées."
+        },
+        {
+          "day": 2,
+          "title": "Icons of Paris",
+          "description": "Eiffel Tower summit, Trocadéro views and an evening Seine dinner cruise."
+        },
+        {
+          "day": 3,
+          "title": "Art & Montmartre",
+          "description": "Louvre highlights in the morning, Montmartre and Sacré-Cœur in the afternoon."
+        },
+        {
+          "day": 4,
+          "title": "Versailles Day Trip",
+          "description": "Explore the palace and its gardens, returning for a final Parisian dinner."
+        },
+        {
+          "day": 5,
+          "title": "Departure",
+          "description": "Free morning for shopping before your airport transfer."
+        }
+      ],
+      "included": [
+        "4 nights central hotel",
+        "Daily breakfast & 1 dinner cruise",
+        "Professional city guide",
+        "All museum & monument tickets",
+        "Airport transfers",
+        "Metro travel pass"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & personal expenses",
+        "Versailles lunch"
+      ],
+      "status": "PUBLISHED",
+      "popularityRank": 1,
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 6,
+      "slug": "french-riviera-nice-coastline",
+      "country": "France",
+      "place": "Nice, France",
+      "title": "French Riviera & Nice Coastline",
+      "location": "Nice, French Riviera",
+      "type": "Beach",
+      "priceCents": 115000,
+      "oldPriceCents": 135000,
+      "currency": "USD",
+      "ratingAverage": 4.7,
+      "reviewCount": 138,
+      "durationDays": 4,
+      "maxGroupSize": 12,
+      "overview": "The Côte d'Azur has drawn artists, aristocrats and sun-seekers for over a century, and it's easy to see why. Base yourself in Nice, with its pebble beaches and pastel Old Town, then explore the glamorous coastline that curves toward Monaco and Cannes. Days are spent swimming in impossibly blue water, sipping rosé on seaside terraces, and wandering perfumed hilltop villages like Èze. The light here is famous — soft, golden and endlessly flattering. Whether you're chasing glamour or just a perfect stretch of Mediterranean coast, the Riviera delivers effortless elegance.",
+      "highlights": [
+        "Stroll the Promenade des Anglais in Nice",
+        "Day trip to Monaco & Monte Carlo",
+        "Medieval hilltop village of Èze",
+        "Old Town markets & Niçoise cuisine",
+        "Coastal drive to Cannes"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Nice",
+          "description": "Settle into a seafront hotel and explore the colourful Old Town."
+        },
+        {
+          "day": 2,
+          "title": "Monaco & Èze",
+          "description": "Visit Monte Carlo, the royal palace and the clifftop village of Èze."
+        },
+        {
+          "day": 3,
+          "title": "Cannes & the Coast",
+          "description": "Scenic coastal drive to Cannes with beach time and a seafood lunch."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Morning by the sea before your transfer to Nice airport."
+        }
+      ],
+      "included": [
+        "3 nights seafront hotel",
+        "Daily breakfast",
+        "Private coastal transfers",
+        "Guided Monaco & Èze excursion",
+        "Airport transfers",
+        "Local guide"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Casino & personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 7,
+      "slug": "provence-lavender-fields-escape",
+      "country": "France",
+      "place": "Provence, France",
+      "title": "Provence Lavender Fields Escape",
+      "location": "Provence, France",
+      "type": "Nature",
+      "priceCents": 108000,
+      "oldPriceCents": 126000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 102,
+      "durationDays": 4,
+      "maxGroupSize": 12,
+      "overview": "In summer, Provence turns into a rolling canvas of purple, the air thick with the scent of lavender and the hum of bees. This escape takes you deep into the French countryside, through honey-stone villages, sun-drenched vineyards and the vast lavender fields of the Valensole plateau. You'll tour a working distillery, taste local rosé and olive oil, and browse markets piled high with herbs and cheese. Life moves slowly here, dictated by long lunches and golden evening light. It's the France of dreams — rustic, fragrant and utterly relaxing.",
+      "highlights": [
+        "Valensole lavender fields at golden hour",
+        "Visit to a traditional lavender distillery",
+        "Hilltop village of Gordes & Sénanque Abbey",
+        "Provençal market & rosé tasting",
+        "Olive oil farm visit"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Provence",
+          "description": "Transfer to a countryside guesthouse and a welcome dinner of local specialties."
+        },
+        {
+          "day": 2,
+          "title": "Lavender & Distillery",
+          "description": "Valensole fields at sunrise and a guided distillery tour."
+        },
+        {
+          "day": 3,
+          "title": "Villages & Vineyards",
+          "description": "Explore Gordes, Sénanque Abbey and a rosé tasting."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Morning market visit before your onward transfer."
+        }
+      ],
+      "included": [
+        "3 nights countryside guesthouse",
+        "Daily breakfast & 1 dinner",
+        "Private driver-guide",
+        "Distillery & farm visits",
+        "Wine & oil tastings",
+        "All transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches",
+        "Personal expenses & tips"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 8,
+      "slug": "mont-saint-michel-island-abbey",
+      "country": "France",
+      "place": "Mont Saint-Michel, France",
+      "title": "Mont Saint-Michel Island Abbey",
+      "location": "Normandy, France",
+      "type": "Cultural",
+      "priceCents": 99000,
+      "oldPriceCents": 115000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 87,
+      "durationDays": 3,
+      "maxGroupSize": 14,
+      "overview": "Rising from the tidal flats of Normandy like something from a fairy tale, Mont Saint-Michel is one of France's most spectacular sights. This medieval abbey-island has crowned its rocky outcrop for over a thousand years, encircled by some of Europe's most dramatic tides. You'll wander its steep cobbled lanes, climb to the soaring Gothic abbey, and watch the sea rush across the bay at extraordinary speed. Time your visit right and the mount becomes a true island, mirrored in the shining sands. It's history, drama and beauty rolled into one unforgettable silhouette.",
+      "highlights": [
+        "Guided tour of the Gothic abbey",
+        "Watch the famous fast-moving tides",
+        "Wander the medieval ramparts & lanes",
+        "Bay walk across the sands (optional)",
+        "Traditional Normandy dinner"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Normandy",
+          "description": "Transfer to a hotel near the bay with sunset views of the mount."
+        },
+        {
+          "day": 2,
+          "title": "The Abbey & Village",
+          "description": "Full guided tour of the abbey, ramparts and an optional guided bay walk."
+        },
+        {
+          "day": 3,
+          "title": "Departure",
+          "description": "Final morning photos before your return transfer."
+        }
+      ],
+      "included": [
+        "2 nights hotel near the bay",
+        "Daily breakfast & 1 dinner",
+        "Abbey guided tour & tickets",
+        "Professional guide",
+        "All transfers",
+        "Shuttle to the mount"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches",
+        "Optional bay walk fee"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 9,
+      "slug": "iceland-golden-circle-explorer",
+      "country": "Iceland",
+      "place": "Golden Circle, Iceland",
+      "title": "Iceland Golden Circle Explorer",
+      "location": "Golden Circle, Iceland",
+      "type": "Adventure",
+      "priceCents": 139000,
+      "oldPriceCents": 159000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 176,
+      "durationDays": 4,
+      "maxGroupSize": 12,
+      "overview": "Iceland's Golden Circle packs an astonishing amount of raw nature into a single loop. You'll stand between two continental plates at Þingvellir, feel the ground rumble as the Strokkur geyser erupts, and watch the mighty Gullfoss waterfall thunder into its canyon. This tour adds bubbling hot springs, lava fields and, in the right season, a chance to chase the northern lights across a star-filled sky. Every stop feels otherworldly, like stepping onto another planet. If you want Iceland's greatest hits with time to truly take them in, this is the trip.",
+      "highlights": [
+        "Gullfoss waterfall & Strokkur geyser",
+        "Þingvellir National Park & continental rift",
+        "Secret Lagoon geothermal soak",
+        "Kerið volcanic crater lake",
+        "Northern lights hunt (seasonal)"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Reykjavík",
+          "description": "Transfer to the capital and an evening walk along the harbour."
+        },
+        {
+          "day": 2,
+          "title": "The Golden Circle",
+          "description": "Þingvellir, Geysir and Gullfoss with a Secret Lagoon soak."
+        },
+        {
+          "day": 3,
+          "title": "Craters & Aurora",
+          "description": "Kerið crater, lava fields and an evening northern lights hunt."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Reykjavík free time before your airport transfer."
+        }
+      ],
+      "included": [
+        "3 nights Reykjavík hotel",
+        "Daily breakfast",
+        "Guided Golden Circle tour",
+        "Geothermal lagoon entry",
+        "Airport transfers",
+        "Northern lights excursion"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 10,
+      "slug": "blue-lagoon-geothermal-retreat",
+      "country": "Iceland",
+      "place": "Blue Lagoon, Iceland",
+      "title": "Blue Lagoon Geothermal Retreat",
+      "location": "Grindavík, Iceland",
+      "type": "Nature",
+      "priceCents": 125000,
+      "oldPriceCents": 145000,
+      "currency": "USD",
+      "ratingAverage": 4.7,
+      "reviewCount": 133,
+      "durationDays": 3,
+      "maxGroupSize": 10,
+      "overview": "Few experiences are as surreal as floating in the milky-blue, mineral-rich water of the Blue Lagoon while snow drifts down around you. Set in a moss-covered lava field near Reykjavík, this geothermal spa is Iceland's most famous escape for good reason. This retreat pairs the lagoon with a silica mud mask, an in-water drink, and time to simply unwind in the steaming, healing waters. Around it, the stark volcanic landscape feels almost lunar. It's the ultimate reset — warm, restorative and unlike anywhere else on earth.",
+      "highlights": [
+        "Blue Lagoon premium entry & silica mask",
+        "In-water bar & floating relaxation",
+        "Lava field boardwalk stroll",
+        "Reykjanes peninsula scenic drive",
+        "Optional volcano viewpoint"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival & Reykjavík",
+          "description": "Airport transfer and an evening in the capital."
+        },
+        {
+          "day": 2,
+          "title": "Blue Lagoon Day",
+          "description": "A full relaxation day at the lagoon with mask, drink and spa access."
+        },
+        {
+          "day": 3,
+          "title": "Departure",
+          "description": "Reykjanes drive and volcano viewpoint before departure."
+        }
+      ],
+      "included": [
+        "2 nights hotel",
+        "Daily breakfast",
+        "Blue Lagoon premium ticket",
+        "Silica mask & in-water drink",
+        "All transfers",
+        "Local guide"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Extra spa treatments"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 11,
+      "slug": "jokulsarlon-glacier-lagoon-tour",
+      "country": "Iceland",
+      "place": "Jökulsárlón, Iceland",
+      "title": "Jökulsárlón Glacier Lagoon Tour",
+      "location": "Jökulsárlón, Iceland",
+      "type": "Adventure",
+      "priceCents": 149000,
+      "oldPriceCents": 172000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 118,
+      "durationDays": 4,
+      "maxGroupSize": 10,
+      "overview": "At Jökulsárlón, great blue icebergs calve from an ancient glacier and drift serenely across a mirror-still lagoon before washing up like diamonds on the black volcanic beach nearby. It is one of the most spellbinding places in all of Iceland. On this tour you'll cruise among the floating ice, walk the glittering shores of Diamond Beach, and travel the epic south coast past thundering waterfalls and towering glaciers. Seals often bob between the icebergs, and the light shifts endlessly across the ice. This is Iceland at its most magical and cinematic.",
+      "highlights": [
+        "Amphibious boat cruise among icebergs",
+        "Diamond Beach ice-on-black-sand walk",
+        "Skaftafell glacier & waterfall views",
+        "Seljalandsfoss & Skógafoss waterfalls",
+        "Vatnajökull glacier scenery"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "South Coast Journey",
+          "description": "Depart Reykjavík via Seljalandsfoss and Skógafoss waterfalls."
+        },
+        {
+          "day": 2,
+          "title": "Glacier Lagoon",
+          "description": "Boat cruise at Jökulsárlón and a Diamond Beach walk."
+        },
+        {
+          "day": 3,
+          "title": "Skaftafell & Glaciers",
+          "description": "Explore Skaftafell's glacier tongues and mountain views."
+        },
+        {
+          "day": 4,
+          "title": "Return & Departure",
+          "description": "Scenic drive back to Reykjavík for your onward transfer."
+        }
+      ],
+      "included": [
+        "3 nights south-coast hotels",
+        "Daily breakfast",
+        "Glacier lagoon boat cruise",
+        "Expert driver-guide",
+        "All transfers",
+        "Waterfall & park entries"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Glacier hike (optional)"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 12,
+      "slug": "vik-black-sand-beach-cliffs",
+      "country": "Iceland",
+      "place": "Vík, Iceland",
+      "title": "Vík Black Sand Beach & Cliffs",
+      "location": "Vík í Mýrdal, Iceland",
+      "type": "Nature",
+      "priceCents": 118000,
+      "oldPriceCents": 136000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 94,
+      "durationDays": 3,
+      "maxGroupSize": 12,
+      "overview": "The tiny village of Vík sits beneath green cliffs on Iceland's wild south coast, framed by one of the most dramatic beaches on earth. Reynisfjara's jet-black sand, towering basalt columns and roaring Atlantic waves feel almost supernatural. This tour explores the coast's sea stacks, hidden caves and puffin-dotted cliffs, with the ever-present rumble of the ocean as your soundtrack. Nearby waterfalls and lava fields add to the sense of raw, untamed nature. It's moody, powerful and endlessly photogenic — Iceland's coastline at its most striking.",
+      "highlights": [
+        "Reynisfjara black sand beach & basalt columns",
+        "Reynisdrangar sea stacks viewpoint",
+        "Dyrhólaey cliffs & puffins (seasonal)",
+        "Skógafoss waterfall visit",
+        "Coastal village of Vík"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Coast to Vík",
+          "description": "Drive the south coast with a stop at Skógafoss waterfall."
+        },
+        {
+          "day": 2,
+          "title": "Black Beaches & Cliffs",
+          "description": "Reynisfjara, the basalt columns and Dyrhólaey cliffs."
+        },
+        {
+          "day": 3,
+          "title": "Departure",
+          "description": "Morning coastal views before returning to Reykjavík."
+        }
+      ],
+      "included": [
+        "2 nights coastal hotel",
+        "Daily breakfast",
+        "Guided south-coast tour",
+        "All transfers",
+        "Waterfall entries",
+        "Local guide"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 13,
+      "slug": "rome-ancient-wonders-la-dolce-vita",
+      "country": "Italy",
+      "place": "Rome, Italy",
+      "title": "Rome: Ancient Wonders & La Dolce Vita",
+      "location": "Rome, Italy",
+      "type": "Cultural",
+      "priceCents": 119000,
+      "oldPriceCents": 139000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 231,
+      "durationDays": 5,
+      "maxGroupSize": 14,
+      "overview": "Rome is a city where three thousand years of history live side by side with the buzz of modern Italian life. Walk in the footsteps of gladiators at the Colosseum, toss a coin into the Trevi Fountain, and gaze up at Michelangelo's ceiling in the Vatican. Between the ancient wonders there's espresso to sip, pasta to twirl and piazzas made for people-watching. Every alley reveals a fountain, a ruin or a trattoria that feels untouched by time. This is the Eternal City at its most captivating — grand, delicious and gloriously alive.",
+      "highlights": [
+        "Colosseum & Roman Forum guided tour",
+        "Vatican Museums & Sistine Chapel",
+        "Trevi Fountain & Spanish Steps",
+        "Pantheon & Piazza Navona stroll",
+        "Trastevere food & wine evening"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Rome",
+          "description": "Transfer to a central hotel and an evening walk to the Trevi Fountain."
+        },
+        {
+          "day": 2,
+          "title": "Ancient Rome",
+          "description": "Colosseum, Roman Forum and Palatine Hill with an expert guide."
+        },
+        {
+          "day": 3,
+          "title": "Vatican City",
+          "description": "Vatican Museums, Sistine Chapel and St Peter's Basilica."
+        },
+        {
+          "day": 4,
+          "title": "Old Rome & Trastevere",
+          "description": "Pantheon, Piazza Navona and a Trastevere food tour."
+        },
+        {
+          "day": 5,
+          "title": "Departure",
+          "description": "Free morning before your airport transfer."
+        }
+      ],
+      "included": [
+        "4 nights central hotel",
+        "Daily breakfast & 1 food tour",
+        "Licensed local guides",
+        "All skip-the-line tickets",
+        "Airport transfers",
+        "Vatican & Colosseum entry"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Most lunches & dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "featuredRank": 2,
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 14,
+      "slug": "venice-canals-gondola-escape",
+      "country": "Italy",
+      "place": "Venice, Italy",
+      "title": "Venice Canals & Gondola Escape",
+      "location": "Venice, Italy",
+      "type": "Cultural",
+      "priceCents": 124000,
+      "oldPriceCents": 144000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 167,
+      "durationDays": 4,
+      "maxGroupSize": 12,
+      "overview": "There is nowhere on earth quite like Venice, a city of canals, bridges and faded palazzos that seems to float on the water. Glide down the Grand Canal by gondola, get gloriously lost in its maze of alleys, and watch St Mark's Square glow at golden hour. This escape includes the glassblowers of Murano and the rainbow houses of Burano, plus quiet corners the day-trippers never find. Every view looks like a painting, and every meal is an excuse to linger. Romantic, timeless and slowly sinking, Venice is a place to savour before it slips away.",
+      "highlights": [
+        "Grand Canal gondola ride",
+        "St Mark's Basilica & Doge's Palace",
+        "Rialto Bridge & market",
+        "Murano glass & Burano's coloured houses",
+        "Hidden backstreet food tour"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Venice",
+          "description": "Water-taxi transfer and an evening in St Mark's Square."
+        },
+        {
+          "day": 2,
+          "title": "Heart of Venice",
+          "description": "St Mark's Basilica, Doge's Palace and a gondola ride."
+        },
+        {
+          "day": 3,
+          "title": "Islands of the Lagoon",
+          "description": "Boat trip to Murano and Burano with local tastings."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Final canal-side espresso before your transfer."
+        }
+      ],
+      "included": [
+        "3 nights Venice hotel",
+        "Daily breakfast",
+        "Gondola ride & guide",
+        "All monument tickets",
+        "Island boat excursion",
+        "Water-taxi transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 15,
+      "slug": "amalfi-coast-coastal-drive",
+      "country": "Italy",
+      "place": "Amalfi Coast, Italy",
+      "title": "Amalfi Coast Coastal Drive",
+      "location": "Amalfi Coast, Italy",
+      "type": "Beach",
+      "priceCents": 138000,
+      "oldPriceCents": 160000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 149,
+      "durationDays": 4,
+      "maxGroupSize": 10,
+      "overview": "The Amalfi Coast is Italy's most dazzling stretch of shoreline, where pastel villages tumble down cliffs to a sparkling sea. Wind along the legendary coastal road to Positano, Amalfi and Ravello, past lemon groves and hidden coves. This trip mixes leisurely beach time with boat trips, clifftop gardens and long lunches of fresh seafood and limoncello. The scenery is impossibly romantic, the pace unhurried, and every turn reveals another view worth stopping for. Glamorous yet soulful, it's the Mediterranean dream made real.",
+      "highlights": [
+        "Scenic drive to Positano & Amalfi",
+        "Boat trip along the coast",
+        "Ravello's clifftop gardens",
+        "Lemon grove visit & limoncello tasting",
+        "Fresh seafood by the sea"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival on the Coast",
+          "description": "Transfer to a cliffside hotel and a sunset aperitivo."
+        },
+        {
+          "day": 2,
+          "title": "Positano & Amalfi",
+          "description": "Coastal drive through the famous villages with free beach time."
+        },
+        {
+          "day": 3,
+          "title": "Boat Day",
+          "description": "Private boat trip to hidden coves and swimming spots."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Ravello gardens visit before your onward transfer."
+        }
+      ],
+      "included": [
+        "3 nights cliffside hotel",
+        "Daily breakfast & 1 dinner",
+        "Private coastal driver",
+        "Boat excursion",
+        "Tastings & garden entry",
+        "All transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Most lunches & dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 16,
+      "slug": "cinque-terre-cliffside-villages",
+      "country": "Italy",
+      "place": "Cinque Terre, Italy",
+      "title": "Cinque Terre Cliffside Villages",
+      "location": "Cinque Terre, Italy",
+      "type": "Adventure",
+      "priceCents": 109000,
+      "oldPriceCents": 127000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 121,
+      "durationDays": 3,
+      "maxGroupSize": 12,
+      "overview": "Five candy-coloured fishing villages cling to the rugged cliffs of the Italian Riviera, linked by scenic hiking trails and a coastal train. Cinque Terre is a place of terraced vineyards, tiny harbours and pastel houses stacked impossibly above the sea. This trip walks the famous cliffside paths between the villages, with plenty of stops for pesto, seafood and cool glasses of local white wine. Swim in hidden coves, ride the little train from town to town, and watch the sunset paint the houses gold. It's active, authentic and endlessly beautiful.",
+      "highlights": [
+        "Hike the cliffside village trail",
+        "Coastal train between all five villages",
+        "Vernazza & Manarola harbours",
+        "Fresh pesto & seafood tasting",
+        "Swim in a hidden cove"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival & Monterosso",
+          "description": "Transfer to the coast and an evening in Monterosso."
+        },
+        {
+          "day": 2,
+          "title": "Village Trail Hike",
+          "description": "Walk and train-hop through Vernazza, Corniglia and Manarola."
+        },
+        {
+          "day": 3,
+          "title": "Departure",
+          "description": "Riomaggiore visit before your return transfer."
+        }
+      ],
+      "included": [
+        "2 nights village hotel",
+        "Daily breakfast",
+        "Cinque Terre train & trail card",
+        "Local hiking guide",
+        "Tastings",
+        "All transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 17,
+      "slug": "tokyo-neon-nights-ancient-temples",
+      "country": "Japan",
+      "place": "Tokyo, Japan",
+      "title": "Tokyo: Neon Nights & Ancient Temples",
+      "location": "Tokyo, Japan",
+      "type": "City",
+      "priceCents": 159000,
+      "oldPriceCents": 182000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 198,
+      "durationDays": 5,
+      "maxGroupSize": 12,
+      "overview": "Tokyo is a city of thrilling contrasts, where neon-soaked skyscrapers rise above centuries-old temples and hyper-modern tech sits beside serene gardens. Cross the famous Shibuya scramble, feast on the freshest sushi, and find calm at the ancient Senso-ji temple. This tour dives into the city's electric energy and its quiet traditions in equal measure — from robot-filled arcades to peaceful tea ceremonies. Every neighbourhood has its own personality and its own incredible food. Fast, futuristic and endlessly fascinating, Tokyo is a place that rewards the endlessly curious.",
+      "highlights": [
+        "Shibuya Crossing & Shinjuku nightlife",
+        "Senso-ji Temple & Asakusa district",
+        "Tsukiji outer market food tour",
+        "teamLab digital art museum",
+        "Day trip option to Nikko or Kamakura"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Tokyo",
+          "description": "Transfer to a central hotel and an evening in glowing Shinjuku."
+        },
+        {
+          "day": 2,
+          "title": "Old & New Tokyo",
+          "description": "Senso-ji temple, Asakusa and the Tsukiji market food tour."
+        },
+        {
+          "day": 3,
+          "title": "Modern Tokyo",
+          "description": "Shibuya, Harajuku and the teamLab digital art museum."
+        },
+        {
+          "day": 4,
+          "title": "Day Trip",
+          "description": "Excursion to Kamakura's Great Buddha and coastal shrines."
+        },
+        {
+          "day": 5,
+          "title": "Departure",
+          "description": "Free morning for shopping before your airport transfer."
+        }
+      ],
+      "included": [
+        "4 nights central hotel",
+        "Daily breakfast & 1 food tour",
+        "English-speaking guide",
+        "All entry tickets",
+        "Airport transfers",
+        "Metro travel pass"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Most lunches & dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "featuredRank": 3,
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 18,
+      "slug": "kyoto-temples-bamboo-groves",
+      "country": "Japan",
+      "place": "Kyoto, Japan",
+      "title": "Kyoto Temples & Bamboo Groves",
+      "location": "Kyoto, Japan",
+      "type": "Cultural",
+      "priceCents": 145000,
+      "oldPriceCents": 168000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 184,
+      "durationDays": 4,
+      "maxGroupSize": 12,
+      "overview": "Kyoto is the soul of old Japan, a city of golden temples, moss gardens and geisha-filled lanes that has kept its grace for over a thousand years. Walk beneath the thousand vermilion gates of Fushimi Inari, drift through the ethereal Arashiyama bamboo grove, and watch the light play on the Golden Pavilion. This tour moves at a contemplative pace, with tea ceremonies, kimono strolls and quiet temple courtyards. In spring the cherry blossoms fall like snow; in autumn the maples blaze red. It's a serene, deeply beautiful counterpoint to Japan's bustling cities.",
+      "highlights": [
+        "Fushimi Inari's thousand torii gates",
+        "Arashiyama bamboo grove",
+        "Kinkaku-ji Golden Pavilion",
+        "Gion geisha district at dusk",
+        "Traditional tea ceremony"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Kyoto",
+          "description": "Transfer to a traditional ryokan and an evening in Gion."
+        },
+        {
+          "day": 2,
+          "title": "Temples & Torii",
+          "description": "Fushimi Inari, Kiyomizu-dera and a tea ceremony."
+        },
+        {
+          "day": 3,
+          "title": "Arashiyama",
+          "description": "Bamboo grove, the Golden Pavilion and Zen gardens."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Morning temple stroll before your onward transfer."
+        }
+      ],
+      "included": [
+        "3 nights ryokan / hotel",
+        "Daily breakfast & 1 dinner",
+        "Local cultural guide",
+        "Temple & shrine tickets",
+        "Tea ceremony",
+        "All transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Most lunches & dinners",
+        "Kimono rental (optional)"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 19,
+      "slug": "mount-fuji-hakone-retreat",
+      "country": "Japan",
+      "place": "Mount Fuji, Japan",
+      "title": "Mount Fuji & Hakone Retreat",
+      "location": "Fuji-Hakone, Japan",
+      "type": "Adventure",
+      "priceCents": 152000,
+      "oldPriceCents": 176000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 126,
+      "durationDays": 3,
+      "maxGroupSize": 10,
+      "overview": "Snow-capped and perfectly symmetrical, Mount Fuji is Japan's sacred icon and one of the most beautiful mountains on earth. This retreat takes you to its lakeside foothills and the hot-spring valley of Hakone, where you can soak in an onsen while gazing at the peak. Cruise Lake Ashi, ride the scenic ropeway over steaming volcanic vents, and photograph Fuji reflected in still waters at dawn. Traditional inns, kaiseki dinners and mineral baths make this as restful as it is scenic. It's the Japan of woodblock prints, brought vividly to life.",
+      "highlights": [
+        "Mount Fuji fifth-station viewpoint",
+        "Lake Ashi scenic cruise",
+        "Hakone ropeway over Owakudani vents",
+        "Relaxing onsen hot-spring soak",
+        "Chureito Pagoda Fuji view"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "To the Foothills",
+          "description": "Travel from Tokyo to a lakeside ryokan with Fuji views."
+        },
+        {
+          "day": 2,
+          "title": "Fuji & Hakone",
+          "description": "Fifth station, Lake Ashi cruise and the Hakone ropeway."
+        },
+        {
+          "day": 3,
+          "title": "Departure",
+          "description": "Sunrise Fuji views and an onsen soak before departure."
+        }
+      ],
+      "included": [
+        "2 nights ryokan with onsen",
+        "Daily breakfast & 1 kaiseki dinner",
+        "Local guide",
+        "Cruise & ropeway tickets",
+        "All transfers",
+        "Onsen access"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "popularityRank": 2,
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 20,
+      "slug": "osaka-street-food-castle-tour",
+      "country": "Japan",
+      "place": "Osaka, Japan",
+      "title": "Osaka Street Food & Castle Tour",
+      "location": "Osaka, Japan",
+      "type": "City",
+      "priceCents": 132000,
+      "oldPriceCents": 154000,
+      "currency": "USD",
+      "ratingAverage": 4.7,
+      "reviewCount": 113,
+      "durationDays": 3,
+      "maxGroupSize": 12,
+      "overview": "Loud, friendly and famously food-obsessed, Osaka is Japan's kitchen and its most fun-loving city. Follow the neon glow to the Dotonbori canal, where giant signs tower over stalls sizzling with takoyaki and okonomiyaki. This tour balances the city's non-stop street-food energy with its history at the magnificent Osaka Castle and its serene gardens. Locals are warm and quick to laugh, and the nightlife hums until the early hours. If you travel to eat, Osaka is paradise — every corner offers another must-try bite.",
+      "highlights": [
+        "Dotonbori neon & street-food crawl",
+        "Osaka Castle & gardens",
+        "Kuromon Ichiba market tasting",
+        "Umeda Sky Building views",
+        "Optional Universal Studios day"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Osaka",
+          "description": "Transfer to a central hotel and a Dotonbori food crawl."
+        },
+        {
+          "day": 2,
+          "title": "Castle & Markets",
+          "description": "Osaka Castle, gardens and Kuromon market tastings."
+        },
+        {
+          "day": 3,
+          "title": "Departure",
+          "description": "Umeda Sky Building views before your onward transfer."
+        }
+      ],
+      "included": [
+        "2 nights central hotel",
+        "Daily breakfast & 1 food tour",
+        "Local guide",
+        "Castle & tower tickets",
+        "All transfers",
+        "Metro pass"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Most meals",
+        "Universal Studios (optional)"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 21,
+      "slug": "male-island-city-ocean-gateway",
+      "country": "Maldives",
+      "place": "Malé, Maldives",
+      "title": "Malé Island City & Ocean Gateway",
+      "location": "Malé, Maldives",
+      "type": "Beach",
+      "priceCents": 169000,
+      "oldPriceCents": 195000,
+      "currency": "USD",
+      "ratingAverage": 4.7,
+      "reviewCount": 108,
+      "durationDays": 4,
+      "maxGroupSize": 10,
+      "overview": "The colourful capital of Malé is the beating heart of the Maldives and the gateway to its thousand shimmering islands. This trip explores the bustling little city — its fish market, golden mosque and vibrant waterfront — before whisking you out to the turquoise lagoons that made the country famous. Snorkel over living coral, cruise past uninhabited sandbanks, and end each day watching the sun sink into an endless ocean. It's the perfect blend of local culture and postcard-perfect island bliss. The Indian Ocean has rarely looked so inviting.",
+      "highlights": [
+        "Malé fish market & Grand Friday Mosque",
+        "Turquoise lagoon snorkelling",
+        "Sandbank picnic excursion",
+        "Sunset dolphin cruise",
+        "Local island cultural visit"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Malé",
+          "description": "Speedboat transfer and a tour of the capital's waterfront and market."
+        },
+        {
+          "day": 2,
+          "title": "Reefs & Sandbanks",
+          "description": "Snorkelling trip and a private sandbank picnic."
+        },
+        {
+          "day": 3,
+          "title": "Ocean & Dolphins",
+          "description": "Sunset dolphin cruise and a local island visit."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Final beach morning before your airport transfer."
+        }
+      ],
+      "included": [
+        "3 nights island hotel",
+        "Daily breakfast & 1 dinner",
+        "Speedboat transfers",
+        "Snorkelling & sandbank trips",
+        "Dolphin cruise",
+        "Local guide"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & some dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 22,
+      "slug": "maafushi-local-island-escape",
+      "country": "Maldives",
+      "place": "Maafushi, Maldives",
+      "title": "Maafushi Local Island Escape",
+      "location": "Maafushi, Maldives",
+      "type": "Beach",
+      "priceCents": 145000,
+      "oldPriceCents": 169000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 132,
+      "durationDays": 4,
+      "maxGroupSize": 12,
+      "overview": "Maafushi offers the Maldives' famous beauty at a friendlier pace — a laid-back local island ringed by soft white sand and warm, glassy water. This escape is all about the ocean: snorkelling with sea turtles, drifting over vivid coral gardens, and swimming in a lagoon so clear it barely looks real. Days are spent island-hopping to sandbanks and hidden reefs, with fresh seafood dinners under the stars. It's relaxed, affordable and authentically Maldivian, without a hint of pretension. Just sun, sea and the softest sand you'll ever feel.",
+      "highlights": [
+        "Snorkel with sea turtles & reef sharks",
+        "Sandbank & lagoon excursions",
+        "Bikini beach relaxation",
+        "Fresh seafood beach barbecue",
+        "Night fishing trip"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival on Maafushi",
+          "description": "Speedboat transfer and an afternoon on the bikini beach."
+        },
+        {
+          "day": 2,
+          "title": "Turtles & Reefs",
+          "description": "Full-day snorkelling safari to turtle points and coral gardens."
+        },
+        {
+          "day": 3,
+          "title": "Sandbank & Barbecue",
+          "description": "Sandbank trip and an evening seafood beach barbecue."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Morning swim before your transfer to Malé."
+        }
+      ],
+      "included": [
+        "3 nights beach guesthouse",
+        "Daily breakfast & 1 barbecue",
+        "Speedboat transfers",
+        "All snorkelling excursions",
+        "Snorkel gear",
+        "Local guide"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & some dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 23,
+      "slug": "baa-atoll-unesco-biosphere-dive",
+      "country": "Maldives",
+      "place": "Baa Atoll, Maldives",
+      "title": "Baa Atoll UNESCO Biosphere Dive",
+      "location": "Baa Atoll, Maldives",
+      "type": "Adventure",
+      "priceCents": 219000,
+      "oldPriceCents": 249000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 97,
+      "durationDays": 5,
+      "maxGroupSize": 8,
+      "overview": "Baa Atoll is a UNESCO Biosphere Reserve and one of the richest marine environments on the planet, home to dazzling coral reefs and seasonal gatherings of manta rays and whale sharks. This diving and snorkelling adventure takes you into that underwater paradise, gliding above technicolour reefs teeming with life. At the famous Hanifaru Bay, dozens of manta rays swirl in a feeding ballet that few travellers ever witness. Above the surface, luxurious island lodges and empty beaches await. For ocean lovers, it simply doesn't get better than this.",
+      "highlights": [
+        "Manta rays at Hanifaru Bay (seasonal)",
+        "Reef diving & snorkelling safaris",
+        "Whale shark encounters (seasonal)",
+        "Coral garden exploration",
+        "Private beach & sunset cruise"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Baa Atoll",
+          "description": "Seaplane transfer to an island lodge and a first reef snorkel."
+        },
+        {
+          "day": 2,
+          "title": "Manta Bay",
+          "description": "Excursion to Hanifaru Bay to snorkel with manta rays."
+        },
+        {
+          "day": 3,
+          "title": "Diving Day",
+          "description": "Two guided dives over pristine coral reefs."
+        },
+        {
+          "day": 4,
+          "title": "Ocean Safari",
+          "description": "Whale shark search and a sunset cruise."
+        },
+        {
+          "day": 5,
+          "title": "Departure",
+          "description": "Final morning snorkel before your seaplane back."
+        }
+      ],
+      "included": [
+        "4 nights island lodge",
+        "Daily breakfast & dinner",
+        "Seaplane transfers",
+        "Guided dives & snorkel trips",
+        "Marine park fees",
+        "Dive & snorkel equipment"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & drinks",
+        "Dive certification"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 24,
+      "slug": "ari-atoll-overwater-luxury",
+      "country": "Maldives",
+      "place": "Ari Atoll, Maldives",
+      "title": "Ari Atoll Overwater Luxury",
+      "location": "Ari Atoll, Maldives",
+      "type": "Beach",
+      "priceCents": 249000,
+      "oldPriceCents": 285000,
+      "currency": "USD",
+      "ratingAverage": 5,
+      "reviewCount": 156,
+      "durationDays": 5,
+      "maxGroupSize": 8,
+      "overview": "This is the Maldives of your imagination: a private overwater villa perched above a glowing turquoise lagoon, with steps leading straight into the warm sea. Ari Atoll pairs pure barefoot luxury with some of the country's best marine life, from resident whale sharks to vibrant house reefs. Slip from your deck into the ocean at dawn, dine on the beach by candlelight, and let the days blur into an endless rhythm of sun, spa and sea. Butler service, private dinners and total seclusion make this the ultimate escape. It is quite simply paradise, refined.",
+      "highlights": [
+        "Private overwater villa with ocean deck",
+        "House reef snorkelling from your villa",
+        "Whale shark & manta excursions",
+        "Sunset champagne sailing",
+        "Overwater spa treatment"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Ari Atoll",
+          "description": "Seaplane transfer to your overwater villa and a sunset welcome."
+        },
+        {
+          "day": 2,
+          "title": "House Reef & Spa",
+          "description": "Morning house-reef snorkel and an overwater spa afternoon."
+        },
+        {
+          "day": 3,
+          "title": "Whale Shark Safari",
+          "description": "Full-day boat safari to snorkel with whale sharks and mantas."
+        },
+        {
+          "day": 4,
+          "title": "Island Indulgence",
+          "description": "Private beach dining and a sunset champagne sail."
+        },
+        {
+          "day": 5,
+          "title": "Departure",
+          "description": "Final lagoon swim before your seaplane back to Malé."
+        }
+      ],
+      "included": [
+        "4 nights overwater villa",
+        "Daily breakfast & dinner",
+        "Seaplane transfers",
+        "Marine excursions",
+        "One spa treatment",
+        "Butler service"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Premium drinks",
+        "Additional spa treatments"
+      ],
+      "status": "PUBLISHED",
+      "featuredRank": 4,
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 25,
+      "slug": "zermatt-the-matterhorn-peak",
+      "country": "Switzerland",
+      "place": "Zermatt, Switzerland",
+      "title": "Zermatt & the Matterhorn Peak",
+      "location": "Zermatt, Switzerland",
+      "type": "Adventure",
+      "priceCents": 189000,
+      "oldPriceCents": 219000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 187,
+      "durationDays": 5,
+      "maxGroupSize": 12,
+      "overview": "Beneath the unmistakable pyramid of the Matterhorn lies Zermatt, a car-free alpine village of wooden chalets and mountain air so crisp it sparkles. This adventure rides Europe's highest cable car to a glacier paradise, wanders flower-filled trails with the great peak always in view, and soaks up the storybook charm of the town below. Whether you're hiking, riding scenic railways or simply sipping hot chocolate on a sunny terrace, the Matterhorn dominates every horizon. In winter it's a skier's dream; in summer, a hiker's heaven. It's the Alps at their most iconic and pristine.",
+      "highlights": [
+        "Matterhorn Glacier Paradise cable car",
+        "Gornergrat scenic railway",
+        "Alpine hiking with Matterhorn views",
+        "Car-free village of Zermatt",
+        "Riffelsee mirror-lake viewpoint"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Zermatt",
+          "description": "Scenic train to the car-free village and an evening stroll."
+        },
+        {
+          "day": 2,
+          "title": "Glacier Paradise",
+          "description": "Cable car to the highest station in Europe for glacier views."
+        },
+        {
+          "day": 3,
+          "title": "Gornergrat & Hiking",
+          "description": "Railway to Gornergrat and a hike past the Riffelsee lake."
+        },
+        {
+          "day": 4,
+          "title": "Alpine Trails",
+          "description": "A guided lower-valley hike with Matterhorn panoramas."
+        },
+        {
+          "day": 5,
+          "title": "Departure",
+          "description": "Free morning before your scenic train back."
+        }
+      ],
+      "included": [
+        "4 nights alpine hotel",
+        "Daily breakfast & 2 dinners",
+        "Scenic railway tickets",
+        "Cable car & Gornergrat passes",
+        "Mountain guide",
+        "All transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches",
+        "Ski equipment (winter)"
+      ],
+      "status": "PUBLISHED",
+      "popularityRank": 3,
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 26,
+      "slug": "interlaken-adventure-lakes",
+      "country": "Switzerland",
+      "place": "Interlaken, Switzerland",
+      "title": "Interlaken Adventure & Lakes",
+      "location": "Interlaken, Switzerland",
+      "type": "Adventure",
+      "priceCents": 162000,
+      "oldPriceCents": 188000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 154,
+      "durationDays": 4,
+      "maxGroupSize": 12,
+      "overview": "Cradled between two brilliant blue lakes and ringed by snow-dusted peaks, Interlaken is Switzerland's adventure capital. This trip mixes heart-pounding thrills with jaw-dropping scenery, from paragliding over the valley to cruising the turquoise waters of Lake Brienz. Ride cogwheel trains up to alpine meadows, marvel at the thundering Trümmelbach Falls, and gaze up at the mighty Eiger, Mönch and Jungfrau. Charming lakeside towns and Swiss chocolate provide the gentler moments. Whether you crave adrenaline or postcard views, Interlaken delivers both in spectacular fashion.",
+      "highlights": [
+        "Paragliding over Interlaken (optional)",
+        "Lake Brienz turquoise boat cruise",
+        "Lauterbrunnen valley & waterfalls",
+        "Cogwheel train to alpine meadows",
+        "Views of Eiger, Mönch & Jungfrau"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Interlaken",
+          "description": "Transfer to a lakeside hotel and a lakeshore evening walk."
+        },
+        {
+          "day": 2,
+          "title": "Lakes & Valley",
+          "description": "Lake Brienz cruise and the waterfalls of Lauterbrunnen."
+        },
+        {
+          "day": 3,
+          "title": "Alpine Heights",
+          "description": "Cogwheel train to alpine meadows with optional paragliding."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Free morning before your onward transfer."
+        }
+      ],
+      "included": [
+        "3 nights lakeside hotel",
+        "Daily breakfast & 1 dinner",
+        "Lake cruise & train tickets",
+        "Local guide",
+        "Waterfall entry",
+        "All transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches",
+        "Paragliding (optional)"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 27,
+      "slug": "lucerne-lake-old-town",
+      "country": "Switzerland",
+      "place": "Lucerne, Switzerland",
+      "title": "Lucerne Lake & Old Town",
+      "location": "Lucerne, Switzerland",
+      "type": "Cultural",
+      "priceCents": 139000,
+      "oldPriceCents": 162000,
+      "currency": "USD",
+      "ratingAverage": 4.8,
+      "reviewCount": 119,
+      "durationDays": 3,
+      "maxGroupSize": 14,
+      "overview": "With its covered wooden bridge, frescoed old town and shimmering lake framed by mountains, Lucerne is Switzerland at its most postcard-perfect. This relaxed tour wanders the medieval streets, cruises the tranquil Lake Lucerne, and rides up nearby Mount Pilatus for panoramic alpine views. There's time for lakeside cafés, Swiss watch shops and the moving Lion Monument carved into the cliff. The pace is gentle and the scenery sublime, making it ideal for those who want beauty without the strenuous hikes. It's a graceful, romantic slice of the Swiss heartland.",
+      "highlights": [
+        "Chapel Bridge & medieval old town",
+        "Lake Lucerne scenic cruise",
+        "Mount Pilatus cogwheel ascent",
+        "Lion Monument visit",
+        "Swiss chocolate & watch shopping"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Lucerne",
+          "description": "Transfer to a central hotel and an old-town walking tour."
+        },
+        {
+          "day": 2,
+          "title": "Lake & Mountain",
+          "description": "Lake Lucerne cruise and the cogwheel railway up Mount Pilatus."
+        },
+        {
+          "day": 3,
+          "title": "Departure",
+          "description": "Lion Monument and free time before your transfer."
+        }
+      ],
+      "included": [
+        "2 nights central hotel",
+        "Daily breakfast",
+        "Lake cruise & Pilatus tickets",
+        "Local guide",
+        "Old-town walking tour",
+        "All transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches & dinners",
+        "Personal expenses"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "_id": 28,
+      "slug": "jungfraujoch-top-of-europe",
+      "country": "Switzerland",
+      "place": "Jungfraujoch, Switzerland",
+      "title": "Jungfraujoch: Top of Europe",
+      "location": "Jungfrau Region, Switzerland",
+      "type": "Adventure",
+      "priceCents": 178000,
+      "oldPriceCents": 205000,
+      "currency": "USD",
+      "ratingAverage": 4.9,
+      "reviewCount": 142,
+      "durationDays": 4,
+      "maxGroupSize": 12,
+      "overview": "Ride one of the world's most extraordinary railways to Jungfraujoch, the 'Top of Europe', where a glittering world of glaciers and eternal snow awaits at 3,454 metres. The journey climbs through tunnels bored into the Eiger itself, emerging into a dazzling alpine wonderland of ice palaces and endless white peaks. This tour also explores the flower-strewn villages of the Jungfrau valley below, from Grindelwald to the cliffside hamlet of Mürren. Standing on the roof of the Alps, surrounded by the great Aletsch Glacier, is a memory that lasts a lifetime. It's Switzerland's grandest high-altitude adventure.",
+      "highlights": [
+        "Cogwheel railway to Jungfraujoch (3,454m)",
+        "Aletsch Glacier & Ice Palace",
+        "Grindelwald First cliff walk",
+        "Snow-capped Eiger, Mönch & Jungfrau",
+        "Alpine village of Mürren"
+      ],
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Arrival in Grindelwald",
+          "description": "Transfer to a mountain village hotel with Eiger views."
+        },
+        {
+          "day": 2,
+          "title": "Top of Europe",
+          "description": "Railway to Jungfraujoch, the Ice Palace and glacier plateau."
+        },
+        {
+          "day": 3,
+          "title": "Cliffs & Villages",
+          "description": "Grindelwald First cliff walk and the village of Mürren."
+        },
+        {
+          "day": 4,
+          "title": "Departure",
+          "description": "Free alpine morning before your onward transfer."
+        }
+      ],
+      "included": [
+        "3 nights mountain hotel",
+        "Daily breakfast & 1 dinner",
+        "Jungfraujoch railway ticket",
+        "First cliff walk pass",
+        "Mountain guide",
+        "All transfers"
+      ],
+      "notIncluded": [
+        "International flights",
+        "Travel insurance",
+        "Lunches",
+        "Adventure add-ons"
+      ],
+      "status": "PUBLISHED",
+      "publishedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "tourImages": [
+    {
+      "tourId": 1,
+      "url": "/img/tour-single/bali-ubud-1.jpg",
+      "altText": "Ubud Cultural & Rice Terrace Retreat image 1",
+      "position": 0
+    },
+    {
+      "tourId": 1,
+      "url": "/img/tour-single/bali-ubud-2.jpg",
+      "altText": "Ubud Cultural & Rice Terrace Retreat image 2",
+      "position": 1
+    },
+    {
+      "tourId": 1,
+      "url": "/img/tour-single/bali-ubud-3.jpg",
+      "altText": "Ubud Cultural & Rice Terrace Retreat image 3",
+      "position": 2
+    },
+    {
+      "tourId": 2,
+      "url": "/img/tour-single/bali-uluwatu-1.jpg",
+      "altText": "Uluwatu Cliffs & Temple Sunset image 1",
+      "position": 0
+    },
+    {
+      "tourId": 2,
+      "url": "/img/tour-single/bali-uluwatu-2.jpg",
+      "altText": "Uluwatu Cliffs & Temple Sunset image 2",
+      "position": 1
+    },
+    {
+      "tourId": 2,
+      "url": "/img/tour-single/bali-uluwatu-3.jpg",
+      "altText": "Uluwatu Cliffs & Temple Sunset image 3",
+      "position": 2
+    },
+    {
+      "tourId": 3,
+      "url": "/img/tour-single/bali-nusapenida-1.jpg",
+      "altText": "Nusa Penida Island Escape image 1",
+      "position": 0
+    },
+    {
+      "tourId": 3,
+      "url": "/img/tour-single/bali-nusapenida-2.jpg",
+      "altText": "Nusa Penida Island Escape image 2",
+      "position": 1
+    },
+    {
+      "tourId": 3,
+      "url": "/img/tour-single/bali-nusapenida-3.jpg",
+      "altText": "Nusa Penida Island Escape image 3",
+      "position": 2
+    },
+    {
+      "tourId": 4,
+      "url": "/img/tour-single/bali-batur-1.jpg",
+      "altText": "Mount Batur Sunrise Trek image 1",
+      "position": 0
+    },
+    {
+      "tourId": 4,
+      "url": "/img/tour-single/bali-batur-2.jpg",
+      "altText": "Mount Batur Sunrise Trek image 2",
+      "position": 1
+    },
+    {
+      "tourId": 4,
+      "url": "/img/tour-single/bali-batur-3.jpg",
+      "altText": "Mount Batur Sunrise Trek image 3",
+      "position": 2
+    },
+    {
+      "tourId": 5,
+      "url": "/img/tour-single/france-paris-1.jpg",
+      "altText": "Paris: City of Light & Landmarks image 1",
+      "position": 0
+    },
+    {
+      "tourId": 5,
+      "url": "/img/tour-single/france-paris-2.jpg",
+      "altText": "Paris: City of Light & Landmarks image 2",
+      "position": 1
+    },
+    {
+      "tourId": 5,
+      "url": "/img/tour-single/france-paris-3.jpg",
+      "altText": "Paris: City of Light & Landmarks image 3",
+      "position": 2
+    },
+    {
+      "tourId": 6,
+      "url": "/img/tour-single/france-riviera-1.jpg",
+      "altText": "French Riviera & Nice Coastline image 1",
+      "position": 0
+    },
+    {
+      "tourId": 6,
+      "url": "/img/tour-single/france-riviera-2.jpg",
+      "altText": "French Riviera & Nice Coastline image 2",
+      "position": 1
+    },
+    {
+      "tourId": 6,
+      "url": "/img/tour-single/france-riviera-3.jpg",
+      "altText": "French Riviera & Nice Coastline image 3",
+      "position": 2
+    },
+    {
+      "tourId": 7,
+      "url": "/img/tour-single/france-provence-1.jpg",
+      "altText": "Provence Lavender Fields Escape image 1",
+      "position": 0
+    },
+    {
+      "tourId": 7,
+      "url": "/img/tour-single/france-provence-2.jpg",
+      "altText": "Provence Lavender Fields Escape image 2",
+      "position": 1
+    },
+    {
+      "tourId": 7,
+      "url": "/img/tour-single/france-provence-3.jpg",
+      "altText": "Provence Lavender Fields Escape image 3",
+      "position": 2
+    },
+    {
+      "tourId": 8,
+      "url": "/img/tour-single/france-montsaintmichel-1.jpg",
+      "altText": "Mont Saint-Michel Island Abbey image 1",
+      "position": 0
+    },
+    {
+      "tourId": 8,
+      "url": "/img/tour-single/france-montsaintmichel-2.jpg",
+      "altText": "Mont Saint-Michel Island Abbey image 2",
+      "position": 1
+    },
+    {
+      "tourId": 8,
+      "url": "/img/tour-single/france-montsaintmichel-3.jpg",
+      "altText": "Mont Saint-Michel Island Abbey image 3",
+      "position": 2
+    },
+    {
+      "tourId": 9,
+      "url": "/img/tour-single/iceland-goldencircle-1.jpg",
+      "altText": "Iceland Golden Circle Explorer image 1",
+      "position": 0
+    },
+    {
+      "tourId": 9,
+      "url": "/img/tour-single/iceland-goldencircle-2.jpg",
+      "altText": "Iceland Golden Circle Explorer image 2",
+      "position": 1
+    },
+    {
+      "tourId": 9,
+      "url": "/img/tour-single/iceland-goldencircle-3.jpg",
+      "altText": "Iceland Golden Circle Explorer image 3",
+      "position": 2
+    },
+    {
+      "tourId": 10,
+      "url": "/img/tour-single/iceland-bluelagoon-1.jpg",
+      "altText": "Blue Lagoon Geothermal Retreat image 1",
+      "position": 0
+    },
+    {
+      "tourId": 10,
+      "url": "/img/tour-single/iceland-bluelagoon-2.jpg",
+      "altText": "Blue Lagoon Geothermal Retreat image 2",
+      "position": 1
+    },
+    {
+      "tourId": 10,
+      "url": "/img/tour-single/iceland-bluelagoon-3.jpg",
+      "altText": "Blue Lagoon Geothermal Retreat image 3",
+      "position": 2
+    },
+    {
+      "tourId": 11,
+      "url": "/img/tour-single/iceland-jokulsarlon-1.jpg",
+      "altText": "Jökulsárlón Glacier Lagoon Tour image 1",
+      "position": 0
+    },
+    {
+      "tourId": 11,
+      "url": "/img/tour-single/iceland-jokulsarlon-2.jpg",
+      "altText": "Jökulsárlón Glacier Lagoon Tour image 2",
+      "position": 1
+    },
+    {
+      "tourId": 11,
+      "url": "/img/tour-single/iceland-jokulsarlon-3.jpg",
+      "altText": "Jökulsárlón Glacier Lagoon Tour image 3",
+      "position": 2
+    },
+    {
+      "tourId": 12,
+      "url": "/img/tour-single/iceland-vik-1.jpg",
+      "altText": "Vík Black Sand Beach & Cliffs image 1",
+      "position": 0
+    },
+    {
+      "tourId": 12,
+      "url": "/img/tour-single/iceland-vik-2.jpg",
+      "altText": "Vík Black Sand Beach & Cliffs image 2",
+      "position": 1
+    },
+    {
+      "tourId": 12,
+      "url": "/img/tour-single/iceland-vik-3.jpg",
+      "altText": "Vík Black Sand Beach & Cliffs image 3",
+      "position": 2
+    },
+    {
+      "tourId": 13,
+      "url": "/img/tour-single/italy-rome-1.jpg",
+      "altText": "Rome: Ancient Wonders & La Dolce Vita image 1",
+      "position": 0
+    },
+    {
+      "tourId": 13,
+      "url": "/img/tour-single/italy-rome-2.jpg",
+      "altText": "Rome: Ancient Wonders & La Dolce Vita image 2",
+      "position": 1
+    },
+    {
+      "tourId": 13,
+      "url": "/img/tour-single/italy-rome-3.jpg",
+      "altText": "Rome: Ancient Wonders & La Dolce Vita image 3",
+      "position": 2
+    },
+    {
+      "tourId": 14,
+      "url": "/img/tour-single/italy-venice-1.jpg",
+      "altText": "Venice Canals & Gondola Escape image 1",
+      "position": 0
+    },
+    {
+      "tourId": 14,
+      "url": "/img/tour-single/italy-venice-2.jpg",
+      "altText": "Venice Canals & Gondola Escape image 2",
+      "position": 1
+    },
+    {
+      "tourId": 14,
+      "url": "/img/tour-single/italy-venice-3.jpg",
+      "altText": "Venice Canals & Gondola Escape image 3",
+      "position": 2
+    },
+    {
+      "tourId": 15,
+      "url": "/img/tour-single/italy-amalfi-1.jpg",
+      "altText": "Amalfi Coast Coastal Drive image 1",
+      "position": 0
+    },
+    {
+      "tourId": 15,
+      "url": "/img/tour-single/italy-amalfi-2.jpg",
+      "altText": "Amalfi Coast Coastal Drive image 2",
+      "position": 1
+    },
+    {
+      "tourId": 15,
+      "url": "/img/tour-single/italy-amalfi-3.jpg",
+      "altText": "Amalfi Coast Coastal Drive image 3",
+      "position": 2
+    },
+    {
+      "tourId": 16,
+      "url": "/img/tour-single/italy-cinqueterre-1.jpg",
+      "altText": "Cinque Terre Cliffside Villages image 1",
+      "position": 0
+    },
+    {
+      "tourId": 16,
+      "url": "/img/tour-single/italy-cinqueterre-2.jpg",
+      "altText": "Cinque Terre Cliffside Villages image 2",
+      "position": 1
+    },
+    {
+      "tourId": 16,
+      "url": "/img/tour-single/italy-cinqueterre-3.jpg",
+      "altText": "Cinque Terre Cliffside Villages image 3",
+      "position": 2
+    },
+    {
+      "tourId": 17,
+      "url": "/img/tour-single/japan-tokyo-1.jpg",
+      "altText": "Tokyo: Neon Nights & Ancient Temples image 1",
+      "position": 0
+    },
+    {
+      "tourId": 17,
+      "url": "/img/tour-single/japan-tokyo-2.jpg",
+      "altText": "Tokyo: Neon Nights & Ancient Temples image 2",
+      "position": 1
+    },
+    {
+      "tourId": 17,
+      "url": "/img/tour-single/japan-tokyo-3.jpg",
+      "altText": "Tokyo: Neon Nights & Ancient Temples image 3",
+      "position": 2
+    },
+    {
+      "tourId": 18,
+      "url": "/img/tour-single/japan-kyoto-1.jpg",
+      "altText": "Kyoto Temples & Bamboo Groves image 1",
+      "position": 0
+    },
+    {
+      "tourId": 18,
+      "url": "/img/tour-single/japan-kyoto-2.jpg",
+      "altText": "Kyoto Temples & Bamboo Groves image 2",
+      "position": 1
+    },
+    {
+      "tourId": 18,
+      "url": "/img/tour-single/japan-kyoto-3.jpg",
+      "altText": "Kyoto Temples & Bamboo Groves image 3",
+      "position": 2
+    },
+    {
+      "tourId": 19,
+      "url": "/img/tour-single/japan-fuji-1.jpg",
+      "altText": "Mount Fuji & Hakone Retreat image 1",
+      "position": 0
+    },
+    {
+      "tourId": 19,
+      "url": "/img/tour-single/japan-fuji-2.jpg",
+      "altText": "Mount Fuji & Hakone Retreat image 2",
+      "position": 1
+    },
+    {
+      "tourId": 19,
+      "url": "/img/tour-single/japan-fuji-3.jpg",
+      "altText": "Mount Fuji & Hakone Retreat image 3",
+      "position": 2
+    },
+    {
+      "tourId": 20,
+      "url": "/img/tour-single/japan-osaka-1.jpg",
+      "altText": "Osaka Street Food & Castle Tour image 1",
+      "position": 0
+    },
+    {
+      "tourId": 20,
+      "url": "/img/tour-single/japan-osaka-2.jpg",
+      "altText": "Osaka Street Food & Castle Tour image 2",
+      "position": 1
+    },
+    {
+      "tourId": 20,
+      "url": "/img/tour-single/japan-osaka-3.jpg",
+      "altText": "Osaka Street Food & Castle Tour image 3",
+      "position": 2
+    },
+    {
+      "tourId": 21,
+      "url": "/img/tour-single/maldives-male-1.jpg",
+      "altText": "Malé Island City & Ocean Gateway image 1",
+      "position": 0
+    },
+    {
+      "tourId": 21,
+      "url": "/img/tour-single/maldives-male-2.jpg",
+      "altText": "Malé Island City & Ocean Gateway image 2",
+      "position": 1
+    },
+    {
+      "tourId": 21,
+      "url": "/img/tour-single/maldives-male-3.jpg",
+      "altText": "Malé Island City & Ocean Gateway image 3",
+      "position": 2
+    },
+    {
+      "tourId": 22,
+      "url": "/img/tour-single/maldives-maafushi-1.jpg",
+      "altText": "Maafushi Local Island Escape image 1",
+      "position": 0
+    },
+    {
+      "tourId": 22,
+      "url": "/img/tour-single/maldives-maafushi-2.jpg",
+      "altText": "Maafushi Local Island Escape image 2",
+      "position": 1
+    },
+    {
+      "tourId": 22,
+      "url": "/img/tour-single/maldives-maafushi-3.jpg",
+      "altText": "Maafushi Local Island Escape image 3",
+      "position": 2
+    },
+    {
+      "tourId": 23,
+      "url": "/img/tour-single/maldives-baa-1.jpg",
+      "altText": "Baa Atoll UNESCO Biosphere Dive image 1",
+      "position": 0
+    },
+    {
+      "tourId": 23,
+      "url": "/img/tour-single/maldives-baa-2.jpg",
+      "altText": "Baa Atoll UNESCO Biosphere Dive image 2",
+      "position": 1
+    },
+    {
+      "tourId": 23,
+      "url": "/img/tour-single/maldives-baa-3.jpg",
+      "altText": "Baa Atoll UNESCO Biosphere Dive image 3",
+      "position": 2
+    },
+    {
+      "tourId": 24,
+      "url": "/img/tour-single/maldives-ari-1.jpg",
+      "altText": "Ari Atoll Overwater Luxury image 1",
+      "position": 0
+    },
+    {
+      "tourId": 24,
+      "url": "/img/tour-single/maldives-ari-2.jpg",
+      "altText": "Ari Atoll Overwater Luxury image 2",
+      "position": 1
+    },
+    {
+      "tourId": 24,
+      "url": "/img/tour-single/maldives-ari-3.jpg",
+      "altText": "Ari Atoll Overwater Luxury image 3",
+      "position": 2
+    },
+    {
+      "tourId": 25,
+      "url": "/img/tour-single/switzerland-zermatt-1.jpg",
+      "altText": "Zermatt & the Matterhorn Peak image 1",
+      "position": 0
+    },
+    {
+      "tourId": 25,
+      "url": "/img/tour-single/switzerland-zermatt-2.jpg",
+      "altText": "Zermatt & the Matterhorn Peak image 2",
+      "position": 1
+    },
+    {
+      "tourId": 25,
+      "url": "/img/tour-single/switzerland-zermatt-3.jpg",
+      "altText": "Zermatt & the Matterhorn Peak image 3",
+      "position": 2
+    },
+    {
+      "tourId": 26,
+      "url": "/img/tour-single/switzerland-interlaken-1.jpg",
+      "altText": "Interlaken Adventure & Lakes image 1",
+      "position": 0
+    },
+    {
+      "tourId": 26,
+      "url": "/img/tour-single/switzerland-interlaken-2.jpg",
+      "altText": "Interlaken Adventure & Lakes image 2",
+      "position": 1
+    },
+    {
+      "tourId": 26,
+      "url": "/img/tour-single/switzerland-interlaken-3.jpg",
+      "altText": "Interlaken Adventure & Lakes image 3",
+      "position": 2
+    },
+    {
+      "tourId": 27,
+      "url": "/img/tour-single/switzerland-lucerne-1.jpg",
+      "altText": "Lucerne Lake & Old Town image 1",
+      "position": 0
+    },
+    {
+      "tourId": 27,
+      "url": "/img/tour-single/switzerland-lucerne-2.jpg",
+      "altText": "Lucerne Lake & Old Town image 2",
+      "position": 1
+    },
+    {
+      "tourId": 27,
+      "url": "/img/tour-single/switzerland-lucerne-3.jpg",
+      "altText": "Lucerne Lake & Old Town image 3",
+      "position": 2
+    },
+    {
+      "tourId": 28,
+      "url": "/img/tour-single/switzerland-jungfraujoch-1.jpg",
+      "altText": "Jungfraujoch: Top of Europe image 1",
+      "position": 0
+    },
+    {
+      "tourId": 28,
+      "url": "/img/tour-single/switzerland-jungfraujoch-2.jpg",
+      "altText": "Jungfraujoch: Top of Europe image 2",
+      "position": 1
+    },
+    {
+      "tourId": 28,
+      "url": "/img/tour-single/switzerland-jungfraujoch-3.jpg",
+      "altText": "Jungfraujoch: Top of Europe image 3",
+      "position": 2
+    }
+  ]
+}

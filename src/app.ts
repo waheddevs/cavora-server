@@ -1,47 +1,49 @@
-import express from 'express';
-import path from 'path';
 import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
-import session from 'express-session';
-import MongoDBStore from 'connect-mongodb-session';
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
+import pinoHttp from 'pino-http';
+import { errorHandler } from './common/middleware/error-handler';
+import { notFound } from './common/middleware/not-found';
+import { globalRateLimiter } from './common/middleware/rate-limit';
+import { requestId } from './common/middleware/request-id';
+import { env } from './config/env';
+import { logger } from './config/logger';
 import router from './router';
-import routerAdmin from './router-admin';
-import { MORGAN_FORMAT } from './libs/config';
 
 const app = express();
 
-const MongoStore = MongoDBStore(session);
-const store = new MongoStore({
-  uri: process.env.MONGO_URL ?? '',
-  collection: 'sessions',
-});
-store.on('error', (err: Error) => console.log('SESSION STORE ERROR: ', err));
+app.disable('x-powered-by');
+app.set('trust proxy', env.TRUST_PROXY);
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(morgan(MORGAN_FORMAT));
-
+app.use(requestId);
 app.use(
-  session({
-    secret: process.env.SESSION_SECRET ?? '',
-    resave: false,
-    saveUninitialized: false,
-    store,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+  pinoHttp({
+    genReqId: (req) => req.requestId,
+    logger,
   }),
 );
+app.use(helmet());
+app.use(
+  cors({
+    credentials: true,
+    origin(origin, callback) {
+      if (!origin || origin === env.FRONTEND_ORIGIN) {
+        callback(null, true);
+        return;
+      }
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+      callback(new Error('CORS_ORIGIN_DENIED'));
+    },
+  }),
+);
+app.use(cookieParser());
+app.use(express.json({ limit: '1mb' }));
+app.use(globalRateLimiter);
 
-app.use((req, res, next) => {
-  res.locals.member = req.session.member ?? null;
-  next();
-});
+app.use('/cavora', router);
 
-app.use('/admin', routerAdmin);
-app.use('/', router);
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;

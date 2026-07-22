@@ -1,10 +1,10 @@
-export enum MemberType {
+export enum MemberRole {
   USER = 'USER',
-  RESTAURANT = 'RESTAURANT',
+  ADMIN = 'ADMIN',
 }
 
 export enum MemberStatus {
   ACTIVE = 'ACTIVE',
-  BLOCK = 'BLOCK',
-  DELETE = 'DELETE',
+  SUSPENDED = 'SUSPENDED',
+  DELETED = 'DELETED',
 }

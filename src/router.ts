@@ -1,23 +1,50 @@
-import express from 'express';
-import memberController from './controllers/member.controller';
-import productController from './controllers/product.controller';
-import orderController from './controllers/order.controller';
+import { Router } from 'express';
+import homeController from './controllers/home.controller';
+import systemController from './controllers/system.controller';
+import tourController from './controllers/tour.controller';
+import { validate } from './common/middleware/validate';
+import {
+  availabilityQuerySchema,
+  tourIdParamsSchema,
+  tourListQuerySchema,
+} from './libs/validators/tour.validator';
 
-const router = express.Router();
+const router = Router();
 
-/* member */
-router.post('/member/signup', memberController.signup);
-router.post('/member/login', memberController.login);
-router.get('/member/detail', memberController.verifyAuth, memberController.getMemberDetail);
-router.post('/member/update', memberController.verifyAuth, memberController.updateMember);
+/* SYSTEM */
+router.get('/health', systemController.getHealth);
 
-/* product */
-router.get('/product/all', memberController.retrieveAuth, productController.getProducts);
-router.get('/product/:id', memberController.retrieveAuth, productController.getProduct);
+/* HOME */
+router.get('/home', homeController.getHome);
 
-/* order */
-router.post('/order/create', memberController.verifyAuth, orderController.createOrder);
-router.get('/order/mine', memberController.verifyAuth, orderController.getMyOrders);
-router.post('/order/update', memberController.verifyAuth, orderController.updateOrderStatus);
+/* AUTHENTICATION */
+
+/* MEMBERS */
+
+/* TOURS & AVAILABILITY */
+router.get('/tours', validate({ query: tourListQuerySchema }), tourController.getTours);
+router.get(
+  '/tours/:id/related',
+  validate({ params: tourIdParamsSchema }),
+  tourController.getRelatedTours,
+);
+router.get(
+  '/tours/:id/availability',
+  validate({ params: tourIdParamsSchema, query: availabilityQuerySchema }),
+  tourController.getAvailability,
+);
+router.get('/tours/:id', validate({ params: tourIdParamsSchema }), tourController.getTour);
+
+/* WISHLISTS */
+
+/* BOOKINGS */
+
+/* PAYMENTS */
+
+/* BLOG */
+
+/* ENGAGEMENT */
+
+/* ADMINISTRATION */
 
 export default router;
