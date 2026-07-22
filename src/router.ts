@@ -45,6 +45,6 @@ router.get('/tours/:id', validate({ params: tourIdParamsSchema }), tourControlle
 
 /* ENGAGEMENT */
 
-/* ADMINISTRATION */
+/* ADMIN */
 
 export default router;

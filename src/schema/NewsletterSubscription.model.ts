@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { NewsletterSubscriptionStatus } from '../libs/enums/engagement.enum';
 import type { NewsletterSubscription } from '../libs/types/engagement';
 
@@ -41,7 +41,7 @@ newsletterSubscriptionSchema.index({ email: 1 }, { unique: true });
 newsletterSubscriptionSchema.index({ unsubscribeTokenHash: 1 }, { unique: true });
 newsletterSubscriptionSchema.index({ status: 1, createdAt: -1 });
 
-export default model<NewsletterSubscription>(
+export default mongoose.model<NewsletterSubscription>(
   'NewsletterSubscription',
   newsletterSubscriptionSchema,
 );

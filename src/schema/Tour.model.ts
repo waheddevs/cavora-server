@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { TourStatus } from '../libs/enums/tour.enum';
 import type { Tour, TourItineraryItem } from '../libs/types/tour';
 
@@ -173,4 +173,4 @@ tourSchema.index(
   },
 );
 
-export default model<Tour>('Tour', tourSchema);
+export default mongoose.model<Tour>('Tour', tourSchema);

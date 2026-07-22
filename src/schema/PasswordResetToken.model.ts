@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import type { AccountToken } from '../libs/types/member';
 
 const passwordResetTokenSchema = new Schema<AccountToken>(
@@ -26,4 +26,4 @@ passwordResetTokenSchema.index({ tokenHash: 1 }, { unique: true });
 passwordResetTokenSchema.index({ memberId: 1, createdAt: -1 });
 passwordResetTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-export default model<AccountToken>('PasswordResetToken', passwordResetTokenSchema);
+export default mongoose.model<AccountToken>('PasswordResetToken', passwordResetTokenSchema);

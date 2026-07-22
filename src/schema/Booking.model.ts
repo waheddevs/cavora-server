@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { BookingStatus } from '../libs/enums/booking.enum';
 import type { Booking } from '../libs/types/booking';
 
@@ -80,4 +80,4 @@ bookingSchema.index({ memberId: 1, status: 1, createdAt: -1 });
 bookingSchema.index({ departureId: 1, status: 1 });
 bookingSchema.index({ status: 1, holdExpiresAt: 1 });
 
-export default model<Booking>('Booking', bookingSchema);
+export default mongoose.model<Booking>('Booking', bookingSchema);

@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { BlogCommentStatus } from '../libs/enums/blog.enum';
 import type { BlogComment } from '../libs/types/blog';
 
@@ -45,4 +45,4 @@ blogCommentSchema.index({ postId: 1, status: 1, createdAt: 1 });
 blogCommentSchema.index({ status: 1, createdAt: -1 });
 blogCommentSchema.index({ memberId: 1, createdAt: -1 });
 
-export default model<BlogComment>('BlogComment', blogCommentSchema);
+export default mongoose.model<BlogComment>('BlogComment', blogCommentSchema);

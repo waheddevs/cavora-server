@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import type { Wishlist } from '../libs/types/wishlist';
 
 const wishlistSchema = new Schema<Wishlist>(
@@ -21,4 +21,4 @@ const wishlistSchema = new Schema<Wishlist>(
 wishlistSchema.index({ memberId: 1, tourId: 1 }, { unique: true });
 wishlistSchema.index({ memberId: 1, createdAt: -1 });
 
-export default model<Wishlist>('Wishlist', wishlistSchema);
+export default mongoose.model<Wishlist>('Wishlist', wishlistSchema);

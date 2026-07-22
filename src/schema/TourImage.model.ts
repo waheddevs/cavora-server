@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import type { TourImage } from '../libs/types/tour';
 
 const tourImageSchema = new Schema<TourImage>(
@@ -33,4 +33,4 @@ const tourImageSchema = new Schema<TourImage>(
 
 tourImageSchema.index({ tourId: 1, position: 1 }, { unique: true });
 
-export default model<TourImage>('TourImage', tourImageSchema);
+export default mongoose.model<TourImage>('TourImage', tourImageSchema);

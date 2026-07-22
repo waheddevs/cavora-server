@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import type { AccountToken } from '../libs/types/member';
 
 const emailVerificationTokenSchema = new Schema<AccountToken>(
@@ -26,4 +26,4 @@ emailVerificationTokenSchema.index({ tokenHash: 1 }, { unique: true });
 emailVerificationTokenSchema.index({ memberId: 1, createdAt: -1 });
 emailVerificationTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-export default model<AccountToken>('EmailVerificationToken', emailVerificationTokenSchema);
+export default mongoose.model<AccountToken>('EmailVerificationToken', emailVerificationTokenSchema);

@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { PaymentProvider, PaymentStatus } from '../libs/enums/payment.enum';
 import type { Payment } from '../libs/types/payment';
 
@@ -55,4 +55,4 @@ paymentSchema.index({ provider: 1, providerIntentId: 1 }, { unique: true });
 paymentSchema.index({ bookingId: 1, createdAt: -1 });
 paymentSchema.index({ status: 1, createdAt: -1 });
 
-export default model<Payment>('Payment', paymentSchema);
+export default mongoose.model<Payment>('Payment', paymentSchema);

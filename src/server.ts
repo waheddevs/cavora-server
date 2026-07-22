@@ -11,14 +11,7 @@ async function startServer(): Promise<void> {
   logger.info('MongoDB connected');
 
   server = app.listen(env.PORT, env.SERVER_HOST, () => {
-    logger.info(
-      {
-        environment: env.NODE_ENV,
-        host: env.SERVER_HOST,
-        port: env.PORT,
-      },
-      'Cavora server listening',
-    );
+    logger.info({ port: env.PORT }, 'Cavora server listening');
   });
 
   server.on('error', (err) => {
@@ -26,31 +19,6 @@ async function startServer(): Promise<void> {
     process.exitCode = 1;
   });
 }
-
-async function shutdown(signal: NodeJS.Signals): Promise<void> {
-  logger.info({ signal }, 'Shutting down Cavora server');
-
-  if (server) {
-    await new Promise<void>((resolve, reject) => {
-      server?.close((err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-  }
-
-  await mongoose.disconnect();
-}
-
-function handleShutdown(signal: NodeJS.Signals): void {
-  void shutdown(signal).catch((err: unknown) => {
-    logger.error({ err }, 'Failed to shut down cleanly');
-    process.exitCode = 1;
-  });
-}
-
-process.once('SIGINT', handleShutdown);
-process.once('SIGTERM', handleShutdown);
 
 void startServer().catch((err: unknown) => {
   logger.fatal({ err }, 'Failed to start Cavora server');

@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import type { Session } from '../libs/types/member';
 
 const sessionSchema = new Schema<Session>(
@@ -38,4 +38,4 @@ sessionSchema.index({ tokenHash: 1 }, { unique: true });
 sessionSchema.index({ memberId: 1, expiresAt: 1 });
 sessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-export default model<Session>('Session', sessionSchema);
+export default mongoose.model<Session>('Session', sessionSchema);

@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { TourDepartureStatus } from '../libs/enums/tour.enum';
 import type { TourDeparture } from '../libs/types/tour';
 
@@ -50,4 +50,4 @@ const tourDepartureSchema = new Schema<TourDeparture>(
 tourDepartureSchema.index({ tourId: 1, startDate: 1, status: 1 });
 tourDepartureSchema.index({ status: 1, startDate: 1 });
 
-export default model<TourDeparture>('TourDeparture', tourDepartureSchema);
+export default mongoose.model<TourDeparture>('TourDeparture', tourDepartureSchema);

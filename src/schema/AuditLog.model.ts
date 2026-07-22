@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { AuditActorType } from '../libs/enums/audit.enum';
 import type { AuditLog } from '../libs/types/audit';
 
@@ -50,4 +50,4 @@ auditLogSchema.index({ entityType: 1, entityId: 1, createdAt: -1 });
 auditLogSchema.index({ action: 1, createdAt: -1 });
 auditLogSchema.index({ requestId: 1 }, { sparse: true });
 
-export default model<AuditLog>('AuditLog', auditLogSchema);
+export default mongoose.model<AuditLog>('AuditLog', auditLogSchema);
