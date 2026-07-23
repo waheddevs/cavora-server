@@ -32,6 +32,7 @@ export interface MemberInput {
 
 export interface MemberUpdateInput {
   _id: Types.ObjectId;
+  email?: string;
   username?: string;
   firstName?: string;
   lastName?: string;
@@ -66,6 +67,7 @@ export interface Session {
   _id: Types.ObjectId;
   memberId: Types.ObjectId;
   tokenHash: string;
+  csrfTokenHash: string;
   expiresAt: Date;
   lastUsedAt: Date;
   ipAddress?: string;
@@ -82,4 +84,72 @@ export interface AccountToken {
   usedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface RequestContext {
+  ipAddress?: string;
+  requestId: string;
+  userAgent?: string;
+}
+
+export interface AuthContext {
+  csrfTokenHash: string;
+  memberId: Types.ObjectId;
+  role: MemberRole;
+  sessionId: Types.ObjectId;
+}
+
+export interface MemberView {
+  avatarUrl?: string;
+  createdAt: string;
+  email: string;
+  emailVerified: boolean;
+  firstName: string;
+  id: string;
+  lastName: string;
+  location?: string;
+  phone?: string;
+  role: MemberRole;
+  username: string;
+}
+
+export interface MemberProfileResult extends MemberView {
+  stats: {
+    bookings: number;
+    wishlist: number;
+  };
+}
+
+export interface SessionTokens {
+  csrfToken: string;
+  expiresAt: Date;
+  sessionToken: string;
+}
+
+export interface AuthenticationResult {
+  member: MemberView;
+  tokens: SessionTokens;
+}
+
+export interface ForgotPasswordInput {
+  email: string;
+}
+
+export interface ResetPasswordInput {
+  password: string;
+  token: string;
+}
+
+export interface VerifyEmailInput {
+  token: string;
+}
+
+export interface ProfileUpdateInput {
+  avatarUrl?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  location?: string;
+  phone?: string;
+  username?: string;
 }

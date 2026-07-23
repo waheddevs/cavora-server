@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { NewsletterSubscriptionStatus } from '../libs/enums/engagement.enum';
 import type { NewsletterSubscription } from '../libs/types/engagement';
 

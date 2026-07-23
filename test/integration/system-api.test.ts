@@ -5,6 +5,70 @@ import { ErrorCode, HttpCode } from '../../src/common/errors/error-codes';
 import { env } from '../../src/config/env';
 
 describe('system API', () => {
+  it('publishes an OpenAPI document covering every implemented route', async () => {
+    const response = await request(app).get('/cavora/openapi.json');
+
+    expect(response.status).toBe(HttpCode.OK);
+    expect(response.type).toBe('application/json');
+    expect(response.headers['cache-control']).toContain('public');
+    expect(response.body).toMatchObject({
+      openapi: '3.1.0',
+      info: {
+        title: 'Cavora API',
+        version: '1.0.0',
+      },
+      servers: [{ url: '/cavora' }],
+    });
+    expect(Object.keys(response.body.paths).sort()).toEqual(
+      [
+        '/auth/forgot-password',
+        '/auth/login',
+        '/auth/logout',
+        '/auth/register',
+        '/auth/reset-password',
+        '/auth/verify-email',
+        '/docs',
+        '/health',
+        '/home',
+        '/openapi.json',
+        '/tours',
+        '/tours/{id}',
+        '/tours/{id}/availability',
+        '/tours/{id}/related',
+        '/users/me',
+        '/users/me/bookings',
+        '/users/me/wishlist',
+        '/users/me/wishlist/{tourId}',
+      ].sort(),
+    );
+
+    const operationIds = Object.values(
+      response.body.paths as Record<string, Record<string, { operationId?: string }>>,
+    ).flatMap((pathItem) =>
+      Object.values(pathItem)
+        .map((operation) => operation.operationId)
+        .filter((operationId): operationId is string => operationId !== undefined),
+    );
+    expect(operationIds).toHaveLength(20);
+    expect(new Set(operationIds).size).toBe(operationIds.length);
+  });
+
+  it('serves Swagger UI and its local initialization asset', async () => {
+    const docsResponse = await request(app).get('/cavora/docs');
+
+    expect(docsResponse.status).toBe(HttpCode.OK);
+    expect(docsResponse.type).toBe('text/html');
+    expect(docsResponse.headers['cache-control']).toContain('public');
+    expect(docsResponse.text).toContain('<title>Cavora API Documentation</title>');
+    expect(docsResponse.text).toContain('href="/cavora/docs/swagger-ui.css');
+    expect(docsResponse.text).toContain('src="/cavora/docs/swagger-ui-bundle.js');
+
+    const initResponse = await request(app).get('/cavora/docs/swagger-ui-init.js');
+    expect(initResponse.status).toBe(HttpCode.OK);
+    expect(initResponse.type).toMatch(/javascript/);
+    expect(initResponse.text).toContain('"title": "Cavora API"');
+  });
+
   it('reports degraded health when the test app has no database connection', async () => {
     const response = await request(app).get('/cavora/health');
 

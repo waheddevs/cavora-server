@@ -20,6 +20,31 @@ async function startServer(): Promise<void> {
   });
 }
 
+async function shutdown(signal: NodeJS.Signals): Promise<void> {
+  logger.info({ signal }, 'Shutting down Cavora server');
+
+  if (server) {
+    await new Promise<void>((resolve, reject) => {
+      server?.close((err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  await mongoose.disconnect();
+}
+
+function handleShutdown(signal: NodeJS.Signals): void {
+  void shutdown(signal).catch((err: unknown) => {
+    logger.error({ err }, 'Failed to shut down cleanly');
+    process.exitCode = 1;
+  });
+}
+
+process.once('SIGINT', handleShutdown);
+process.once('SIGTERM', handleShutdown);
+
 void startServer().catch((err: unknown) => {
   logger.fatal({ err }, 'Failed to start Cavora server');
   process.exitCode = 1;

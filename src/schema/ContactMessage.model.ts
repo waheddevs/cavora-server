@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { ContactMessageStatus } from '../libs/enums/engagement.enum';
 import type { ContactMessage } from '../libs/types/engagement';
 
@@ -12,31 +12,31 @@ const contactMessageSchema = new Schema<ContactMessage>(
       type: String,
       required: true,
       trim: true,
-      maxlength: 160
+      maxlength: 160,
     },
     email: {
       type: String,
       required: true,
       trim: true,
       lowercase: true,
-      maxlength: 254
+      maxlength: 254,
     },
     phone: {
       type: String,
       trim: true,
-      maxlength: 30
+      maxlength: 30,
     },
     subject: {
       type: String,
       required: true,
       trim: true,
-      maxlength: 240
+      maxlength: 240,
     },
     message: {
       type: String,
       required: true,
       trim: true,
-      maxlength: 10_000
+      maxlength: 10_000,
     },
     status: {
       type: String,

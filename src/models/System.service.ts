@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { env } from '../config/env';
+import { openApiDocument } from '../config/openapi';
 import type { DatabaseStatus, HealthResult } from '../libs/types/system';
 
 const databaseStatuses: Record<number, DatabaseStatus> = {
@@ -27,6 +28,10 @@ class SystemService {
         database,
       },
     };
+  }
+
+  public getOpenApiDocument(): typeof openApiDocument {
+    return openApiDocument;
   }
 }
 

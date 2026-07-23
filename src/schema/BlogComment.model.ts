@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { BlogCommentStatus } from '../libs/enums/blog.enum';
 import type { BlogComment } from '../libs/types/blog';
 

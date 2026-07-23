@@ -126,6 +126,7 @@ describe('Cavora schema definitions', () => {
   it('keeps password and token hashes out of normal projections', () => {
     expect(Member.schema.path('passwordHash').options.select).toBe(false);
     expect(Session.schema.path('tokenHash').options.select).toBe(false);
+    expect(Session.schema.path('csrfTokenHash').options.select).toBe(false);
     expect(PasswordResetToken.schema.path('tokenHash').options.select).toBe(false);
     expect(EmailVerificationToken.schema.path('tokenHash').options.select).toBe(false);
     expect(NewsletterSubscription.schema.path('unsubscribeTokenHash').options.select).toBe(false);

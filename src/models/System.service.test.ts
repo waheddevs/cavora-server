@@ -25,4 +25,17 @@ describe('SystemService', () => {
       },
     });
   });
+
+  it('provides the OpenAPI contract for the Cavora API', () => {
+    const service = new SystemService(() => 1);
+    const document = service.getOpenApiDocument();
+
+    expect(document.openapi).toBe('3.1.0');
+    expect(document.servers).toContainEqual({
+      url: '/cavora',
+      description: 'Cavora API',
+    });
+    expect(document.paths['/health']).toHaveProperty('get');
+    expect(document.paths['/openapi.json']).toHaveProperty('get');
+  });
 });

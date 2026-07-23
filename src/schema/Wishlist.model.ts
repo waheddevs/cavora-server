@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import type { Wishlist } from '../libs/types/wishlist';
 
 const wishlistSchema = new Schema<Wishlist>(

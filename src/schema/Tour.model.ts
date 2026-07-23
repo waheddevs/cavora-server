@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { TourStatus } from '../libs/enums/tour.enum';
 import type { Tour, TourItineraryItem } from '../libs/types/tour';
 

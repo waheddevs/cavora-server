@@ -1,3 +1,5 @@
+import type { AuthContext } from '../../libs/types/member';
+
 declare global {
   namespace Express {
     interface ValidatedRequestData {
@@ -7,6 +9,7 @@ declare global {
     }
 
     interface Request {
+      auth?: AuthContext;
       requestId: string;
       validated: ValidatedRequestData;
     }

@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { AuditActorType } from '../libs/enums/audit.enum';
 import type { AuditLog } from '../libs/types/audit';
 

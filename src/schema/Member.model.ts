@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { MemberRole, MemberStatus } from '../libs/enums/member.enum';
 import type { Member } from '../libs/types/member';
 

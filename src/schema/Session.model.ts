@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import type { Session } from '../libs/types/member';
 
 const sessionSchema = new Schema<Session>(
@@ -9,6 +9,11 @@ const sessionSchema = new Schema<Session>(
       required: true,
     },
     tokenHash: {
+      type: String,
+      required: true,
+      select: false,
+    },
+    csrfTokenHash: {
       type: String,
       required: true,
       select: false,

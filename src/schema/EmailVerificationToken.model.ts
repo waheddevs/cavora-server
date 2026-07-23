@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import type { AccountToken } from '../libs/types/member';
 
 const emailVerificationTokenSchema = new Schema<AccountToken>(

@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { PaymentProvider, PaymentStatus } from '../libs/enums/payment.enum';
 import type { Payment } from '../libs/types/payment';
 

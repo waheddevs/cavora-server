@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import type { TourImage } from '../libs/types/tour';
 
 const tourImageSchema = new Schema<TourImage>(

@@ -1,4 +1,5 @@
 import type { Types } from 'mongoose';
+import type { TourSummary } from './tour';
 
 export interface Wishlist {
   _id: Types.ObjectId;
@@ -11,4 +12,8 @@ export interface Wishlist {
 export interface WishlistInput {
   memberId: Types.ObjectId;
   tourId: number;
+}
+
+export interface WishlistResult {
+  data: TourSummary[];
 }

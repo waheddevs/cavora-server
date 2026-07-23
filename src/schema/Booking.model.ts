@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { BookingStatus } from '../libs/enums/booking.enum';
 import type { Booking } from '../libs/types/booking';
 

@@ -1,5 +1,6 @@
 import type { Types } from 'mongoose';
 import type { BookingStatus } from '../enums/booking.enum';
+import type { PaginationMeta, TourSummary } from './tour';
 
 export interface Booking {
   _id: Types.ObjectId;
@@ -31,4 +32,23 @@ export interface BookingInquiry {
   page: number;
   limit: number;
   status?: BookingStatus;
+}
+
+export interface MemberBookingView {
+  createdAt: string;
+  currency: string;
+  departureId: string;
+  holdExpiresAt: string;
+  id: string;
+  reference: string;
+  status: BookingStatus;
+  totalCents: number;
+  tour: TourSummary | null;
+  tourId: number;
+  travelers: number;
+}
+
+export interface MemberBookingHistory {
+  data: MemberBookingView[];
+  meta: PaginationMeta;
 }
