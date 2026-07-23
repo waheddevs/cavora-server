@@ -54,5 +54,6 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
 
   if (appError.fieldErrors) response.fieldErrors = appError.fieldErrors;
 
+  res.setHeader('Cache-Control', 'private, no-store');
   res.status(appError.status).json(response);
 };

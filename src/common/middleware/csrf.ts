@@ -28,3 +28,11 @@ export function requireCsrf(req: Request, _res: Response, next: NextFunction): v
     next(err);
   }
 }
+
+export function requireCsrfIfAuthenticated(req: Request, res: Response, next: NextFunction): void {
+  if (!req.auth) {
+    next();
+    return;
+  }
+  requireCsrf(req, res, next);
+}

@@ -4,6 +4,7 @@ declare global {
   namespace Express {
     interface ValidatedRequestData {
       body: unknown;
+      headers: unknown;
       params: unknown;
       query: unknown;
     }

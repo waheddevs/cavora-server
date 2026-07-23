@@ -7,6 +7,7 @@ import Tour from '../schema/Tour.model';
 
 interface HomeTour extends TourSummary {
   featuredRank?: number;
+  homepageSpotlight?: boolean;
   popularityRank?: number;
 }
 
@@ -39,6 +40,7 @@ class HomeService {
           $or: [
             { featuredRank: { $exists: true } },
             { popularityRank: { $exists: true } },
+            { homepageSpotlight: true },
             { _id: spotlightContent.tourId },
           ],
         },
@@ -74,6 +76,7 @@ class HomeService {
           maxGroupSize: 1,
           images: 1,
           featuredRank: 1,
+          homepageSpotlight: 1,
           popularityRank: 1,
         },
       },
@@ -87,7 +90,9 @@ class HomeService {
       .filter((tour) => tour.popularityRank !== undefined)
       .sort((left, right) => (left.popularityRank ?? 0) - (right.popularityRank ?? 0))
       .map(toTourSummary);
-    const spotlight = tours.find((tour) => tour.id === spotlightContent.tourId);
+    const spotlight =
+      tours.find((tour) => tour.homepageSpotlight) ??
+      tours.find((tour) => tour.id === spotlightContent.tourId);
     const spotlightTour = spotlight ? toTourSummary(spotlight) : null;
 
     return {

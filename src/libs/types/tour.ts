@@ -30,6 +30,7 @@ export interface Tour {
   status: TourStatus;
   featuredRank?: number;
   popularityRank?: number;
+  homepageSpotlight?: boolean;
   publishedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -140,4 +141,57 @@ export interface AvailabilityResult {
   tourId: number;
   travelers: number;
   departures: AvailableDeparture[];
+}
+
+export interface TourImageInput {
+  altText: string;
+  position: number;
+  tourId: number;
+  url: string;
+}
+
+export interface TourDepartureInput {
+  capacity: number;
+  currency: string;
+  priceCents: number;
+  startDate: Date;
+  status: TourDepartureStatus;
+  tourId: number;
+}
+
+export interface TourDepartureUpdateInput extends Partial<Omit<TourDepartureInput, 'tourId'>> {
+  _id: Types.ObjectId;
+}
+
+export interface HomepageSelectionsInput {
+  featuredTourIds: number[];
+  popularTourIds: number[];
+  spotlightTourId: number;
+}
+
+export type HomepageSelectionsResult = HomepageSelectionsInput;
+
+export interface AdminTourView extends Omit<
+  Tour,
+  '_id' | 'createdAt' | 'publishedAt' | 'updatedAt'
+> {
+  createdAt: string;
+  id: number;
+  publishedAt?: string;
+  updatedAt: string;
+}
+
+export interface AdminTourDepartureView extends Omit<
+  TourDeparture,
+  '_id' | 'createdAt' | 'startDate' | 'updatedAt'
+> {
+  createdAt: string;
+  id: string;
+  startDate: string;
+  updatedAt: string;
+}
+
+export interface AdminTourImageView extends TourImageView {
+  id: string;
+  tourId: number;
 }

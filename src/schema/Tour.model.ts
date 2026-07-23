@@ -144,6 +144,10 @@ const tourSchema = new Schema<Tour>(
       type: Number,
       min: 1,
     },
+    homepageSpotlight: {
+      type: Boolean,
+      default: false,
+    },
     publishedAt: {
       type: Date,
     },
@@ -155,6 +159,7 @@ tourSchema.index({ slug: 1 }, { unique: true });
 tourSchema.index({ status: 1, publishedAt: -1 });
 tourSchema.index({ status: 1, featuredRank: 1 });
 tourSchema.index({ status: 1, popularityRank: 1 });
+tourSchema.index({ status: 1, homepageSpotlight: 1 });
 tourSchema.index({ status: 1, country: 1, type: 1, priceCents: 1 });
 tourSchema.index(
   {

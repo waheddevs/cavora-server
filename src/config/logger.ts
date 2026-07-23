@@ -18,6 +18,8 @@ export const logger = pino({
     paths: [
       'req.headers.authorization',
       'req.headers.cookie',
+      'req.headers.idempotency-key',
+      'req.headers.stripe-signature',
       'req.headers.x-csrf-token',
       'password',
       '*.password',

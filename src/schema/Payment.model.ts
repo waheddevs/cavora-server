@@ -9,6 +9,12 @@ const paymentSchema = new Schema<Payment>(
       ref: 'Booking',
       required: true,
     },
+    idempotencyKey: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 255,
+    },
     provider: {
       type: String,
       enum: Object.values(PaymentProvider),
@@ -20,6 +26,18 @@ const paymentSchema = new Schema<Payment>(
       trim: true,
       maxlength: 255,
     },
+    providerRefundIds: {
+      type: [String],
+      default: [],
+    },
+    processedEventIds: {
+      type: [String],
+      default: [],
+    },
+    settledRefundIds: {
+      type: [String],
+      default: [],
+    },
     status: {
       type: String,
       enum: Object.values(PaymentStatus),
@@ -28,6 +46,16 @@ const paymentSchema = new Schema<Payment>(
     amountCents: {
       type: Number,
       required: true,
+      min: 0,
+    },
+    pendingRefundAmountCents: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    refundedAmountCents: {
+      type: Number,
+      default: 0,
       min: 0,
     },
     currency: {
@@ -52,7 +80,8 @@ const paymentSchema = new Schema<Payment>(
 );
 
 paymentSchema.index({ provider: 1, providerIntentId: 1 }, { unique: true });
-paymentSchema.index({ bookingId: 1, createdAt: -1 });
+paymentSchema.index({ bookingId: 1 }, { unique: true });
+paymentSchema.index({ idempotencyKey: 1 }, { unique: true });
 paymentSchema.index({ status: 1, createdAt: -1 });
 
 export default mongoose.model<Payment>('Payment', paymentSchema);

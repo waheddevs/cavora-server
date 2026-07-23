@@ -1,7 +1,8 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { env } from '../../config/env';
 
-type TokenPurpose = 'csrf' | 'email-verification' | 'password-reset' | 'session';
+type TokenPurpose =
+  'csrf' | 'email-verification' | 'newsletter-unsubscribe' | 'password-reset' | 'session';
 
 export function createOpaqueToken(): string {
   return randomBytes(32).toString('base64url');

@@ -28,6 +28,24 @@ export interface BookingHoldInput {
   travelers: number;
 }
 
+export interface BookingView {
+  cancelledAt?: string;
+  confirmedAt?: string;
+  createdAt: string;
+  currency: string;
+  departureId: string;
+  holdExpiresAt: string;
+  id: string;
+  reference: string;
+  serviceFeeCents: number;
+  status: BookingStatus;
+  subtotalCents: number;
+  totalCents: number;
+  tourId: number;
+  travelers: number;
+  unitPriceCents: number;
+}
+
 export interface BookingInquiry {
   page: number;
   limit: number;
@@ -51,4 +69,9 @@ export interface MemberBookingView {
 export interface MemberBookingHistory {
   data: MemberBookingView[];
   meta: PaginationMeta;
+}
+
+export interface AdminBookingStatusInput {
+  bookingId: Types.ObjectId;
+  status: BookingStatus.CANCELLED | BookingStatus.COMPLETED;
 }

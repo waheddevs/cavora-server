@@ -4,6 +4,7 @@ import { AppError, type FieldErrors } from '../errors/app-error';
 
 export interface RequestSchemas {
   body?: ZodType;
+  headers?: ZodType;
   params?: ZodType;
   query?: ZodType;
 }
@@ -17,12 +18,13 @@ export function validate(schemas: RequestSchemas) {
     try {
       const validated: Express.ValidatedRequestData = {
         body: req.body,
+        headers: req.headers,
         params: req.params,
         query: req.query,
       };
       const fieldErrors: FieldErrors = {};
 
-      for (const target of ['body', 'params', 'query'] as const) {
+      for (const target of ['body', 'headers', 'params', 'query'] as const) {
         const schema = schemas[target];
         if (!schema) continue;
 

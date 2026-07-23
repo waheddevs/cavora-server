@@ -1,14 +1,21 @@
 import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
-import { requireAuth } from './common/middleware/auth';
-import { requireCsrf } from './common/middleware/csrf';
+import { optionalAuth, requireAuth } from './common/middleware/auth';
+import { requireCsrf, requireCsrfIfAuthenticated } from './common/middleware/csrf';
 import {
   accountRecoveryRateLimiter,
+  commentRateLimiter,
+  contactRateLimiter,
   loginRateLimiter,
+  newsletterRateLimiter,
   registrationRateLimiter,
 } from './common/middleware/rate-limit';
+import blogController from './controllers/blog.controller';
+import bookingController from './controllers/booking.controller';
+import engagementController from './controllers/engagement.controller';
 import homeController from './controllers/home.controller';
 import memberController from './controllers/member.controller';
+import paymentController from './controllers/payment.controller';
 import systemController from './controllers/system.controller';
 import tourController from './controllers/tour.controller';
 import { validate } from './common/middleware/validate';
@@ -27,7 +34,24 @@ import {
   verifyEmailBodySchema,
   wishlistTourParamsSchema,
 } from './libs/validators/member.validator';
-
+import { bookingHoldBodySchema, bookingIdParamsSchema } from './libs/validators/booking.validator';
+import {
+  paymentIntentBodySchema,
+  paymentIntentHeadersSchema,
+  stripeWebhookHeadersSchema,
+} from './libs/validators/payment.validator';
+import {
+  blogCommentBodySchema,
+  blogCommentListQuerySchema,
+  blogPostIdParamsSchema,
+  blogPostListQuerySchema,
+  blogPostSlugParamsSchema,
+} from './libs/validators/blog.validator';
+import {
+  contactMessageBodySchema,
+  newsletterSubscriptionBodySchema,
+  newsletterUnsubscribeParamsSchema,
+} from './libs/validators/engagement.validator';
 const router = Router();
 
 /* SYSTEM */
@@ -117,16 +141,79 @@ router.get(
 );
 router.get('/tours/:id', validate({ params: tourIdParamsSchema }), tourController.getTour);
 
-/* WISHLISTS */
-
 /* BOOKINGS */
+router.post(
+  '/booking-holds',
+  requireAuth,
+  requireCsrf,
+  validate({ body: bookingHoldBodySchema }),
+  bookingController.createBookingHold,
+);
+router.get(
+  '/bookings/:id',
+  requireAuth,
+  validate({ params: bookingIdParamsSchema }),
+  bookingController.getBooking,
+);
+router.post(
+  '/bookings/:id/cancel',
+  requireAuth,
+  requireCsrf,
+  validate({ params: bookingIdParamsSchema }),
+  bookingController.cancelBooking,
+);
 
 /* PAYMENTS */
+router.post(
+  '/payments/intents',
+  requireAuth,
+  requireCsrf,
+  validate({ body: paymentIntentBodySchema, headers: paymentIntentHeadersSchema }),
+  paymentController.createPaymentIntent,
+);
+router.post(
+  '/payments/webhooks/stripe',
+  validate({ headers: stripeWebhookHeadersSchema }),
+  paymentController.receiveStripeWebhook,
+);
 
 /* BLOG */
+router.get('/posts', validate({ query: blogPostListQuerySchema }), blogController.getPosts);
+router.get('/posts/:slug', validate({ params: blogPostSlugParamsSchema }), blogController.getPost);
+router.get(
+  '/posts/:id/comments',
+  validate({ params: blogPostIdParamsSchema, query: blogCommentListQuerySchema }),
+  blogController.getComments,
+);
+router.post(
+  '/posts/:id/comments',
+  commentRateLimiter,
+  optionalAuth,
+  requireCsrfIfAuthenticated,
+  validate({ params: blogPostIdParamsSchema, body: blogCommentBodySchema }),
+  blogController.submitComment,
+);
 
 /* ENGAGEMENT */
-
-/* ADMINISTRATION */
+router.post(
+  '/contact-messages',
+  contactRateLimiter,
+  optionalAuth,
+  requireCsrfIfAuthenticated,
+  validate({ body: contactMessageBodySchema }),
+  engagementController.submitContactMessage,
+);
+router.post(
+  '/newsletter-subscriptions',
+  newsletterRateLimiter,
+  validate({ body: newsletterSubscriptionBodySchema }),
+  engagementController.subscribeNewsletter,
+);
+router.delete(
+  '/newsletter-subscriptions/:token',
+  newsletterRateLimiter,
+  validate({ params: newsletterUnsubscribeParamsSchema }),
+  engagementController.unsubscribeNewsletter,
+);
 
 export default router;

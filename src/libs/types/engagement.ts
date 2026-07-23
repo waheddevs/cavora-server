@@ -1,5 +1,6 @@
 import type { Types } from 'mongoose';
 import type { ContactMessageStatus, NewsletterSubscriptionStatus } from '../enums/engagement.enum';
+import type { PaginationMeta } from './tour';
 
 export interface ContactMessage {
   _id: Types.ObjectId;
@@ -40,4 +41,49 @@ export interface NewsletterSubscriptionInput {
   email: string;
   source: string;
   unsubscribeTokenHash: string;
+}
+
+export interface ContactMessageView {
+  createdAt: string;
+  email: string;
+  fullName: string;
+  id: string;
+  memberId?: string;
+  message: string;
+  phone?: string;
+  resolvedAt?: string;
+  status: ContactMessageStatus;
+  subject: string;
+}
+
+export interface NewsletterSubscriptionView {
+  confirmedAt?: string;
+  consentedAt: string;
+  createdAt: string;
+  email: string;
+  id: string;
+  source: string;
+  status: NewsletterSubscriptionStatus;
+}
+
+export interface ContactMessageInquiry {
+  limit: number;
+  page: number;
+  status?: ContactMessageStatus;
+}
+
+export interface NewsletterSubscriptionInquiry {
+  limit: number;
+  page: number;
+  status?: NewsletterSubscriptionStatus;
+}
+
+export interface PaginatedContactMessages {
+  data: ContactMessageView[];
+  meta: PaginationMeta;
+}
+
+export interface PaginatedNewsletterSubscriptions {
+  data: NewsletterSubscriptionView[];
+  meta: PaginationMeta;
 }

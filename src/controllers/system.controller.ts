@@ -11,6 +11,7 @@ const systemController = {
       req.log.info('getHealth');
       const result = systemService.getHealth();
       const status = result.status === 'ok' ? HttpCode.OK : HttpCode.SERVICE_UNAVAILABLE;
+      res.setHeader('Cache-Control', 'no-store');
       res.status(status).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on getHealth');

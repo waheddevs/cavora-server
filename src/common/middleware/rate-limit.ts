@@ -42,3 +42,18 @@ export const accountRecoveryRateLimiter = createRateLimiter({
   limit: 5,
   windowMs: 15 * 60 * 1_000,
 });
+
+export const commentRateLimiter = createRateLimiter({
+  limit: 10,
+  windowMs: 60 * 60 * 1_000,
+});
+
+export const contactRateLimiter = createRateLimiter({
+  limit: 5,
+  windowMs: 60 * 60 * 1_000,
+});
+
+export const newsletterRateLimiter = createRateLimiter({
+  limit: 10,
+  windowMs: 60 * 60 * 1_000,
+});

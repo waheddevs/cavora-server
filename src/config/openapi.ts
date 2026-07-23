@@ -1,5 +1,1046 @@
 import { env } from './env';
 
+const adminSecurity = [{ sessionCookie: [] }] as const;
+const adminReadResponses = {
+  '401': { $ref: '#/components/responses/AuthenticationRequired' },
+  '403': { $ref: '#/components/responses/AuthorizationRequired' },
+  '422': { $ref: '#/components/responses/ValidationError' },
+} as const;
+const adminMutationResponses = {
+  ...adminReadResponses,
+  '409': { $ref: '#/components/responses/AdminConflict' },
+} as const;
+
+const sectionEightPaths = {
+  '/posts': {
+    get: {
+      operationId: 'getPosts',
+      summary: 'List published blog posts',
+      tags: ['Blog'],
+      parameters: [
+        { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, default: 1 } },
+        {
+          name: 'limit',
+          in: 'query',
+          schema: { type: 'integer', minimum: 1, maximum: 50, default: 9 },
+        },
+        { name: 'category', in: 'query', schema: { type: 'string', maxLength: 100 } },
+      ],
+      responses: {
+        '200': {
+          description: 'Paginated published posts.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/BlogPostListResponse' } },
+          },
+        },
+        '422': { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+  },
+  '/posts/{slug}': {
+    get: {
+      operationId: 'getPost',
+      summary: 'Get a published post by slug',
+      tags: ['Blog'],
+      parameters: [{ $ref: '#/components/parameters/BlogPostSlug' }],
+      responses: {
+        '200': {
+          description: 'The published post.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/BlogPostResponse' } },
+          },
+        },
+        '404': { $ref: '#/components/responses/BlogPostNotFound' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+  },
+  '/posts/{id}/comments': {
+    get: {
+      operationId: 'getPostComments',
+      summary: 'List approved comments',
+      tags: ['Blog'],
+      parameters: [
+        { $ref: '#/components/parameters/BlogPostId' },
+        { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, default: 1 } },
+        {
+          name: 'limit',
+          in: 'query',
+          schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+        },
+      ],
+      responses: {
+        '200': {
+          description: 'Paginated approved comments.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/BlogCommentListResponse' },
+            },
+          },
+        },
+        '404': { $ref: '#/components/responses/BlogPostNotFound' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+    post: {
+      operationId: 'submitPostComment',
+      summary: 'Submit a comment for moderation',
+      tags: ['Blog'],
+      parameters: [{ $ref: '#/components/parameters/BlogPostId' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/BlogCommentInput' } },
+        },
+      },
+      responses: {
+        '202': {
+          description: 'The comment is pending moderation.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/ActionDataResponse' } },
+          },
+        },
+        '404': { $ref: '#/components/responses/BlogPostNotFound' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+        '429': { $ref: '#/components/responses/RateLimitExceeded' },
+      },
+    },
+  },
+  '/contact-messages': {
+    post: {
+      operationId: 'submitContactMessage',
+      summary: 'Submit a contact request',
+      tags: ['Engagement'],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/ContactMessageInput' } },
+        },
+      },
+      responses: {
+        '201': {
+          description: 'The message was stored.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/ActionDataResponse' } },
+          },
+        },
+        '422': { $ref: '#/components/responses/ValidationError' },
+        '429': { $ref: '#/components/responses/RateLimitExceeded' },
+      },
+    },
+  },
+  '/newsletter-subscriptions': {
+    post: {
+      operationId: 'subscribeNewsletter',
+      summary: 'Subscribe an email address idempotently',
+      tags: ['Engagement'],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/NewsletterInput' } },
+        },
+      },
+      responses: {
+        '200': {
+          description: 'A non-enumerating subscription acknowledgement.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/MessageResponse' } },
+          },
+        },
+        '422': { $ref: '#/components/responses/ValidationError' },
+        '429': { $ref: '#/components/responses/RateLimitExceeded' },
+      },
+    },
+  },
+  '/newsletter-subscriptions/{token}': {
+    delete: {
+      operationId: 'unsubscribeNewsletter',
+      summary: 'Unsubscribe using a one-time opaque link token',
+      tags: ['Engagement'],
+      parameters: [{ $ref: '#/components/parameters/UnsubscribeToken' }],
+      responses: {
+        '204': { description: 'The subscription is inactive, if it existed.' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+        '429': { $ref: '#/components/responses/RateLimitExceeded' },
+      },
+    },
+  },
+  '/admin/tours': {
+    post: {
+      operationId: 'adminCreateTour',
+      summary: 'Create a tour',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/AdminTourInput' } },
+        },
+      },
+      responses: {
+        '201': { $ref: '#/components/responses/AdminDataResponse' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/tours/{id}': {
+    patch: {
+      operationId: 'adminUpdateTour',
+      summary: 'Update a tour',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminTourId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: { 'application/json': { schema: { type: 'object', minProperties: 1 } } },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/TourNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/tours/{id}/images/{position}': {
+    put: {
+      operationId: 'adminUpsertTourImage',
+      summary: 'Create or replace a positioned tour image',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminTourId' },
+        { $ref: '#/components/parameters/ImagePosition' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/AdminTourImageInput' } },
+        },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        ...adminMutationResponses,
+      },
+    },
+    delete: {
+      operationId: 'adminDeleteTourImage',
+      summary: 'Delete a positioned tour image',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminTourId' },
+        { $ref: '#/components/parameters/ImagePosition' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      responses: {
+        '204': { description: 'The image was deleted.' },
+        '404': { $ref: '#/components/responses/AdminNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/tours/{id}/departures': {
+    post: {
+      operationId: 'adminCreateDeparture',
+      summary: 'Create a tour departure',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminTourId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/AdminDepartureInput' } },
+        },
+      },
+      responses: {
+        '201': { $ref: '#/components/responses/AdminDataResponse' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/departures/{id}': {
+    patch: {
+      operationId: 'adminUpdateDeparture',
+      summary: 'Update departure pricing, capacity, date, or status',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminObjectId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: { 'application/json': { schema: { type: 'object', minProperties: 1 } } },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/AdminNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/homepage/selections': {
+    put: {
+      operationId: 'adminUpdateHomepageSelections',
+      summary: 'Replace featured, popular, and spotlight tour selections',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/HomepageSelectionsInput' } },
+        },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/posts': {
+    post: {
+      operationId: 'adminCreateBlogPost',
+      summary: 'Create a blog post',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/AdminBlogPostInput' } },
+        },
+      },
+      responses: {
+        '201': { $ref: '#/components/responses/AdminDataResponse' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/posts/{id}': {
+    patch: {
+      operationId: 'adminUpdateBlogPost',
+      summary: 'Update or publish a blog post',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminObjectId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: { 'application/json': { schema: { type: 'object', minProperties: 1 } } },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/BlogPostNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/comments/{id}/status': {
+    patch: {
+      operationId: 'adminModerateComment',
+      summary: 'Moderate a blog comment',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminObjectId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/CommentStatusInput' } },
+        },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/AdminNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/contact-messages': {
+    get: {
+      operationId: 'adminGetContactMessages',
+      summary: 'List contact requests',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminListPage' },
+        { $ref: '#/components/parameters/AdminListLimit' },
+        {
+          name: 'status',
+          in: 'query',
+          schema: { type: 'string', enum: ['NEW', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] },
+        },
+      ],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminListResponse' },
+        ...adminReadResponses,
+      },
+    },
+  },
+  '/admin/contact-messages/{id}/status': {
+    patch: {
+      operationId: 'adminUpdateContactStatus',
+      summary: 'Update a contact request status',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminObjectId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/ContactStatusInput' } },
+        },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/AdminNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/newsletter-subscriptions': {
+    get: {
+      operationId: 'adminGetNewsletterSubscriptions',
+      summary: 'List newsletter subscriptions',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminListPage' },
+        { $ref: '#/components/parameters/AdminListLimit' },
+        {
+          name: 'status',
+          in: 'query',
+          schema: { type: 'string', enum: ['PENDING', 'ACTIVE', 'UNSUBSCRIBED'] },
+        },
+      ],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminListResponse' },
+        ...adminReadResponses,
+      },
+    },
+  },
+  '/admin/newsletter-subscriptions/{id}/status': {
+    patch: {
+      operationId: 'adminUpdateNewsletterStatus',
+      summary: 'Update a newsletter subscription status',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminObjectId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/NewsletterStatusInput' } },
+        },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/AdminNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/bookings': {
+    get: {
+      operationId: 'adminGetBookings',
+      summary: 'List bookings for support',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminListPage' },
+        { $ref: '#/components/parameters/AdminListLimit' },
+        { name: 'status', in: 'query', schema: { type: 'string' } },
+      ],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminListResponse' },
+        ...adminReadResponses,
+      },
+    },
+  },
+  '/admin/bookings/{id}/status': {
+    patch: {
+      operationId: 'adminUpdateBookingStatus',
+      summary: 'Complete or cancel an unpaid booking',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminObjectId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/BookingStatusInput' } },
+        },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/BookingNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/payments': {
+    get: {
+      operationId: 'adminGetPayments',
+      summary: 'List safe payment records',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminListPage' },
+        { $ref: '#/components/parameters/AdminListLimit' },
+        { name: 'status', in: 'query', schema: { type: 'string' } },
+      ],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminListResponse' },
+        ...adminReadResponses,
+      },
+    },
+  },
+  '/admin/payments/{id}/refunds': {
+    post: {
+      operationId: 'adminRefundPayment',
+      summary: 'Create an idempotent full or partial Stripe refund',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminObjectId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+        { $ref: '#/components/parameters/IdempotencyKey' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/RefundInput' } },
+        },
+      },
+      responses: {
+        '202': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/AdminNotFound' },
+        '503': { $ref: '#/components/responses/PaymentProviderUnavailable' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+} as const;
+
+const sectionEightSchemas = {
+  BlogPostSummary: {
+    type: 'object',
+    required: [
+      'id',
+      'slug',
+      'title',
+      'excerpt',
+      'category',
+      'imageUrl',
+      'authorName',
+      'publishedAt',
+    ],
+    properties: {
+      id: { type: 'string' },
+      slug: { type: 'string' },
+      title: { type: 'string' },
+      excerpt: { type: 'string' },
+      category: { type: 'string' },
+      imageUrl: { type: 'string' },
+      authorName: { type: 'string' },
+      authorImageUrl: { type: 'string' },
+      publishedAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  BlogPost: {
+    allOf: [
+      { $ref: '#/components/schemas/BlogPostSummary' },
+      {
+        type: 'object',
+        required: ['body', 'updatedAt'],
+        properties: {
+          body: {},
+          updatedAt: { type: 'string', format: 'date-time' },
+        },
+      },
+    ],
+  },
+  BlogPostListResponse: {
+    type: 'object',
+    required: ['data', 'meta'],
+    properties: {
+      data: { type: 'array', items: { $ref: '#/components/schemas/BlogPostSummary' } },
+      meta: { $ref: '#/components/schemas/PaginationMeta' },
+    },
+  },
+  BlogPostResponse: {
+    type: 'object',
+    required: ['data'],
+    properties: { data: { $ref: '#/components/schemas/BlogPost' } },
+  },
+  BlogComment: {
+    type: 'object',
+    required: ['id', 'name', 'body', 'createdAt'],
+    properties: {
+      id: { type: 'string' },
+      name: { type: 'string' },
+      body: { type: 'string' },
+      memberId: { type: 'string' },
+      createdAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  BlogCommentListResponse: {
+    type: 'object',
+    required: ['data', 'meta'],
+    properties: {
+      data: { type: 'array', items: { $ref: '#/components/schemas/BlogComment' } },
+      meta: { $ref: '#/components/schemas/PaginationMeta' },
+    },
+  },
+  BlogCommentInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['name', 'email', 'body'],
+    properties: {
+      name: { type: 'string', minLength: 1, maxLength: 160 },
+      email: { type: 'string', format: 'email', maxLength: 254 },
+      body: { type: 'string', minLength: 2, maxLength: 5000 },
+    },
+  },
+  ContactMessageInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['fullName', 'email', 'subject', 'message'],
+    properties: {
+      fullName: { type: 'string', minLength: 1, maxLength: 160 },
+      email: { type: 'string', format: 'email', maxLength: 254 },
+      phone: { type: 'string', maxLength: 30 },
+      subject: { type: 'string', minLength: 2, maxLength: 240 },
+      message: { type: 'string', minLength: 10, maxLength: 10000 },
+    },
+  },
+  NewsletterInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['email', 'consent'],
+    properties: {
+      email: { type: 'string', format: 'email', maxLength: 254 },
+      source: { type: 'string', default: 'website', maxLength: 100 },
+      consent: { type: 'boolean', const: true },
+    },
+  },
+  MessageResponse: {
+    type: 'object',
+    required: ['message'],
+    properties: { message: { type: 'string' } },
+  },
+  ActionDataResponse: {
+    type: 'object',
+    required: ['data'],
+    properties: { data: { type: 'object', additionalProperties: true } },
+  },
+  AdminTourInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+      'id',
+      'slug',
+      'country',
+      'place',
+      'title',
+      'location',
+      'type',
+      'priceCents',
+      'currency',
+      'durationDays',
+      'maxGroupSize',
+      'overview',
+    ],
+    properties: {
+      id: { type: 'integer', minimum: 1 },
+      slug: { type: 'string' },
+      country: { type: 'string' },
+      place: { type: 'string' },
+      title: { type: 'string' },
+      location: { type: 'string' },
+      type: { type: 'string' },
+      priceCents: { type: 'integer', minimum: 0 },
+      oldPriceCents: { type: 'integer', minimum: 0 },
+      currency: { type: 'string', pattern: '^[A-Z]{3}$' },
+      ratingAverage: { type: 'number', minimum: 0, maximum: 5, default: 0 },
+      reviewCount: { type: 'integer', minimum: 0, default: 0 },
+      durationDays: { type: 'integer', minimum: 1 },
+      maxGroupSize: { type: 'integer', minimum: 1 },
+      overview: { type: 'string' },
+      highlights: { type: 'array', items: { type: 'string' } },
+      itinerary: { type: 'array', items: { type: 'object' } },
+      included: { type: 'array', items: { type: 'string' } },
+      notIncluded: { type: 'array', items: { type: 'string' } },
+      status: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+      publishedAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  AdminTourImageInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['url', 'altText'],
+    properties: {
+      url: { type: 'string' },
+      altText: { type: 'string', minLength: 1, maxLength: 300 },
+    },
+  },
+  AdminDepartureInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['startDate', 'capacity', 'priceCents', 'currency'],
+    properties: {
+      startDate: { type: 'string', format: 'date-time' },
+      capacity: { type: 'integer', minimum: 1 },
+      priceCents: { type: 'integer', minimum: 0 },
+      currency: { type: 'string', pattern: '^[A-Z]{3}$' },
+      status: {
+        type: 'string',
+        enum: ['SCHEDULED', 'SOLD_OUT', 'CANCELLED', 'COMPLETED'],
+      },
+    },
+  },
+  HomepageSelectionsInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['featuredTourIds', 'popularTourIds', 'spotlightTourId'],
+    properties: {
+      featuredTourIds: { type: 'array', maxItems: 12, items: { type: 'integer' } },
+      popularTourIds: { type: 'array', maxItems: 12, items: { type: 'integer' } },
+      spotlightTourId: { type: 'integer', minimum: 1 },
+    },
+  },
+  AdminBlogPostInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['slug', 'title', 'excerpt', 'body', 'category', 'imageUrl', 'authorName'],
+    properties: {
+      slug: { type: 'string' },
+      title: { type: 'string' },
+      excerpt: { type: 'string' },
+      body: {},
+      category: { type: 'string' },
+      imageUrl: { type: 'string' },
+      authorName: { type: 'string' },
+      authorImageUrl: { type: 'string' },
+      status: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+      publishedAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  CommentStatusInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['status'],
+    properties: {
+      status: { type: 'string', enum: ['PENDING', 'APPROVED', 'REJECTED', 'SPAM'] },
+    },
+  },
+  ContactStatusInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['status'],
+    properties: {
+      status: { type: 'string', enum: ['NEW', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] },
+    },
+  },
+  NewsletterStatusInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['status'],
+    properties: {
+      status: { type: 'string', enum: ['PENDING', 'ACTIVE', 'UNSUBSCRIBED'] },
+    },
+  },
+  BookingStatusInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['status'],
+    properties: { status: { type: 'string', enum: ['CANCELLED', 'COMPLETED'] } },
+  },
+  RefundInput: {
+    type: 'object',
+    additionalProperties: false,
+    properties: { amountCents: { type: 'integer', minimum: 1 } },
+  },
+} as const;
+
+const sectionSevenPaths = {
+  '/payments/intents': {
+    post: {
+      operationId: 'createPaymentIntent',
+      summary: 'Create or reuse a Stripe PaymentIntent for an owned booking hold',
+      tags: ['Payments'],
+      security: [{ sessionCookie: [] }],
+      parameters: [
+        { $ref: '#/components/parameters/CsrfToken' },
+        { $ref: '#/components/parameters/IdempotencyKey' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/PaymentIntentInput' } },
+        },
+      },
+      responses: {
+        '200': {
+          description: 'A safe client secret for the booking owner.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/PaymentIntentResponse' },
+            },
+          },
+        },
+        '401': { $ref: '#/components/responses/AuthenticationRequired' },
+        '403': { $ref: '#/components/responses/CsrfInvalid' },
+        '404': { $ref: '#/components/responses/BookingNotFound' },
+        '409': { $ref: '#/components/responses/PaymentConflict' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+        '503': { $ref: '#/components/responses/PaymentProviderUnavailable' },
+      },
+    },
+  },
+  '/payments/webhooks/stripe': {
+    post: {
+      operationId: 'receiveStripeWebhook',
+      summary: 'Verify and process a Stripe webhook event',
+      description:
+        'Called by Stripe. The exact raw request bytes are verified before the event is processed.',
+      tags: ['Payments'],
+      parameters: [
+        {
+          name: 'stripe-signature',
+          in: 'header',
+          required: true,
+          schema: { type: 'string' },
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { type: 'object', additionalProperties: true } },
+        },
+      },
+      responses: {
+        '200': {
+          description: 'The verified event was accepted or safely ignored.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/StripeWebhookResponse' },
+            },
+          },
+        },
+        '400': { $ref: '#/components/responses/InvalidStripeWebhook' },
+        '409': { $ref: '#/components/responses/PaymentConflict' },
+        '503': { $ref: '#/components/responses/PaymentProviderUnavailable' },
+      },
+    },
+  },
+} as const;
+
+const sectionSevenSchemas = {
+  PaymentIntentInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['bookingId'],
+    properties: {
+      bookingId: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
+    },
+  },
+  PaymentIntent: {
+    type: 'object',
+    required: [
+      'id',
+      'bookingId',
+      'providerIntentId',
+      'status',
+      'amountCents',
+      'currency',
+      'clientSecret',
+    ],
+    properties: {
+      id: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
+      bookingId: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
+      providerIntentId: { type: 'string' },
+      status: {
+        type: 'string',
+        enum: [
+          'REQUIRES_PAYMENT_METHOD',
+          'REQUIRES_ACTION',
+          'PROCESSING',
+          'SUCCEEDED',
+          'FAILED',
+          'CANCELLED',
+          'REFUND_PENDING',
+          'PARTIALLY_REFUNDED',
+          'REFUNDED',
+        ],
+      },
+      amountCents: { type: 'integer', minimum: 0 },
+      currency: { type: 'string', pattern: '^[A-Z]{3}$' },
+      clientSecret: {
+        type: 'string',
+        description: 'Use only with Stripe.js for this authenticated checkout.',
+      },
+    },
+  },
+  PaymentIntentResponse: {
+    type: 'object',
+    required: ['data'],
+    properties: { data: { $ref: '#/components/schemas/PaymentIntent' } },
+  },
+  StripeWebhookResponse: {
+    type: 'object',
+    required: ['received'],
+    properties: { received: { type: 'boolean', const: true } },
+  },
+} as const;
+
+const sectionSixPaths = {
+  '/booking-holds': {
+    post: {
+      operationId: 'createBookingHold',
+      summary: 'Reserve departure capacity and create a short-lived booking hold',
+      tags: ['Bookings'],
+      security: [{ sessionCookie: [] }],
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/BookingHoldInput' } },
+        },
+      },
+      responses: {
+        '201': {
+          description: 'The authoritative booking hold and price calculation.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/BookingResponse' } },
+          },
+        },
+        '401': { $ref: '#/components/responses/AuthenticationRequired' },
+        '403': { $ref: '#/components/responses/CsrfInvalid' },
+        '409': { $ref: '#/components/responses/BookingConflict' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+  },
+  '/bookings/{id}': {
+    get: {
+      operationId: 'getBooking',
+      summary: 'Get a booking owned by the current member',
+      tags: ['Bookings'],
+      security: [{ sessionCookie: [] }],
+      parameters: [{ $ref: '#/components/parameters/BookingId' }],
+      responses: {
+        '200': {
+          description: 'The owned booking.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/BookingResponse' } },
+          },
+        },
+        '401': { $ref: '#/components/responses/AuthenticationRequired' },
+        '404': { $ref: '#/components/responses/BookingNotFound' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+  },
+  '/bookings/{id}/cancel': {
+    post: {
+      operationId: 'cancelBooking',
+      summary: 'Cancel a pending hold or request cancellation for a confirmed booking',
+      tags: ['Bookings'],
+      security: [{ sessionCookie: [] }],
+      parameters: [
+        { $ref: '#/components/parameters/BookingId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      responses: {
+        '200': {
+          description: 'The updated booking state.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/BookingResponse' } },
+          },
+        },
+        '401': { $ref: '#/components/responses/AuthenticationRequired' },
+        '403': { $ref: '#/components/responses/CsrfInvalid' },
+        '404': { $ref: '#/components/responses/BookingNotFound' },
+        '409': { $ref: '#/components/responses/BookingConflict' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+  },
+} as const;
+
+const sectionSixSchemas = {
+  BookingHoldInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['tourId', 'departureId', 'travelers'],
+    properties: {
+      tourId: { type: 'integer', minimum: 1 },
+      departureId: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
+      travelers: { type: 'integer', minimum: 1, maximum: 50 },
+    },
+  },
+  Booking: {
+    type: 'object',
+    required: [
+      'id',
+      'reference',
+      'tourId',
+      'departureId',
+      'status',
+      'travelers',
+      'unitPriceCents',
+      'subtotalCents',
+      'serviceFeeCents',
+      'totalCents',
+      'currency',
+      'holdExpiresAt',
+      'createdAt',
+    ],
+    properties: {
+      id: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
+      reference: { type: 'string' },
+      tourId: { type: 'integer' },
+      departureId: { type: 'string' },
+      status: { type: 'string' },
+      travelers: { type: 'integer' },
+      unitPriceCents: { type: 'integer' },
+      subtotalCents: { type: 'integer' },
+      serviceFeeCents: { type: 'integer' },
+      totalCents: { type: 'integer' },
+      currency: { type: 'string' },
+      holdExpiresAt: { type: 'string', format: 'date-time' },
+      confirmedAt: { type: 'string', format: 'date-time' },
+      cancelledAt: { type: 'string', format: 'date-time' },
+      createdAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  BookingResponse: {
+    type: 'object',
+    required: ['data'],
+    properties: { data: { $ref: '#/components/schemas/Booking' } },
+  },
+} as const;
+
 const sectionFivePaths = {
   '/auth/register': {
     post: {
@@ -471,6 +1512,11 @@ export const openApiDocument = {
     { name: 'Authentication', description: 'Member identity and opaque sessions.' },
     { name: 'Members', description: 'Authenticated member account operations.' },
     { name: 'Wishlists', description: 'Authenticated saved-tour operations.' },
+    { name: 'Bookings', description: 'Owned booking holds and cancellation.' },
+    { name: 'Payments', description: 'Stripe PaymentIntents and verified webhooks.' },
+    { name: 'Blog', description: 'Published posts and moderated comments.' },
+    { name: 'Engagement', description: 'Contact and newsletter workflows.' },
+    { name: 'Administration', description: 'Protected operational management APIs.' },
   ],
   paths: {
     '/health': {
@@ -723,6 +1769,9 @@ export const openApiDocument = {
       },
     },
     ...sectionFivePaths,
+    ...sectionSixPaths,
+    ...sectionSevenPaths,
+    ...sectionEightPaths,
   },
   components: {
     securitySchemes: {
@@ -754,6 +1803,70 @@ export const openApiDocument = {
         required: true,
         description: 'Must match the readable CSRF cookie issued with the session.',
         schema: { type: 'string' },
+      },
+      BookingId: {
+        name: 'id',
+        in: 'path',
+        required: true,
+        schema: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
+      },
+      IdempotencyKey: {
+        name: 'idempotency-key',
+        in: 'header',
+        required: true,
+        description: 'A unique retry key, normally a UUID, between 16 and 255 characters.',
+        schema: {
+          type: 'string',
+          minLength: 16,
+          maxLength: 255,
+          pattern: '^[A-Za-z0-9._:-]+$',
+        },
+      },
+      BlogPostSlug: {
+        name: 'slug',
+        in: 'path',
+        required: true,
+        schema: { type: 'string', pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' },
+      },
+      BlogPostId: {
+        name: 'id',
+        in: 'path',
+        required: true,
+        schema: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
+      },
+      UnsubscribeToken: {
+        name: 'token',
+        in: 'path',
+        required: true,
+        schema: { type: 'string', minLength: 43, maxLength: 200 },
+      },
+      AdminObjectId: {
+        name: 'id',
+        in: 'path',
+        required: true,
+        schema: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
+      },
+      AdminTourId: {
+        name: 'id',
+        in: 'path',
+        required: true,
+        schema: { type: 'integer', minimum: 1 },
+      },
+      ImagePosition: {
+        name: 'position',
+        in: 'path',
+        required: true,
+        schema: { type: 'integer', minimum: 0 },
+      },
+      AdminListPage: {
+        name: 'page',
+        in: 'query',
+        schema: { type: 'integer', minimum: 1, default: 1 },
+      },
+      AdminListLimit: {
+        name: 'limit',
+        in: 'query',
+        schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
       },
     },
     responses: {
@@ -813,9 +1926,107 @@ export const openApiDocument = {
           },
         },
       },
+      BookingNotFound: {
+        description: 'The booking does not exist or is not owned by the current member.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
+        },
+      },
+      BookingConflict: {
+        description: 'Capacity is unavailable or the booking state transition is invalid.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
+        },
+      },
+      PaymentConflict: {
+        description: 'The booking, amount, or idempotency state prevents this payment operation.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
+        },
+      },
+      InvalidStripeWebhook: {
+        description: 'The Stripe signature or raw request format is invalid.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
+        },
+      },
+      PaymentProviderUnavailable: {
+        description: 'Stripe is temporarily unavailable.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
+        },
+      },
+      AuthorizationRequired: {
+        description: 'An administrator role is required.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
+        },
+      },
+      BlogPostNotFound: {
+        description: 'The published blog post does not exist.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
+        },
+      },
+      AdminNotFound: {
+        description: 'The requested administrative resource does not exist.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
+        },
+      },
+      AdminConflict: {
+        description: 'The administrative state transition or uniqueness constraint failed.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
+        },
+      },
+      AdminDataResponse: {
+        description: 'The protected administrative result.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ActionDataResponse' },
+          },
+        },
+      },
+      AdminListResponse: {
+        description: 'A protected paginated administrative list.',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['data', 'meta'],
+              properties: {
+                data: { type: 'array', items: { type: 'object' } },
+                meta: { $ref: '#/components/schemas/PaginationMeta' },
+              },
+            },
+          },
+        },
+      },
     },
     schemas: {
       ...sectionFiveSchemas,
+      ...sectionSixSchemas,
+      ...sectionSevenSchemas,
+      ...sectionEightSchemas,
       ErrorResponse: {
         type: 'object',
         required: ['status', 'code', 'message', 'requestId'],
