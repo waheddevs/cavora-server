@@ -24,4 +24,23 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
+  {
+    files: ['public/js/**/*.js'],
+    languageOptions: {
+      globals: {
+        document: 'readonly',
+        fetch: 'readonly',
+        FormData: 'readonly',
+        HTMLButtonElement: 'readonly',
+        HTMLElement: 'readonly',
+        HTMLFormElement: 'readonly',
+        HTMLInputElement: 'readonly',
+        HTMLLabelElement: 'readonly',
+        HTMLSelectElement: 'readonly',
+        Headers: 'readonly',
+        MutationObserver: 'readonly',
+        window: 'readonly',
+      },
+    },
+  },
 );

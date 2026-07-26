@@ -8,12 +8,19 @@ import { BookingStatus } from '../libs/enums/booking.enum';
 import { ContactMessageStatus, NewsletterSubscriptionStatus } from '../libs/enums/engagement.enum';
 import { TourStatus } from '../libs/enums/tour.enum';
 import type {
+  AdminBlogCommentInquiry,
+  AdminBlogCommentView,
+  AdminBlogPostInquiry,
   AdminBlogPostView,
+  BlogComment as BlogCommentEntity,
   BlogPost,
   BlogPostInput,
   BlogPostUpdateInput,
+  PaginatedAdminBlogComments,
+  PaginatedAdminBlogPosts,
 } from '../libs/types/blog';
 import type {
+  AdminBookingView,
   AdminBookingStatusInput,
   Booking,
   BookingInquiry,
@@ -39,11 +46,17 @@ import type {
   PaymentRefundResult,
 } from '../libs/types/payment';
 import type {
+  AdminDepartureInquiry,
+  AdminTourDetail,
+  AdminTourInquiry,
   AdminTourDepartureView,
   AdminTourImageView,
   AdminTourView,
   HomepageSelectionsInput,
   HomepageSelectionsResult,
+  HomepageSelectionsView,
+  PaginatedAdminDepartures,
+  PaginatedAdminTours,
   PaginationMeta,
   Tour,
   TourDeparture,
@@ -76,6 +89,10 @@ function invalidState(message: string): AppError {
 
 function pagination(page: number, limit: number, total: number): PaginationMeta {
   return { page, limit, total, totalPages: Math.ceil(total / limit) };
+}
+
+function searchRegex(query: string): RegExp {
+  return new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
 }
 
 function toTourView(tour: Tour): AdminTourView {
@@ -142,6 +159,20 @@ function toBlogPostView(post: BlogPost): AdminBlogPostView {
   };
 }
 
+function toBlogCommentView(comment: BlogCommentEntity): AdminBlogCommentView {
+  return {
+    id: comment._id.toString(),
+    postId: comment.postId.toString(),
+    ...(comment.memberId ? { memberId: comment.memberId.toString() } : {}),
+    name: comment.name,
+    email: comment.email,
+    body: comment.body,
+    status: comment.status,
+    createdAt: comment.createdAt.toISOString(),
+    updatedAt: comment.updatedAt.toISOString(),
+  };
+}
+
 function toContactView(contact: ContactMessage): ContactMessageView {
   return {
     id: contact._id.toString(),
@@ -169,9 +200,10 @@ function toSubscriptionView(subscription: NewsletterSubscription): NewsletterSub
   };
 }
 
-function toBookingView(booking: Booking): BookingView {
+function toBookingView(booking: Booking): AdminBookingView {
   return {
     id: booking._id.toString(),
+    memberId: booking.memberId.toString(),
     reference: booking.reference,
     tourId: booking.tourId,
     departureId: booking.departureId.toString(),
@@ -186,6 +218,7 @@ function toBookingView(booking: Booking): BookingView {
     ...(booking.confirmedAt ? { confirmedAt: booking.confirmedAt.toISOString() } : {}),
     ...(booking.cancelledAt ? { cancelledAt: booking.cancelledAt.toISOString() } : {}),
     createdAt: booking.createdAt.toISOString(),
+    updatedAt: booking.updatedAt.toISOString(),
   };
 }
 
@@ -201,6 +234,7 @@ function toPaymentView(payment: Payment): AdminPaymentView {
     currency: payment.currency,
     ...(payment.paidAt ? { paidAt: payment.paidAt.toISOString() } : {}),
     createdAt: payment.createdAt.toISOString(),
+    updatedAt: payment.updatedAt.toISOString(),
   };
 }
 
@@ -209,6 +243,61 @@ class AdminService {
     private readonly now: () => Date = () => new Date(),
     private readonly paymentService: PaymentService = new PaymentService(),
   ) {}
+
+  public async getTours(
+    auth: AuthContext,
+    inquiry: AdminTourInquiry,
+  ): Promise<PaginatedAdminTours> {
+    this.assertAdmin(auth);
+    const filter: Record<string, unknown> = {};
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.type) filter.type = inquiry.type;
+    if (inquiry.query) {
+      const regex = searchRegex(inquiry.query);
+      const textFilters: Record<string, unknown>[] = [
+        { title: regex },
+        { slug: regex },
+        { country: regex },
+        { place: regex },
+        { location: regex },
+      ];
+      const numericId = Number(inquiry.query);
+      if (Number.isInteger(numericId) && numericId > 0) textFilters.push({ _id: numericId });
+      filter.$or = textFilters;
+    }
+    const [tours, total] = await Promise.all([
+      TourModel.find(filter)
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((inquiry.page - 1) * inquiry.limit)
+        .limit(inquiry.limit)
+        .lean<Tour[]>()
+        .exec(),
+      TourModel.countDocuments(filter).exec(),
+    ]);
+    return {
+      data: tours.map(toTourView),
+      meta: pagination(inquiry.page, inquiry.limit, total),
+    };
+  }
+
+  public async getTour(auth: AuthContext, tourId: number): Promise<AdminTourDetail> {
+    this.assertAdmin(auth);
+    const [tour, images] = await Promise.all([
+      TourModel.findById(tourId).lean<Tour>().exec(),
+      TourImageModel.find({ tourId }).sort({ position: 1 }).lean<TourImage[]>().exec(),
+    ]);
+    if (!tour) throw notFound(ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
+    return {
+      ...toTourView(tour),
+      images: images.map((image) => ({
+        id: image._id.toString(),
+        tourId: image.tourId,
+        url: image.url,
+        altText: image.altText,
+        position: image.position,
+      })),
+    };
+  }
 
   public async createTour(
     auth: AuthContext,
@@ -357,6 +446,30 @@ class AdminService {
     });
   }
 
+  public async getDepartures(
+    auth: AuthContext,
+    inquiry: AdminDepartureInquiry,
+  ): Promise<PaginatedAdminDepartures> {
+    this.assertAdmin(auth);
+    const filter: Record<string, unknown> = {};
+    if (inquiry.tourId) filter.tourId = inquiry.tourId;
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.from) filter.startDate = { $gte: inquiry.from };
+    const [departures, total] = await Promise.all([
+      TourDepartureModel.find(filter)
+        .sort({ startDate: 1, _id: 1 })
+        .skip((inquiry.page - 1) * inquiry.limit)
+        .limit(inquiry.limit)
+        .lean<TourDeparture[]>()
+        .exec(),
+      TourDepartureModel.countDocuments(filter).exec(),
+    ]);
+    return {
+      data: departures.map(toDepartureView),
+      meta: pagination(inquiry.page, inquiry.limit, total),
+    };
+  }
+
   public async updateDeparture(
     auth: AuthContext,
     input: TourDepartureUpdateInput,
@@ -464,6 +577,57 @@ class AdminService {
     });
   }
 
+  public async getHomepageSelections(auth: AuthContext): Promise<HomepageSelectionsView> {
+    this.assertAdmin(auth);
+    const [featured, popular, spotlight] = await Promise.all([
+      TourModel.find({ featuredRank: { $exists: true } })
+        .sort({ featuredRank: 1 })
+        .select({ _id: 1 })
+        .lean<Array<Pick<Tour, '_id'>>>()
+        .exec(),
+      TourModel.find({ popularityRank: { $exists: true } })
+        .sort({ popularityRank: 1 })
+        .select({ _id: 1 })
+        .lean<Array<Pick<Tour, '_id'>>>()
+        .exec(),
+      TourModel.findOne({ homepageSpotlight: true })
+        .select({ _id: 1 })
+        .lean<Pick<Tour, '_id'>>()
+        .exec(),
+    ]);
+    return {
+      featuredTourIds: featured.map((tour) => tour._id),
+      popularTourIds: popular.map((tour) => tour._id),
+      ...(spotlight ? { spotlightTourId: spotlight._id } : {}),
+    };
+  }
+
+  public async getBlogPosts(
+    auth: AuthContext,
+    inquiry: AdminBlogPostInquiry,
+  ): Promise<PaginatedAdminBlogPosts> {
+    this.assertAdmin(auth);
+    const filter: Record<string, unknown> = {};
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.query) {
+      const regex = searchRegex(inquiry.query);
+      filter.$or = [{ title: regex }, { slug: regex }, { category: regex }, { authorName: regex }];
+    }
+    const [posts, total] = await Promise.all([
+      BlogPostModel.find(filter)
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((inquiry.page - 1) * inquiry.limit)
+        .limit(inquiry.limit)
+        .lean<BlogPost[]>()
+        .exec(),
+      BlogPostModel.countDocuments(filter).exec(),
+    ]);
+    return {
+      data: posts.map(toBlogPostView),
+      meta: pagination(inquiry.page, inquiry.limit, total),
+    };
+  }
+
   public async createBlogPost(
     auth: AuthContext,
     input: BlogPostInput,
@@ -554,12 +718,44 @@ class AdminService {
     });
   }
 
+  public async getComments(
+    auth: AuthContext,
+    inquiry: AdminBlogCommentInquiry,
+  ): Promise<PaginatedAdminBlogComments> {
+    this.assertAdmin(auth);
+    const filter: Record<string, unknown> = {};
+    if (inquiry.postId) filter.postId = inquiry.postId;
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.query) {
+      const regex = searchRegex(inquiry.query);
+      filter.$or = [{ name: regex }, { email: regex }, { body: regex }];
+    }
+    const [comments, total] = await Promise.all([
+      BlogComment.find(filter)
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((inquiry.page - 1) * inquiry.limit)
+        .limit(inquiry.limit)
+        .lean<BlogCommentEntity[]>()
+        .exec(),
+      BlogComment.countDocuments(filter).exec(),
+    ]);
+    return {
+      data: comments.map(toBlogCommentView),
+      meta: pagination(inquiry.page, inquiry.limit, total),
+    };
+  }
+
   public async getContactMessages(
     auth: AuthContext,
     inquiry: ContactMessageInquiry,
   ): Promise<PaginatedContactMessages> {
     this.assertAdmin(auth);
-    const filter = inquiry.status ? { status: inquiry.status } : {};
+    const filter: Record<string, unknown> = {};
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.query) {
+      const regex = searchRegex(inquiry.query);
+      filter.$or = [{ fullName: regex }, { email: regex }, { subject: regex }, { message: regex }];
+    }
     const [messages, total] = await Promise.all([
       ContactMessageModel.find(filter)
         .sort({ createdAt: -1, _id: -1 })
@@ -615,7 +811,12 @@ class AdminService {
     inquiry: NewsletterSubscriptionInquiry,
   ): Promise<PaginatedNewsletterSubscriptions> {
     this.assertAdmin(auth);
-    const filter = inquiry.status ? { status: inquiry.status } : {};
+    const filter: Record<string, unknown> = {};
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.query) {
+      const regex = searchRegex(inquiry.query);
+      filter.$or = [{ email: regex }, { source: regex }];
+    }
     const [subscriptions, total] = await Promise.all([
       NewsletterSubscriptionModel.find(filter)
         .sort({ createdAt: -1, _id: -1 })
@@ -671,9 +872,23 @@ class AdminService {
   public async getBookings(
     auth: AuthContext,
     inquiry: BookingInquiry,
-  ): Promise<{ data: BookingView[]; meta: PaginationMeta }> {
+  ): Promise<{ data: AdminBookingView[]; meta: PaginationMeta }> {
     this.assertAdmin(auth);
-    const filter = inquiry.status ? { status: inquiry.status } : {};
+    const filter: Record<string, unknown> = {};
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.query) {
+      const regex = searchRegex(inquiry.query);
+      const queryFilters: Record<string, unknown>[] = [{ reference: regex }];
+      if (mongoose.Types.ObjectId.isValid(inquiry.query)) {
+        const objectId = new mongoose.Types.ObjectId(inquiry.query);
+        queryFilters.push({ _id: objectId }, { memberId: objectId }, { departureId: objectId });
+      }
+      const numericTourId = Number(inquiry.query);
+      if (Number.isInteger(numericTourId) && numericTourId > 0) {
+        queryFilters.push({ tourId: numericTourId });
+      }
+      filter.$or = queryFilters;
+    }
     const [bookings, total] = await Promise.all([
       BookingModel.find(filter)
         .sort({ createdAt: -1, _id: -1 })
@@ -750,7 +965,17 @@ class AdminService {
     inquiry: PaymentInquiry,
   ): Promise<{ data: AdminPaymentView[]; meta: PaginationMeta }> {
     this.assertAdmin(auth);
-    const filter = inquiry.status ? { status: inquiry.status } : {};
+    const filter: Record<string, unknown> = {};
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.query) {
+      const regex = searchRegex(inquiry.query);
+      const queryFilters: Record<string, unknown>[] = [{ providerIntentId: regex }];
+      if (mongoose.Types.ObjectId.isValid(inquiry.query)) {
+        const objectId = new mongoose.Types.ObjectId(inquiry.query);
+        queryFilters.push({ _id: objectId }, { bookingId: objectId });
+      }
+      filter.$or = queryFilters;
+    }
     const [payments, total] = await Promise.all([
       PaymentModel.find(filter)
         .sort({ createdAt: -1, _id: -1 })

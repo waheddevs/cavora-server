@@ -1,0 +1,147 @@
+<%- include('../includes/header', {
+  activePage,
+  layoutMode,
+  pageTitle,
+  stylesheetPath,
+}) %>
+
+<section class="page-heading">
+  <div>
+    <p class="section-label">Financial operations</p>
+    <h2>Payments and refunds</h2>
+    <p>Review provider payment states and request controlled, idempotent refunds.</p>
+  </div>
+</section>
+
+<div class="summary-grid">
+  <article class="summary-card">
+    <span>Succeeded</span>
+    <strong data-payment-succeeded>—</strong>
+    <small>Completed payments</small>
+  </article>
+  <article class="summary-card">
+    <span>Processing</span>
+    <strong data-payment-processing>—</strong>
+    <small>Awaiting provider outcome</small>
+  </article>
+  <article class="summary-card">
+    <span>Refund activity</span>
+    <strong data-payment-refunds>—</strong>
+    <small>Pending or completed refunds</small>
+  </article>
+</div>
+
+<div class="split-layout payments-layout">
+  <div>
+    <form class="toolbar" data-payment-filters>
+      <label class="field field--wide">
+        <span>Search payments</span>
+        <input
+          type="search"
+          name="query"
+          maxlength="200"
+          placeholder="Payment or booking reference"
+        />
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select name="status">
+          <option value="">All statuses</option>
+          <option value="REQUIRES_PAYMENT_METHOD">Requires payment method</option>
+          <option value="REQUIRES_ACTION">Requires action</option>
+          <option value="PROCESSING">Processing</option>
+          <option value="SUCCEEDED">Succeeded</option>
+          <option value="FAILED">Failed</option>
+          <option value="CANCELLED">Cancelled</option>
+          <option value="REFUND_PENDING">Refund pending</option>
+          <option value="PARTIALLY_REFUNDED">Partially refunded</option>
+          <option value="REFUNDED">Refunded</option>
+        </select>
+      </label>
+      <button class="button" type="submit">Apply</button>
+      <button class="button" type="button" data-filter-reset>Reset</button>
+    </form>
+
+    <section class="table-card" aria-label="Payment records">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Payment</th>
+              <th scope="col">Booking</th>
+              <th scope="col">Provider reference</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Refunded</th>
+              <th scope="col">Status</th>
+              <th scope="col">Updated</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody data-payment-rows></tbody>
+        </table>
+      </div>
+      <div class="empty-state" data-payment-empty>
+        <div class="empty-state__mark" aria-hidden="true">P</div>
+        <h3>No payments loaded</h3>
+        <p>No payments match the current filters.</p>
+      </div>
+      <div class="pagination">
+        <span data-page-summary>Page 1 of 1</span>
+        <div class="pagination__actions">
+          <button class="button button--small" type="button" data-page-prev disabled>
+            Previous
+          </button>
+          <button class="button button--small" type="button" data-page-next disabled>Next</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="panel refund-panel" aria-labelledby="refund-heading">
+    <div class="panel__header">
+      <div>
+        <h3 id="refund-heading">Create refund</h3>
+        <p>Leave the amount empty for the remaining refundable balance.</p>
+      </div>
+      <span class="badge badge--danger">Sensitive action</span>
+    </div>
+    <form data-refund-form novalidate>
+      <div class="form-grid">
+        <label class="field field--full">
+          <span>Payment ID</span>
+          <input
+            type="text"
+            name="id"
+            minlength="24"
+            maxlength="24"
+            pattern="[a-fA-F0-9]{24}"
+            required
+          />
+        </label>
+        <label class="field field--full">
+          <span>Refund amount (minor units)</span>
+          <input type="number" name="amountCents" min="1" step="1" />
+          <small>Optional; must not exceed the remaining refundable amount.</small>
+        </label>
+        <label class="field field--full">
+          <span>Idempotency key</span>
+          <input
+            type="text"
+            name="idempotencyKey"
+            minlength="16"
+            maxlength="255"
+            pattern="[A-Za-z0-9._:-]+"
+            required
+          />
+          <small>Use a unique key for each intended refund operation.</small>
+        </label>
+      </div>
+      <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+      <div class="form-actions">
+        <button class="button button--danger" type="submit">Request refund</button>
+      </div>
+    </form>
+  </aside>
+</div>
+
+<%- include('../includes/footer', { layoutMode, scriptPath }) %>

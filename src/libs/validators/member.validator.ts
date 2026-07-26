@@ -30,6 +30,8 @@ export const registerBodySchema = z
   })
   .strict();
 
+export const adminRegisterBodySchema = registerBodySchema;
+
 export const loginBodySchema = z
   .object({
     email,

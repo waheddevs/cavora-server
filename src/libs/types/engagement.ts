@@ -69,12 +69,14 @@ export interface NewsletterSubscriptionView {
 export interface ContactMessageInquiry {
   limit: number;
   page: number;
+  query?: string;
   status?: ContactMessageStatus;
 }
 
 export interface NewsletterSubscriptionInquiry {
   limit: number;
   page: number;
+  query?: string;
   status?: NewsletterSubscriptionStatus;
 }
 

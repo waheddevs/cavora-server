@@ -1,0 +1,243 @@
+<%- include('../includes/header', {
+  activePage,
+  layoutMode,
+  pageTitle,
+  stylesheetPath,
+}) %>
+
+<section class="page-heading">
+  <div>
+    <p class="section-label">Inventory</p>
+    <h2>Tour catalogue</h2>
+    <p>Create and maintain the public tour records used across Cavora.</p>
+  </div>
+  <button
+    class="button button--primary"
+    type="button"
+    aria-controls="tour-editor"
+    aria-expanded="false"
+    data-tour-editor-toggle
+  >
+    New tour
+  </button>
+</section>
+
+<section class="panel tour-editor" id="tour-editor" data-tour-editor hidden>
+  <div class="panel__header">
+    <div>
+      <h3>Tour editor</h3>
+      <p>Prices use integer minor units. Tour IDs must remain compatible with the public frontend.</p>
+    </div>
+    <button class="button button--small" type="button" data-disclosure-close>Close</button>
+  </div>
+
+  <form data-tour-form novalidate>
+    <div class="form-grid form-grid--three">
+      <label class="field">
+        <span>Tour ID</span>
+        <input type="number" name="id" min="1" step="1" required />
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select name="status" required>
+          <option value="DRAFT">Draft</option>
+          <option value="PUBLISHED">Published</option>
+          <option value="ARCHIVED">Archived</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Slug</span>
+        <input
+          type="text"
+          name="slug"
+          maxlength="200"
+          pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+          placeholder="seoul-city-break"
+          required
+        />
+      </label>
+      <label class="field field--full">
+        <span>Title</span>
+        <input type="text" name="title" maxlength="200" required />
+      </label>
+      <label class="field">
+        <span>Country</span>
+        <input type="text" name="country" maxlength="100" required />
+      </label>
+      <label class="field">
+        <span>Place</span>
+        <input type="text" name="place" maxlength="160" required />
+      </label>
+      <label class="field">
+        <span>Location</span>
+        <input type="text" name="location" maxlength="240" required />
+      </label>
+      <label class="field">
+        <span>Tour type</span>
+        <input type="text" name="type" maxlength="80" required />
+      </label>
+      <label class="field">
+        <span>Duration (days)</span>
+        <input type="number" name="durationDays" min="1" step="1" required />
+      </label>
+      <label class="field">
+        <span>Maximum group size</span>
+        <input type="number" name="maxGroupSize" min="1" step="1" required />
+      </label>
+      <label class="field">
+        <span>Price (minor units)</span>
+        <input type="number" name="priceCents" min="0" step="1" required />
+      </label>
+      <label class="field">
+        <span>Old price (minor units)</span>
+        <input type="number" name="oldPriceCents" min="0" step="1" />
+      </label>
+      <label class="field">
+        <span>Currency</span>
+        <input
+          type="text"
+          name="currency"
+          minlength="3"
+          maxlength="3"
+          pattern="[A-Za-z]{3}"
+          value="USD"
+          required
+        />
+      </label>
+      <label class="field">
+        <span>Rating average</span>
+        <input type="number" name="ratingAverage" min="0" max="5" step="0.1" value="0" required />
+      </label>
+      <label class="field">
+        <span>Review count</span>
+        <input type="number" name="reviewCount" min="0" step="1" value="0" required />
+      </label>
+      <label class="field field--full">
+        <span>Overview</span>
+        <textarea name="overview" maxlength="20000" required></textarea>
+      </label>
+      <label class="field">
+        <span>Highlights</span>
+        <textarea name="highlights" placeholder="One item per line"></textarea>
+      </label>
+      <label class="field">
+        <span>Included</span>
+        <textarea name="included" placeholder="One item per line"></textarea>
+      </label>
+      <label class="field">
+        <span>Not included</span>
+        <textarea name="notIncluded" placeholder="One item per line"></textarea>
+      </label>
+      <label class="field field--full">
+        <span>Itinerary JSON</span>
+        <textarea
+          name="itinerary"
+          placeholder='[{"day":1,"title":"Arrival","description":"Meet your guide."}]'
+        ></textarea>
+      </label>
+    </div>
+    <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+    <div class="form-actions">
+      <button class="button" type="reset">Clear</button>
+      <button class="button button--primary" type="submit">Save tour</button>
+    </div>
+  </form>
+</section>
+
+<form class="toolbar" data-tour-filters>
+  <label class="field field--wide">
+    <span>Search tours</span>
+    <input
+      type="search"
+      name="query"
+      maxlength="200"
+      placeholder="Title, destination, or ID"
+    />
+  </label>
+  <label class="field">
+    <span>Status</span>
+    <select name="status">
+      <option value="">All statuses</option>
+      <option value="DRAFT">Draft</option>
+      <option value="PUBLISHED">Published</option>
+      <option value="ARCHIVED">Archived</option>
+    </select>
+  </label>
+  <label class="field">
+    <span>Tour type</span>
+    <input type="text" name="type" maxlength="80" placeholder="Any type" />
+  </label>
+  <button class="button" type="submit">Apply</button>
+  <button class="button" type="button" data-filter-reset>Reset</button>
+</form>
+
+<section class="table-card" aria-labelledby="tour-list-heading">
+  <div class="visually-hidden" id="tour-list-heading">Tour records</div>
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Tour</th>
+          <th scope="col">Destination</th>
+          <th scope="col">Type</th>
+          <th scope="col">Duration</th>
+          <th scope="col">Price</th>
+          <th scope="col">Status</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody data-tour-rows></tbody>
+    </table>
+  </div>
+  <div class="empty-state" data-tour-empty>
+    <div class="empty-state__mark" aria-hidden="true">T</div>
+    <h3>No tours loaded</h3>
+    <p>No tour records match the current filters.</p>
+  </div>
+  <div class="pagination">
+    <span data-page-summary>Page 1 of 1</span>
+    <div class="pagination__actions">
+      <button class="button button--small" type="button" data-page-prev disabled>Previous</button>
+      <button class="button button--small" type="button" data-page-next disabled>Next</button>
+    </div>
+  </div>
+</section>
+
+<section class="panel image-manager">
+  <div class="panel__header">
+    <div>
+      <h3>Tour image manager</h3>
+      <p>Upsert an ordered image after its parent tour exists.</p>
+    </div>
+  </div>
+  <form data-tour-image-form novalidate>
+    <div class="form-grid form-grid--three">
+      <label class="field">
+        <span>Tour ID</span>
+        <input type="number" name="tourId" min="1" step="1" required />
+      </label>
+      <label class="field">
+        <span>Position</span>
+        <input type="number" name="position" min="0" step="1" required />
+      </label>
+      <label class="field">
+        <span>Image URL or path</span>
+        <input type="text" name="url" maxlength="2048" required />
+      </label>
+      <label class="field field--full">
+        <span>Alternative text</span>
+        <input type="text" name="altText" maxlength="300" required />
+      </label>
+    </div>
+    <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+    <div class="form-actions">
+      <button class="button button--danger" type="button" data-image-delete>
+        Delete image
+      </button>
+      <button class="button button--primary" type="submit">Save image</button>
+    </div>
+  </form>
+</section>
+
+<%- include('../includes/footer', { layoutMode, scriptPath }) %>

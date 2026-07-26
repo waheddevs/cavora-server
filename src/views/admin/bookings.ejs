@@ -1,0 +1,134 @@
+<%- include('../includes/header', {
+  activePage,
+  layoutMode,
+  pageTitle,
+  stylesheetPath,
+}) %>
+
+<section class="page-heading">
+  <div>
+    <p class="section-label">Reservations</p>
+    <h2>Booking operations</h2>
+    <p>Review customer bookings and apply permitted administrative state changes.</p>
+  </div>
+</section>
+
+<div class="summary-grid">
+  <article class="summary-card">
+    <span>Confirmed</span>
+    <strong data-booking-confirmed>—</strong>
+    <small>Upcoming confirmed bookings</small>
+  </article>
+  <article class="summary-card">
+    <span>Cancellation requests</span>
+    <strong data-booking-cancellations>—</strong>
+    <small>Awaiting operational review</small>
+  </article>
+  <article class="summary-card">
+    <span>Pending payment</span>
+    <strong data-booking-pending>—</strong>
+    <small>Active payment holds</small>
+  </article>
+</div>
+
+<div class="split-layout">
+  <div>
+    <form class="toolbar" data-booking-filters>
+      <label class="field field--wide">
+        <span>Search bookings</span>
+        <input
+          type="search"
+          name="query"
+          maxlength="200"
+          placeholder="Booking reference or member"
+        />
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select name="status">
+          <option value="">All statuses</option>
+          <option value="PENDING_PAYMENT">Pending payment</option>
+          <option value="CONFIRMED">Confirmed</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLATION_REQUESTED">Cancellation requested</option>
+          <option value="CANCELLED">Cancelled</option>
+          <option value="REFUNDED">Refunded</option>
+          <option value="EXPIRED">Expired</option>
+        </select>
+      </label>
+      <button class="button" type="submit">Apply</button>
+      <button class="button" type="button" data-filter-reset>Reset</button>
+    </form>
+
+    <section class="table-card" aria-label="Booking records">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Reference</th>
+              <th scope="col">Member</th>
+              <th scope="col">Tour</th>
+              <th scope="col">Departure</th>
+              <th scope="col">Travelers</th>
+              <th scope="col">Total</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody data-booking-rows></tbody>
+        </table>
+      </div>
+      <div class="empty-state" data-booking-empty>
+        <div class="empty-state__mark" aria-hidden="true">B</div>
+        <h3>No bookings loaded</h3>
+        <p>No bookings match the current filters.</p>
+      </div>
+      <div class="pagination">
+        <span data-page-summary>Page 1 of 1</span>
+        <div class="pagination__actions">
+          <button class="button button--small" type="button" data-page-prev disabled>
+            Previous
+          </button>
+          <button class="button button--small" type="button" data-page-next disabled>Next</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="panel booking-panel" aria-labelledby="booking-status-heading">
+    <div class="panel__header">
+      <div>
+        <h3 id="booking-status-heading">Update booking</h3>
+        <p>Administration may only complete or cancel eligible bookings.</p>
+      </div>
+    </div>
+    <form data-booking-status-form novalidate>
+      <div class="form-grid">
+        <label class="field field--full">
+          <span>Booking ID</span>
+          <input
+            type="text"
+            name="id"
+            minlength="24"
+            maxlength="24"
+            pattern="[a-fA-F0-9]{24}"
+            required
+          />
+        </label>
+        <label class="field field--full">
+          <span>New status</span>
+          <select name="status" required>
+            <option value="COMPLETED">Completed</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+        </label>
+      </div>
+      <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+      <div class="form-actions">
+        <button class="button button--primary" type="submit">Update booking</button>
+      </div>
+    </form>
+  </aside>
+</div>
+
+<%- include('../includes/footer', { layoutMode, scriptPath }) %>

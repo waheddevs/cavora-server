@@ -49,7 +49,13 @@ export interface BookingView {
 export interface BookingInquiry {
   page: number;
   limit: number;
+  query?: string;
   status?: BookingStatus;
+}
+
+export interface AdminBookingView extends BookingView {
+  memberId: string;
+  updatedAt: string;
 }
 
 export interface MemberBookingView {

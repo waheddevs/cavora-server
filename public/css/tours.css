@@ -1,0 +1,19 @@
+.tour-editor textarea[name='overview'] {
+  min-height: 150px;
+}
+
+.tour-editor textarea[name='itinerary'] {
+  min-height: 130px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.76rem;
+}
+
+.image-manager {
+  margin-top: 18px;
+}
+
+@media (min-width: 1100px) {
+  .image-manager .form-grid {
+    grid-template-columns: 0.6fr 0.6fr 1.8fr;
+  }
+}

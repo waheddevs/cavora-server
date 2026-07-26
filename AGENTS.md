@@ -8,11 +8,17 @@ This file defines how those requirements must be implemented in this repository.
 
 Cavora is a REST/JSON backend for a separate React travel-booking frontend. Its domains are
 members, tours, departures and availability, wishlists, bookings, payments, blog content, contact
-messages, newsletter subscriptions, and administration.
+messages, newsletter subscriptions, and administration. Cavora also includes a small,
+server-rendered EJS administration interface approved for operational use.
 
 The repository originally contained restaurant, menu-product, and food-ordering code. That domain
-is obsolete. Do not restore restaurant members, products, food orders, EJS views, the restaurant
-admin panel, or its routes.
+is obsolete. Do not restore restaurant members, products, food orders, restaurant EJS views, the
+restaurant admin panel, or its routes.
+
+The Cavora administration interface is the only EJS exception. Keep it minimal, place page
+templates under `src/views/admin`, shared partials under `src/views/includes`, and page-specific
+assets under `public/css` and `public/js`. It consumes the protected Cavora REST APIs and must not
+reintroduce restaurant behavior.
 
 Use `BACKEND.md` for Cavora behavior and data, but preserve the folder architecture and coding
 patterns defined below. In particular, do not reorganize features into `src/modules`, do not add a
@@ -26,6 +32,7 @@ repository layer, and do not distribute routes across feature routers.
 | Runtime | Node.js |
 | HTTP framework | Express 4 |
 | API | REST/JSON under `/cavora` |
+| Administration UI | EJS pages under `/admin` |
 | Database | MongoDB |
 | ODM | Mongoose |
 | Validation | Zod |
@@ -38,8 +45,8 @@ repository layer, and do not distribute routes across feature routers.
 | Testing | Vitest and Supertest |
 | Local infrastructure | Docker Compose for MongoDB |
 
-Do not use PostgreSQL, Prisma, Mongoose-independent repositories, EJS, restaurant sessions, or a
-JWT stored in an `accessToken` cookie.
+Do not use PostgreSQL, Prisma, Mongoose-independent repositories, EJS outside the approved Cavora
+administration interface, restaurant sessions, or a JWT stored in an `accessToken` cookie.
 
 ## 3. Mandatory folder structure
 
@@ -122,6 +129,21 @@ test/
 Create files only when their section is implemented. The tree above defines their final ownership;
 empty placeholder controllers, models, or schemas are not useful.
 
+The administration UI may additionally use:
+
+```text
+src/
+├── router.admin-view.ts
+├── controllers/
+│   └── admin-view.controller.ts
+└── views/
+    ├── admin/
+    └── includes/
+public/
+├── css/
+└── js/
+```
+
 ## 4. Request flow and layer ownership
 
 ```text
@@ -130,9 +152,10 @@ router.ts → middleware → controller → models/*.service.ts → schema/*.mod
 
 ### `router.ts`
 
-`src/router.ts` is the single location where every application API is declared. It contains only
-Express method, path, middleware order, and controller references. It must not contain inline route
-callbacks, database queries, calculations, or other business logic.
+`src/router.ts` is the single location where every application REST API is declared. It contains
+only Express method, path, middleware order, and controller references. It must not contain inline
+route callbacks, database queries, calculations, or other business logic. HTML-only administration
+page routes may live in `src/router.admin-view.ts`; it must follow the same routing-only rule.
 
 Keep routes ordered under these comments:
 
@@ -263,7 +286,8 @@ Use this middleware order:
 12. Not-found middleware.
 13. Centralized error middleware.
 
-Static files, EJS views, and an SSR admin panel are not part of Cavora.
+Static files and EJS views are permitted only for the approved Cavora administration interface.
+They must not alter the REST middleware or error-response contract.
 
 ## 6. Error response convention
 
@@ -400,8 +424,9 @@ Administrative REST endpoints manage tours/images, departures/capacity, homepage
 moderation, contacts, subscribers, bookings, payments, and refunds. Place all of them under the
 administration router comment and protect them with admin authorization.
 
-Do not add legacy aliases such as `/member/signup`, `/product/all`, `/order/create`, or `/admin`
-EJS routes.
+Do not add legacy aliases such as `/member/signup`, `/product/all`, `/order/create`, or restaurant
+admin EJS routes. Cavora administration pages may use `/admin`; administration APIs remain under
+`/cavora/admin`.
 
 ## 10. Tour listing and response conventions
 

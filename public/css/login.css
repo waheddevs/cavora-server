@@ -1,0 +1,69 @@
+.login-card {
+  width: min(100%, 430px);
+  padding: clamp(26px, 5vw, 40px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgb(16 24 40 / 9%);
+}
+
+.login-card__header {
+  margin-bottom: 26px;
+}
+
+.login-card__header h1 {
+  margin: 4px 0 7px;
+  font-size: 1.6rem;
+  letter-spacing: -0.025em;
+}
+
+.login-card__header p:not(.section-label),
+.login-card__note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.login-form {
+  display: grid;
+  gap: 16px;
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 62px;
+}
+
+.password-field button {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  padding: 4px 7px;
+  color: var(--accent);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 750;
+  transform: translateY(-50%);
+}
+
+.login-submit {
+  width: 100%;
+}
+
+.login-card__note {
+  margin-top: 22px;
+  padding-top: 18px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+.login-card a {
+  color: var(--accent);
+  font-weight: 750;
+}

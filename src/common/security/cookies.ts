@@ -4,7 +4,7 @@ import type { SessionTokens } from '../../libs/types/member';
 
 function baseCookieOptions(): CookieOptions {
   return {
-    path: '/cavora',
+    path: '/',
     sameSite: env.COOKIE_SAME_SITE,
     secure: env.NODE_ENV === 'production' || env.COOKIE_SAME_SITE === 'none',
   };
@@ -13,6 +13,16 @@ function baseCookieOptions(): CookieOptions {
 export function setAuthenticationCookies(res: Response, tokens: SessionTokens): void {
   const maxAge = Math.max(0, tokens.expiresAt.getTime() - Date.now());
 
+  res.clearCookie(env.SESSION_COOKIE_NAME, {
+    ...baseCookieOptions(),
+    httpOnly: true,
+    path: '/cavora',
+  });
+  res.clearCookie(env.CSRF_COOKIE_NAME, {
+    ...baseCookieOptions(),
+    httpOnly: false,
+    path: '/cavora',
+  });
   res.cookie(env.SESSION_COOKIE_NAME, tokens.sessionToken, {
     ...baseCookieOptions(),
     httpOnly: true,
@@ -28,4 +38,14 @@ export function setAuthenticationCookies(res: Response, tokens: SessionTokens): 
 export function clearAuthenticationCookies(res: Response): void {
   res.clearCookie(env.SESSION_COOKIE_NAME, { ...baseCookieOptions(), httpOnly: true });
   res.clearCookie(env.CSRF_COOKIE_NAME, { ...baseCookieOptions(), httpOnly: false });
+  res.clearCookie(env.SESSION_COOKIE_NAME, {
+    ...baseCookieOptions(),
+    httpOnly: true,
+    path: '/cavora',
+  });
+  res.clearCookie(env.CSRF_COOKIE_NAME, {
+    ...baseCookieOptions(),
+    httpOnly: false,
+    path: '/cavora',
+  });
 }

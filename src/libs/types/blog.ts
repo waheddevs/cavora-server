@@ -111,3 +111,40 @@ export interface AdminBlogPostView extends Omit<
   publishedAt?: string;
   updatedAt: string;
 }
+
+export interface AdminBlogPostInquiry {
+  limit: number;
+  page: number;
+  query?: string;
+  status?: BlogPostStatus;
+}
+
+export interface AdminBlogCommentInquiry {
+  limit: number;
+  page: number;
+  postId?: Types.ObjectId;
+  query?: string;
+  status?: BlogCommentStatus;
+}
+
+export interface AdminBlogCommentView {
+  body: string;
+  createdAt: string;
+  email: string;
+  id: string;
+  memberId?: string;
+  name: string;
+  postId: string;
+  status: BlogCommentStatus;
+  updatedAt: string;
+}
+
+export interface PaginatedAdminBlogPosts {
+  data: AdminBlogPostView[];
+  meta: PaginationMeta;
+}
+
+export interface PaginatedAdminBlogComments {
+  data: AdminBlogCommentView[];
+  meta: PaginationMeta;
+}

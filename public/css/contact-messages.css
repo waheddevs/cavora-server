@@ -1,0 +1,17 @@
+.message-panel {
+  align-self: start;
+  position: sticky;
+  top: 18px;
+}
+
+.data-table th:nth-child(2),
+.data-table td:nth-child(2) {
+  min-width: 230px;
+  white-space: normal;
+}
+
+@media (max-width: 1040px) {
+  .message-panel {
+    position: static;
+  }
+}

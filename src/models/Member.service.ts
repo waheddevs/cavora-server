@@ -9,7 +9,7 @@ import { argonPasswordAdapter, type PasswordAdapter } from '../common/security/p
 import { createOpaqueToken, hashOpaqueToken } from '../common/security/tokens';
 import { env } from '../config/env';
 import { AuditActorType } from '../libs/enums/audit.enum';
-import { MemberStatus } from '../libs/enums/member.enum';
+import { MemberRole, MemberStatus } from '../libs/enums/member.enum';
 import { TourStatus } from '../libs/enums/tour.enum';
 import type {
   MemberBookingHistory,
@@ -147,6 +147,42 @@ class MemberService {
     }
   }
 
+  public async registerAdmin(
+    input: RegisterInput,
+    context: RequestContext,
+  ): Promise<AuthenticationResult> {
+    const adminCount = await MemberModel.countDocuments({ role: MemberRole.ADMIN });
+    if (adminCount > 0) this.throwAdminAlreadyExists();
+    await MemberModel.createIndexes();
+    const adminCreatedWhileIndexing = await MemberModel.exists({ role: MemberRole.ADMIN });
+    if (adminCreatedWhileIndexing) this.throwAdminAlreadyExists();
+    await this.assertIdentityAvailable(input.email, input.username);
+    const passwordHash = await this.passwordAdapter.hash(input.password);
+
+    try {
+      const member = await MemberModel.create({
+        email: input.email,
+        username: input.username,
+        passwordHash,
+        firstName: input.firstName,
+        lastName: input.lastName,
+        role: MemberRole.ADMIN,
+        emailVerifiedAt: this.now(),
+      });
+      const tokens = await this.createSession(member._id, context);
+      await this.writeAudit(
+        member._id,
+        'admin.registered',
+        'member',
+        member._id.toString(),
+        context,
+      );
+      return { member: toMemberView(member.toObject()), tokens };
+    } catch (err) {
+      this.throwIdentityConflict(err);
+    }
+  }
+
   public async login(input: LoginInput, context: RequestContext): Promise<AuthenticationResult> {
     const member = await MemberModel.findOne({ email: input.email })
       .select('+passwordHash')
@@ -171,6 +207,7 @@ class MemberService {
     await this.writeAudit(member._id, 'account.logged_in', 'session', undefined, context);
 
     return { member: toMemberView(member), tokens };
+  
   }
 
   public async authenticateSession(sessionToken: string | undefined): Promise<AuthContext> {
@@ -644,8 +681,17 @@ class MemberService {
           { fieldErrors: { 'body.username': 'Username is already taken.' } },
         );
       }
+      if (err.keyPattern?.role) this.throwAdminAlreadyExists();
     }
     throw err;
+  }
+
+  private throwAdminAlreadyExists(): never {
+    throw new AppError(
+      HttpCode.CONFLICT,
+      ErrorCode.RESOURCE_CONFLICT,
+      'The administrator account already exists. Sign in instead.',
+    );
   }
 
   private throwInvalidAccountToken(): never {

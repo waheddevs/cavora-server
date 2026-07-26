@@ -1,0 +1,14 @@
+#post-editor textarea[name='excerpt'] {
+  min-height: 90px;
+}
+
+#post-editor textarea[name='body'] {
+  min-height: 190px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.76rem;
+}
+
+.data-table th:first-child,
+.data-table td:first-child {
+  min-width: 240px;
+}

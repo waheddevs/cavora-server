@@ -7,7 +7,12 @@ import type {
   ContactMessageStatus,
   NewsletterSubscriptionStatus,
 } from '../libs/enums/engagement.enum';
-import type { BlogPostInput, BlogPostUpdateInput } from '../libs/types/blog';
+import type {
+  AdminBlogCommentInquiry,
+  AdminBlogPostInquiry,
+  BlogPostInput,
+  BlogPostUpdateInput,
+} from '../libs/types/blog';
 import type { BookingInquiry } from '../libs/types/booking';
 import type {
   ContactMessageInquiry,
@@ -16,6 +21,8 @@ import type {
 import type { AuthContext, RequestContext } from '../libs/types/member';
 import type { PaymentInquiry, PaymentRefundInput } from '../libs/types/payment';
 import type {
+  AdminDepartureInquiry,
+  AdminTourInquiry,
   HomepageSelectionsInput,
   TourDepartureInput,
   TourDepartureUpdateInput,
@@ -44,6 +51,34 @@ function noStore(res: Response): void {
 }
 
 const adminController = {
+  async getTours(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminGetTours');
+      const result = await adminService.getTours(
+        auth(req),
+        req.validated.query as AdminTourInquiry,
+      );
+      noStore(res);
+      res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminGetTours');
+      next(err);
+    }
+  },
+
+  async getTour(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminGetTour');
+      const { id } = req.validated.params as { id: number };
+      const result = await adminService.getTour(auth(req), id);
+      noStore(res);
+      res.status(HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminGetTour');
+      next(err);
+    }
+  },
+
   async createTour(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       req.log.info('adminCreateTour');
@@ -125,6 +160,21 @@ const adminController = {
     }
   },
 
+  async getDepartures(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminGetDepartures');
+      const result = await adminService.getDepartures(
+        auth(req),
+        req.validated.query as AdminDepartureInquiry,
+      );
+      noStore(res);
+      res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminGetDepartures');
+      next(err);
+    }
+  },
+
   async updateDeparture(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       req.log.info('adminUpdateDeparture');
@@ -154,6 +204,33 @@ const adminController = {
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on adminUpdateHomepageSelections');
+      next(err);
+    }
+  },
+
+  async getHomepageSelections(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminGetHomepageSelections');
+      const result = await adminService.getHomepageSelections(auth(req));
+      noStore(res);
+      res.status(HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminGetHomepageSelections');
+      next(err);
+    }
+  },
+
+  async getBlogPosts(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminGetBlogPosts');
+      const result = await adminService.getBlogPosts(
+        auth(req),
+        req.validated.query as AdminBlogPostInquiry,
+      );
+      noStore(res);
+      res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminGetBlogPosts');
       next(err);
     }
   },
@@ -206,6 +283,27 @@ const adminController = {
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on adminModerateComment');
+      next(err);
+    }
+  },
+
+  async getComments(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminGetComments');
+      const { postId, ...query } = req.validated.query as Omit<
+        AdminBlogCommentInquiry,
+        'postId'
+      > & {
+        postId?: string;
+      };
+      const result = await adminService.getComments(auth(req), {
+        ...query,
+        ...(postId ? { postId: new Types.ObjectId(postId) } : {}),
+      });
+      noStore(res);
+      res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminGetComments');
       next(err);
     }
   },

@@ -166,6 +166,27 @@ const sectionEightPaths = {
     },
   },
   '/admin/tours': {
+    get: {
+      operationId: 'adminGetTours',
+      summary: 'List tours including unpublished records',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminListPage' },
+        { $ref: '#/components/parameters/AdminListLimit' },
+        { $ref: '#/components/parameters/AdminListQuery' },
+        {
+          name: 'status',
+          in: 'query',
+          schema: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+        },
+        { name: 'type', in: 'query', schema: { type: 'string', maxLength: 80 } },
+      ],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminListResponse' },
+        ...adminReadResponses,
+      },
+    },
     post: {
       operationId: 'adminCreateTour',
       summary: 'Create a tour',
@@ -185,6 +206,18 @@ const sectionEightPaths = {
     },
   },
   '/admin/tours/{id}': {
+    get: {
+      operationId: 'adminGetTour',
+      summary: 'Get a tour and its ordered images',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [{ $ref: '#/components/parameters/AdminTourId' }],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/TourNotFound' },
+        ...adminReadResponses,
+      },
+    },
     patch: {
       operationId: 'adminUpdateTour',
       summary: 'Update a tour',
@@ -266,6 +299,32 @@ const sectionEightPaths = {
       },
     },
   },
+  '/admin/departures': {
+    get: {
+      operationId: 'adminGetDepartures',
+      summary: 'List tour departures',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminListPage' },
+        { $ref: '#/components/parameters/AdminListLimit' },
+        { name: 'tourId', in: 'query', schema: { type: 'integer', minimum: 1 } },
+        {
+          name: 'status',
+          in: 'query',
+          schema: {
+            type: 'string',
+            enum: ['SCHEDULED', 'SOLD_OUT', 'CANCELLED', 'COMPLETED'],
+          },
+        },
+        { name: 'from', in: 'query', schema: { type: 'string', format: 'date-time' } },
+      ],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminListResponse' },
+        ...adminReadResponses,
+      },
+    },
+  },
   '/admin/departures/{id}': {
     patch: {
       operationId: 'adminUpdateDeparture',
@@ -288,6 +347,16 @@ const sectionEightPaths = {
     },
   },
   '/admin/homepage/selections': {
+    get: {
+      operationId: 'adminGetHomepageSelections',
+      summary: 'Get current homepage tour selections',
+      tags: ['Administration'],
+      security: adminSecurity,
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        ...adminReadResponses,
+      },
+    },
     put: {
       operationId: 'adminUpdateHomepageSelections',
       summary: 'Replace featured, popular, and spotlight tour selections',
@@ -307,6 +376,26 @@ const sectionEightPaths = {
     },
   },
   '/admin/posts': {
+    get: {
+      operationId: 'adminGetBlogPosts',
+      summary: 'List blog posts including unpublished records',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminListPage' },
+        { $ref: '#/components/parameters/AdminListLimit' },
+        { $ref: '#/components/parameters/AdminListQuery' },
+        {
+          name: 'status',
+          in: 'query',
+          schema: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+        },
+      ],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminListResponse' },
+        ...adminReadResponses,
+      },
+    },
     post: {
       operationId: 'adminCreateBlogPost',
       summary: 'Create a blog post',
@@ -346,6 +435,33 @@ const sectionEightPaths = {
       },
     },
   },
+  '/admin/comments': {
+    get: {
+      operationId: 'adminGetComments',
+      summary: 'List blog comments for moderation',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminListPage' },
+        { $ref: '#/components/parameters/AdminListLimit' },
+        { $ref: '#/components/parameters/AdminListQuery' },
+        {
+          name: 'postId',
+          in: 'query',
+          schema: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
+        },
+        {
+          name: 'status',
+          in: 'query',
+          schema: { type: 'string', enum: ['PENDING', 'APPROVED', 'REJECTED', 'SPAM'] },
+        },
+      ],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminListResponse' },
+        ...adminReadResponses,
+      },
+    },
+  },
   '/admin/comments/{id}/status': {
     patch: {
       operationId: 'adminModerateComment',
@@ -378,6 +494,7 @@ const sectionEightPaths = {
       parameters: [
         { $ref: '#/components/parameters/AdminListPage' },
         { $ref: '#/components/parameters/AdminListLimit' },
+        { $ref: '#/components/parameters/AdminListQuery' },
         {
           name: 'status',
           in: 'query',
@@ -422,6 +539,7 @@ const sectionEightPaths = {
       parameters: [
         { $ref: '#/components/parameters/AdminListPage' },
         { $ref: '#/components/parameters/AdminListLimit' },
+        { $ref: '#/components/parameters/AdminListQuery' },
         {
           name: 'status',
           in: 'query',
@@ -466,6 +584,7 @@ const sectionEightPaths = {
       parameters: [
         { $ref: '#/components/parameters/AdminListPage' },
         { $ref: '#/components/parameters/AdminListLimit' },
+        { $ref: '#/components/parameters/AdminListQuery' },
         { name: 'status', in: 'query', schema: { type: 'string' } },
       ],
       responses: {
@@ -506,6 +625,7 @@ const sectionEightPaths = {
       parameters: [
         { $ref: '#/components/parameters/AdminListPage' },
         { $ref: '#/components/parameters/AdminListLimit' },
+        { $ref: '#/components/parameters/AdminListQuery' },
         { name: 'status', in: 'query', schema: { type: 'string' } },
       ],
       responses: {
@@ -1056,6 +1176,31 @@ const sectionFivePaths = {
       responses: {
         '201': {
           description: 'The member and opaque cookie session were created.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/AuthResponse' } },
+          },
+        },
+        '409': { $ref: '#/components/responses/IdentityConflict' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+        '429': { $ref: '#/components/responses/RateLimitExceeded' },
+      },
+    },
+  },
+  '/auth/admin-register': {
+    post: {
+      operationId: 'registerAdmin',
+      summary: 'Create the first and only administrator account',
+      description: 'This bootstrap operation succeeds only while no administrator account exists.',
+      tags: ['Authentication'],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/RegisterInput' } },
+        },
+      },
+      responses: {
+        '201': {
+          description: 'The administrator and opaque cookie session were created.',
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/AuthResponse' } },
           },
@@ -1867,6 +2012,11 @@ export const openApiDocument = {
         name: 'limit',
         in: 'query',
         schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+      },
+      AdminListQuery: {
+        name: 'query',
+        in: 'query',
+        schema: { type: 'string', minLength: 1, maxLength: 200 },
       },
     },
     responses: {

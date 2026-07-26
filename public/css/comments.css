@@ -1,0 +1,17 @@
+.moderation-panel {
+  align-self: start;
+  position: sticky;
+  top: 18px;
+}
+
+.data-table th:nth-child(3),
+.data-table td:nth-child(3) {
+  min-width: 260px;
+  white-space: normal;
+}
+
+@media (max-width: 1040px) {
+  .moderation-panel {
+    position: static;
+  }
+}

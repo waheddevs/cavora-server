@@ -67,6 +67,14 @@ const memberSchema = new Schema<Member>(
 
 memberSchema.index({ email: 1 }, { unique: true });
 memberSchema.index({ username: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
+memberSchema.index(
+  { role: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { role: MemberRole.ADMIN },
+    name: 'single_admin_role',
+  },
+);
 memberSchema.index({ role: 1, status: 1, createdAt: -1 });
 
 export default mongoose.model<Member>('Member', memberSchema);

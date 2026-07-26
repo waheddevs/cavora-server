@@ -171,6 +171,12 @@ export interface HomepageSelectionsInput {
 
 export type HomepageSelectionsResult = HomepageSelectionsInput;
 
+export interface HomepageSelectionsView {
+  featuredTourIds: number[];
+  popularTourIds: number[];
+  spotlightTourId?: number;
+}
+
 export interface AdminTourView extends Omit<
   Tour,
   '_id' | 'createdAt' | 'publishedAt' | 'updatedAt'
@@ -194,4 +200,34 @@ export interface AdminTourDepartureView extends Omit<
 export interface AdminTourImageView extends TourImageView {
   id: string;
   tourId: number;
+}
+
+export interface AdminTourInquiry {
+  limit: number;
+  page: number;
+  query?: string;
+  status?: TourStatus;
+  type?: string;
+}
+
+export interface AdminTourDetail extends AdminTourView {
+  images: AdminTourImageView[];
+}
+
+export interface AdminDepartureInquiry {
+  from?: Date;
+  limit: number;
+  page: number;
+  status?: TourDepartureStatus;
+  tourId?: number;
+}
+
+export interface PaginatedAdminTours {
+  data: AdminTourView[];
+  meta: PaginationMeta;
+}
+
+export interface PaginatedAdminDepartures {
+  data: AdminTourDepartureView[];
+  meta: PaginationMeta;
 }

@@ -50,6 +50,22 @@ const memberController = {
     }
   },
 
+  async registerAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('registerAdmin');
+      const result = await memberService.registerAdmin(
+        req.validated.body as RegisterInput,
+        requestContext(req),
+      );
+      setAuthenticationCookies(res, result.tokens);
+      preventPrivateCaching(res);
+      res.status(HttpCode.CREATED).json({ data: result.member });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on registerAdmin');
+      next(err);
+    }
+  },
+
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       req.log.info('login');

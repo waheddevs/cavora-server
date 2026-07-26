@@ -1,0 +1,51 @@
+.selection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.selection-grid .panel {
+  margin-bottom: 0;
+}
+
+.selection-grid textarea {
+  min-height: 145px;
+}
+
+.spotlight-panel {
+  grid-column: 1 / -1;
+}
+
+.save-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.save-panel h3,
+.save-panel p {
+  margin: 0;
+}
+
+.save-panel p {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.save-panel .form-feedback {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .selection-grid,
+  .save-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .spotlight-panel {
+    grid-column: auto;
+  }
+}

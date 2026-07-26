@@ -5,13 +5,16 @@ import { validate } from './common/middleware/validate';
 import adminController from './controllers/admin.controller';
 import {
   adminBlogPostCreateBodySchema,
+  adminBlogPostListQuerySchema,
   adminBlogPostUpdateBodySchema,
   adminBookingListQuerySchema,
   adminBookingStatusBodySchema,
   adminCommentStatusBodySchema,
+  adminCommentListQuerySchema,
   adminContactListQuerySchema,
   adminContactStatusBodySchema,
   adminDepartureCreateBodySchema,
+  adminDepartureListQuerySchema,
   adminDepartureUpdateBodySchema,
   adminHomepageSelectionsBodySchema,
   adminNewsletterListQuerySchema,
@@ -24,6 +27,7 @@ import {
   adminTourImageBodySchema,
   adminTourImageParamsSchema,
   adminTourUpdateBodySchema,
+  adminTourListQuerySchema,
 } from './libs/validators/admin.validator';
 import { paymentIntentHeadersSchema } from './libs/validators/payment.validator';
 
@@ -32,6 +36,12 @@ const adminRouter = Router();
 adminRouter.use(requireAuth, requireAdmin);
 
 /* TOURS & IMAGES */
+adminRouter.get('/tours', validate({ query: adminTourListQuerySchema }), adminController.getTours);
+adminRouter.get(
+  '/tours/:id',
+  validate({ params: adminTourIdParamsSchema }),
+  adminController.getTour,
+);
 adminRouter.post(
   '/tours',
   requireCsrf,
@@ -58,6 +68,11 @@ adminRouter.delete(
 );
 
 /* DEPARTURES */
+adminRouter.get(
+  '/departures',
+  validate({ query: adminDepartureListQuerySchema }),
+  adminController.getDepartures,
+);
 adminRouter.post(
   '/tours/:id/departures',
   requireCsrf,
@@ -72,6 +87,7 @@ adminRouter.patch(
 );
 
 /* HOMEPAGE */
+adminRouter.get('/homepage/selections', adminController.getHomepageSelections);
 adminRouter.put(
   '/homepage/selections',
   requireCsrf,
@@ -80,6 +96,11 @@ adminRouter.put(
 );
 
 /* BLOG */
+adminRouter.get(
+  '/posts',
+  validate({ query: adminBlogPostListQuerySchema }),
+  adminController.getBlogPosts,
+);
 adminRouter.post(
   '/posts',
   requireCsrf,
@@ -91,6 +112,11 @@ adminRouter.patch(
   requireCsrf,
   validate({ params: adminObjectIdParamsSchema, body: adminBlogPostUpdateBodySchema }),
   adminController.updateBlogPost,
+);
+adminRouter.get(
+  '/comments',
+  validate({ query: adminCommentListQuerySchema }),
+  adminController.getComments,
 );
 adminRouter.patch(
   '/comments/:id/status',

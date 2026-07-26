@@ -1,0 +1,139 @@
+<%- include('../includes/header', {
+  activePage,
+  layoutMode,
+  pageTitle,
+  stylesheetPath,
+}) %>
+
+<section class="page-heading">
+  <div>
+    <p class="section-label">Editorial</p>
+    <h2>Blog posts</h2>
+    <p>Create, publish, archive, and maintain Cavora travel content.</p>
+  </div>
+  <button
+    class="button button--primary"
+    type="button"
+    aria-controls="post-editor"
+    aria-expanded="false"
+    data-post-editor-toggle
+  >
+    New post
+  </button>
+</section>
+
+<section class="panel" id="post-editor" data-post-editor hidden>
+  <div class="panel__header">
+    <div>
+      <h3>Post editor</h3>
+      <p>The body field accepts the structured JSON document used by the public blog.</p>
+    </div>
+    <button class="button button--small" type="button" data-disclosure-close>Close</button>
+  </div>
+  <form data-post-form novalidate>
+    <div class="form-grid">
+      <label class="field field--full">
+        <span>Title</span>
+        <input type="text" name="title" maxlength="240" required />
+      </label>
+      <label class="field">
+        <span>Slug</span>
+        <input
+          type="text"
+          name="slug"
+          maxlength="200"
+          pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+          required
+        />
+      </label>
+      <label class="field">
+        <span>Category</span>
+        <input type="text" name="category" maxlength="100" required />
+      </label>
+      <label class="field">
+        <span>Author name</span>
+        <input type="text" name="authorName" maxlength="160" required />
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select name="status" required>
+          <option value="DRAFT">Draft</option>
+          <option value="PUBLISHED">Published</option>
+          <option value="ARCHIVED">Archived</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Image URL or path</span>
+        <input type="text" name="imageUrl" maxlength="2048" required />
+      </label>
+      <label class="field">
+        <span>Author image URL or path</span>
+        <input type="text" name="authorImageUrl" maxlength="2048" />
+      </label>
+      <label class="field field--full">
+        <span>Excerpt</span>
+        <textarea name="excerpt" maxlength="1000" required></textarea>
+      </label>
+      <label class="field field--full">
+        <span>Body JSON</span>
+        <textarea name="body" placeholder='{"type":"doc","content":[]}' required></textarea>
+      </label>
+    </div>
+    <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+    <div class="form-actions">
+      <button class="button" type="reset">Clear</button>
+      <button class="button button--primary" type="submit">Save post</button>
+    </div>
+  </form>
+</section>
+
+<form class="toolbar" data-post-filters>
+  <label class="field field--wide">
+    <span>Search posts</span>
+    <input type="search" name="query" maxlength="200" placeholder="Title, slug, or category" />
+  </label>
+  <label class="field">
+    <span>Status</span>
+    <select name="status">
+      <option value="">All statuses</option>
+      <option value="DRAFT">Draft</option>
+      <option value="PUBLISHED">Published</option>
+      <option value="ARCHIVED">Archived</option>
+    </select>
+  </label>
+  <button class="button" type="submit">Apply</button>
+  <button class="button" type="button" data-filter-reset>Reset</button>
+</form>
+
+<section class="table-card" aria-label="Blog post records">
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Category</th>
+          <th scope="col">Author</th>
+          <th scope="col">Published</th>
+          <th scope="col">Status</th>
+          <th scope="col">Updated</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody data-post-rows></tbody>
+    </table>
+  </div>
+  <div class="empty-state" data-post-empty>
+    <div class="empty-state__mark" aria-hidden="true">P</div>
+    <h3>No posts loaded</h3>
+    <p>No blog posts match the current filters.</p>
+  </div>
+  <div class="pagination">
+    <span data-page-summary>Page 1 of 1</span>
+    <div class="pagination__actions">
+      <button class="button button--small" type="button" data-page-prev disabled>Previous</button>
+      <button class="button button--small" type="button" data-page-next disabled>Next</button>
+    </div>
+  </div>
+</section>
+
+<%- include('../includes/footer', { layoutMode, scriptPath }) %>

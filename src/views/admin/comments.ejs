@@ -1,0 +1,114 @@
+<%- include('../includes/header', {
+  activePage,
+  layoutMode,
+  pageTitle,
+  stylesheetPath,
+}) %>
+
+<section class="page-heading">
+  <div>
+    <p class="section-label">Community</p>
+    <h2>Comment moderation</h2>
+    <p>Review submitted blog comments and apply an explicit moderation status.</p>
+  </div>
+</section>
+
+<div class="split-layout">
+  <div>
+    <form class="toolbar" data-comment-filters>
+      <label class="field field--wide">
+        <span>Search comments</span>
+        <input
+          type="search"
+          name="query"
+          maxlength="200"
+          placeholder="Author, email, or comment"
+        />
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select name="status">
+          <option value="">All statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+          <option value="SPAM">Spam</option>
+        </select>
+      </label>
+      <button class="button" type="submit">Apply</button>
+      <button class="button" type="button" data-filter-reset>Reset</button>
+    </form>
+
+    <section class="table-card" aria-label="Blog comments">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Author</th>
+              <th scope="col">Post</th>
+              <th scope="col">Comment</th>
+              <th scope="col">Submitted</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody data-comment-rows></tbody>
+        </table>
+      </div>
+      <div class="empty-state" data-comment-empty>
+        <div class="empty-state__mark" aria-hidden="true">C</div>
+        <h3>No comments loaded</h3>
+        <p>No comments match the current filters.</p>
+      </div>
+      <div class="pagination">
+        <span data-page-summary>Page 1 of 1</span>
+        <div class="pagination__actions">
+          <button class="button button--small" type="button" data-page-prev disabled>
+            Previous
+          </button>
+          <button class="button button--small" type="button" data-page-next disabled>Next</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="panel moderation-panel" aria-labelledby="moderation-heading">
+    <div class="panel__header">
+      <div>
+        <h3 id="moderation-heading">Update status</h3>
+        <p>Select a comment from the list or enter its record ID.</p>
+      </div>
+    </div>
+    <form data-comment-status-form novalidate>
+      <div class="form-grid">
+        <label class="field field--full">
+          <span>Comment ID</span>
+          <input
+            type="text"
+            name="id"
+            minlength="24"
+            maxlength="24"
+            pattern="[a-fA-F0-9]{24}"
+            placeholder="24-character record ID"
+            required
+          />
+        </label>
+        <label class="field field--full">
+          <span>Moderation status</span>
+          <select name="status" required>
+            <option value="PENDING">Pending</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+            <option value="SPAM">Spam</option>
+          </select>
+        </label>
+      </div>
+      <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+      <div class="form-actions">
+        <button class="button button--primary" type="submit">Update comment</button>
+      </div>
+    </form>
+  </aside>
+</div>
+
+<%- include('../includes/footer', { layoutMode, scriptPath }) %>

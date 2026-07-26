@@ -1,0 +1,54 @@
+<%- include('../includes/header', {
+  activePage,
+  layoutMode,
+  pageTitle,
+  stylesheetPath,
+}) %>
+
+<section class="login-card" aria-labelledby="login-heading">
+  <div class="login-card__header">
+    <p class="section-label">Secure access</p>
+    <h1 id="login-heading">Sign in to Cavora</h1>
+    <p>Use an administrator account to continue to the operations workspace.</p>
+  </div>
+
+  <form class="login-form" data-login-form novalidate>
+    <label class="field">
+      <span>Email address</span>
+      <input
+        type="email"
+        name="email"
+        autocomplete="username"
+        maxlength="254"
+        placeholder="admin@cavora.com"
+        required
+      />
+    </label>
+
+    <label class="field">
+      <span>Password</span>
+      <span class="password-field">
+        <input
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          maxlength="128"
+          required
+          data-password-input
+        />
+        <button type="button" data-password-toggle aria-pressed="false">Show</button>
+      </span>
+    </label>
+
+    <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+
+    <button class="button button--primary login-submit" type="submit">Sign in</button>
+  </form>
+
+  <p class="login-card__note">
+    No administrator yet?
+    <a href="/admin/signup">Create the first administrator</a>
+  </p>
+</section>
+
+<%- include('../includes/footer', { layoutMode, scriptPath }) %>

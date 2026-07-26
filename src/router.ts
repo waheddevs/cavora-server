@@ -25,6 +25,7 @@ import {
   tourListQuerySchema,
 } from './libs/validators/tour.validator';
 import {
+  adminRegisterBodySchema,
   bookingHistoryQuerySchema,
   forgotPasswordBodySchema,
   loginBodySchema,
@@ -69,6 +70,12 @@ router.post(
   registrationRateLimiter,
   validate({ body: registerBodySchema }),
   memberController.register,
+);
+router.post(
+  '/auth/admin-register',
+  registrationRateLimiter,
+  validate({ body: adminRegisterBodySchema }),
+  memberController.registerAdmin,
 );
 router.post(
   '/auth/login',

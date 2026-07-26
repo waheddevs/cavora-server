@@ -1,0 +1,68 @@
+<%- include('../includes/header', {
+  activePage,
+  layoutMode,
+  pageTitle,
+  stylesheetPath,
+}) %>
+
+<section class="dashboard-intro" aria-labelledby="dashboard-heading">
+  <div>
+    <p class="section-label">Overview</p>
+    <h2 id="dashboard-heading">Travel operations at a glance</h2>
+    <p>
+      Use this workspace to manage Cavora inventory, customer activity, content, and payments.
+    </p>
+  </div>
+  <p class="dashboard-date" data-dashboard-date aria-live="polite"></p>
+</section>
+
+<section class="dashboard-grid" aria-label="Administration areas">
+  <article class="dashboard-card">
+    <div class="dashboard-card__header">
+      <span class="dashboard-card__index">01</span>
+      <span class="dashboard-card__status">API ready</span>
+    </div>
+    <h3>Tours and departures</h3>
+    <p>Maintain tour details, images, inventory, departure dates, and capacity.</p>
+  </article>
+
+  <article class="dashboard-card">
+    <div class="dashboard-card__header">
+      <span class="dashboard-card__index">02</span>
+      <span class="dashboard-card__status">API ready</span>
+    </div>
+    <h3>Bookings and payments</h3>
+    <p>Review booking states, payment records, operational updates, and refunds.</p>
+  </article>
+
+  <article class="dashboard-card">
+    <div class="dashboard-card__header">
+      <span class="dashboard-card__index">03</span>
+      <span class="dashboard-card__status">API ready</span>
+    </div>
+    <h3>Content</h3>
+    <p>Update homepage selections, publish blog posts, and moderate comments.</p>
+  </article>
+
+  <article class="dashboard-card">
+    <div class="dashboard-card__header">
+      <span class="dashboard-card__index">04</span>
+      <span class="dashboard-card__status">API ready</span>
+    </div>
+    <h3>Engagement</h3>
+    <p>Process contact messages and maintain newsletter subscription statuses.</p>
+  </article>
+</section>
+
+<section class="dashboard-note" aria-labelledby="security-heading">
+  <div class="dashboard-note__marker" aria-hidden="true">i</div>
+  <div>
+    <h2 id="security-heading">Protected workspace</h2>
+    <p>
+      This page requires an active administrator session. All data changes continue through the
+      authenticated Cavora REST APIs with CSRF validation.
+    </p>
+  </div>
+</section>
+
+<%- include('../includes/footer', { layoutMode, scriptPath }) %>

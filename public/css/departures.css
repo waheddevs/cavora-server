@@ -1,0 +1,8 @@
+.data-table th:first-child,
+.data-table td:first-child {
+  min-width: 160px;
+}
+
+.toolbar input[type='date'] {
+  min-width: 150px;
+}

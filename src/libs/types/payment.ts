@@ -53,6 +53,7 @@ export interface PaymentRefundResult {
 export interface PaymentInquiry {
   limit: number;
   page: number;
+  query?: string;
   status?: PaymentStatus;
 }
 
@@ -67,6 +68,7 @@ export interface AdminPaymentView {
   providerIntentId: string;
   refundedAmountCents: number;
   status: PaymentStatus;
+  updatedAt: string;
 }
 
 export interface StripeWebhookResult {

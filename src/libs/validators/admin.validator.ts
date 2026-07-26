@@ -30,6 +30,7 @@ const pageQuery = {
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
 };
+const listQuery = z.string().trim().min(1).max(200).optional();
 const itineraryItem = z
   .object({
     day: z.number().int().min(1),
@@ -114,6 +115,15 @@ export const adminTourImageBodySchema = z
   })
   .strict();
 
+export const adminTourListQuerySchema = z
+  .object({
+    ...pageQuery,
+    query: listQuery,
+    status: z.enum(TourStatus).optional(),
+    type: z.string().trim().min(1).max(80).optional(),
+  })
+  .strict();
+
 export const adminDepartureCreateBodySchema = z
   .object({
     startDate: z.coerce.date(),
@@ -131,6 +141,14 @@ export const adminDepartureUpdateBodySchema = adminDepartureCreateBodySchema
   .refine((input) => Object.keys(input).length > 0, {
     message: 'At least one departure field is required.',
   });
+export const adminDepartureListQuerySchema = z
+  .object({
+    ...pageQuery,
+    from: z.coerce.date().optional(),
+    status: z.enum(TourDepartureStatus).optional(),
+    tourId: z.coerce.number().int().positive().optional(),
+  })
+  .strict();
 
 export const adminHomepageSelectionsBodySchema = z
   .object({
@@ -154,6 +172,21 @@ export const adminBlogPostUpdateBodySchema = z
   .refine((input) => Object.keys(input).length > 0, {
     message: 'At least one blog post field is required.',
   });
+export const adminBlogPostListQuerySchema = z
+  .object({
+    ...pageQuery,
+    query: listQuery,
+    status: z.enum(BlogPostStatus).optional(),
+  })
+  .strict();
+export const adminCommentListQuerySchema = z
+  .object({
+    ...pageQuery,
+    postId: objectId.optional(),
+    query: listQuery,
+    status: z.enum(BlogCommentStatus).optional(),
+  })
+  .strict();
 export const adminCommentStatusBodySchema = z
   .object({ status: z.enum(BlogCommentStatus) })
   .strict();
@@ -161,6 +194,7 @@ export const adminCommentStatusBodySchema = z
 export const adminContactListQuerySchema = z
   .object({
     ...pageQuery,
+    query: listQuery,
     status: z.enum(ContactMessageStatus).optional(),
   })
   .strict();
@@ -171,6 +205,7 @@ export const adminContactStatusBodySchema = z
 export const adminNewsletterListQuerySchema = z
   .object({
     ...pageQuery,
+    query: listQuery,
     status: z.enum(NewsletterSubscriptionStatus).optional(),
   })
   .strict();
@@ -181,6 +216,7 @@ export const adminNewsletterStatusBodySchema = z
 export const adminBookingListQuerySchema = z
   .object({
     ...pageQuery,
+    query: listQuery,
     status: z.enum(BookingStatus).optional(),
   })
   .strict();
@@ -193,6 +229,7 @@ export const adminBookingStatusBodySchema = z
 export const adminPaymentListQuerySchema = z
   .object({
     ...pageQuery,
+    query: listQuery,
     status: z.enum(PaymentStatus).optional(),
   })
   .strict();

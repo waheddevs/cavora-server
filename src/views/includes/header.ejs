@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title><%= pageTitle %> | Cavora Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-shell.css" />
+    <link rel="stylesheet" href="<%= stylesheetPath %>" />
+  </head>
+  <body class="<%= layoutMode === 'auth' ? 'auth-page' : 'admin-page' %>">
+    <div
+      class="admin-notice"
+      data-admin-notice
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      hidden
+    >
+      <span data-admin-notice-message></span>
+      <button type="button" data-admin-notice-close>Dismiss</button>
+    </div>
+
+    <% if (layoutMode === 'auth') { %>
+      <div class="auth-shell">
+        <header class="auth-header">
+          <a class="admin-brand admin-brand--dark" href="/admin/login" aria-label="Cavora admin">
+            <span class="admin-brand__mark" aria-hidden="true">C</span>
+            <span>
+              <strong>Cavora</strong>
+              <small>Administration</small>
+            </span>
+          </a>
+        </header>
+        <main class="auth-main">
+    <% } else { %>
+      <div
+        class="admin-shell"
+        data-admin-shell
+        data-csrf-cookie-name="<%= csrfCookieName %>"
+      >
+      <aside class="admin-sidebar" id="admin-sidebar" aria-label="Administration navigation">
+        <a class="admin-brand" href="/admin" aria-label="Cavora admin dashboard">
+          <span class="admin-brand__mark" aria-hidden="true">C</span>
+          <span>
+            <strong>Cavora</strong>
+            <small>Administration</small>
+          </span>
+        </a>
+
+        <nav class="admin-nav">
+          <p class="admin-nav__label">Workspace</p>
+          <a
+            class="admin-nav__link <%= activePage === 'dashboard' ? 'is-active' : '' %>"
+            href="/admin"
+            <%- activePage === 'dashboard' ? 'aria-current="page"' : '' %>
+          >
+            Dashboard
+          </a>
+          <a
+            class="admin-nav__link <%= activePage === 'tours' ? 'is-active' : '' %>"
+            href="/admin/tours"
+            <%- activePage === 'tours' ? 'aria-current="page"' : '' %>
+          >
+            Tours
+          </a>
+          <a
+            class="admin-nav__link <%= activePage === 'departures' ? 'is-active' : '' %>"
+            href="/admin/departures"
+            <%- activePage === 'departures' ? 'aria-current="page"' : '' %>
+          >
+            Departures
+          </a>
+          <a
+            class="admin-nav__link <%= activePage === 'homepage' ? 'is-active' : '' %>"
+            href="/admin/homepage"
+            <%- activePage === 'homepage' ? 'aria-current="page"' : '' %>
+          >
+            Homepage
+          </a>
+
+          <p class="admin-nav__label">Operations</p>
+          <a
+            class="admin-nav__link <%= activePage === 'bookings' ? 'is-active' : '' %>"
+            href="/admin/bookings"
+            <%- activePage === 'bookings' ? 'aria-current="page"' : '' %>
+          >
+            Bookings
+          </a>
+          <a
+            class="admin-nav__link <%= activePage === 'payments' ? 'is-active' : '' %>"
+            href="/admin/payments"
+            <%- activePage === 'payments' ? 'aria-current="page"' : '' %>
+          >
+            Payments
+          </a>
+
+          <p class="admin-nav__label">Content</p>
+          <a
+            class="admin-nav__link <%= activePage === 'posts' ? 'is-active' : '' %>"
+            href="/admin/posts"
+            <%- activePage === 'posts' ? 'aria-current="page"' : '' %>
+          >
+            Blog posts
+          </a>
+          <a
+            class="admin-nav__link <%= activePage === 'comments' ? 'is-active' : '' %>"
+            href="/admin/comments"
+            <%- activePage === 'comments' ? 'aria-current="page"' : '' %>
+          >
+            Comments
+          </a>
+
+          <p class="admin-nav__label">Engagement</p>
+          <a
+            class="admin-nav__link <%= activePage === 'contact-messages' ? 'is-active' : '' %>"
+            href="/admin/contact-messages"
+            <%- activePage === 'contact-messages' ? 'aria-current="page"' : '' %>
+          >
+            Contact messages
+          </a>
+          <a
+            class="admin-nav__link <%= activePage === 'newsletter-subscriptions' ? 'is-active' : '' %>"
+            href="/admin/newsletter-subscriptions"
+            <%- activePage === 'newsletter-subscriptions' ? 'aria-current="page"' : '' %>
+          >
+            Newsletter
+          </a>
+        </nav>
+
+        <div class="admin-sidebar__meta">
+          <span>Authenticated administrator</span>
+        </div>
+      </aside>
+
+      <div class="admin-workspace">
+        <header class="admin-topbar">
+          <button
+            class="admin-menu-button"
+            type="button"
+            aria-controls="admin-sidebar"
+            aria-expanded="false"
+            data-sidebar-toggle
+          >
+            <span aria-hidden="true">☰</span>
+            <span>Menu</span>
+          </button>
+          <div>
+            <p class="admin-topbar__eyebrow">Cavora operations</p>
+            <h1><%= pageTitle %></h1>
+          </div>
+          <div class="admin-topbar__actions">
+            <span class="admin-status">
+              <span class="admin-status__dot" aria-hidden="true"></span>
+              Admin session
+            </span>
+            <div class="admin-account" data-admin-account>
+              <span class="admin-account__avatar" data-admin-initial aria-hidden="true">A</span>
+              <span class="admin-account__identity">
+                <strong data-admin-name>Administrator</strong>
+                <small data-admin-email>Loading account…</small>
+              </span>
+              <button class="button button--small" type="button" data-admin-logout>
+                Log out
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <main class="admin-main">
+    <% } %>

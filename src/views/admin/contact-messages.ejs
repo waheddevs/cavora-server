@@ -1,0 +1,131 @@
+<%- include('../includes/header', {
+  activePage,
+  layoutMode,
+  pageTitle,
+  stylesheetPath,
+}) %>
+
+<section class="page-heading">
+  <div>
+    <p class="section-label">Customer support</p>
+    <h2>Contact messages</h2>
+    <p>Track customer enquiries from receipt through resolution.</p>
+  </div>
+</section>
+
+<div class="summary-grid">
+  <article class="summary-card">
+    <span>New messages</span>
+    <strong data-contact-new>—</strong>
+    <small>Awaiting initial review</small>
+  </article>
+  <article class="summary-card">
+    <span>In progress</span>
+    <strong data-contact-progress>—</strong>
+    <small>Currently being handled</small>
+  </article>
+  <article class="summary-card">
+    <span>Resolved</span>
+    <strong data-contact-resolved>—</strong>
+    <small>Completed enquiries</small>
+  </article>
+</div>
+
+<div class="split-layout">
+  <div>
+    <form class="toolbar" data-contact-filters>
+      <label class="field field--wide">
+        <span>Search messages</span>
+        <input
+          type="search"
+          name="query"
+          maxlength="200"
+          placeholder="Name, email, or subject"
+        />
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select name="status">
+          <option value="">All statuses</option>
+          <option value="NEW">New</option>
+          <option value="IN_PROGRESS">In progress</option>
+          <option value="RESOLVED">Resolved</option>
+          <option value="CLOSED">Closed</option>
+        </select>
+      </label>
+      <button class="button" type="submit">Apply</button>
+      <button class="button" type="button" data-filter-reset>Reset</button>
+    </form>
+
+    <section class="table-card" aria-label="Contact message records">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Sender</th>
+              <th scope="col">Subject</th>
+              <th scope="col">Message</th>
+              <th scope="col">Received</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody data-contact-rows></tbody>
+        </table>
+      </div>
+      <div class="empty-state" data-contact-empty>
+        <div class="empty-state__mark" aria-hidden="true">M</div>
+        <h3>No messages loaded</h3>
+        <p>No contact messages match the current filters.</p>
+      </div>
+      <div class="pagination">
+        <span data-page-summary>Page 1 of 1</span>
+        <div class="pagination__actions">
+          <button class="button button--small" type="button" data-page-prev disabled>
+            Previous
+          </button>
+          <button class="button button--small" type="button" data-page-next disabled>Next</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="panel message-panel" aria-labelledby="message-status-heading">
+    <div class="panel__header">
+      <div>
+        <h3 id="message-status-heading">Update message</h3>
+        <p>Apply the operational status after reviewing the enquiry.</p>
+      </div>
+    </div>
+    <form data-contact-status-form novalidate>
+      <div class="form-grid">
+        <label class="field field--full">
+          <span>Message ID</span>
+          <input
+            type="text"
+            name="id"
+            minlength="24"
+            maxlength="24"
+            pattern="[a-fA-F0-9]{24}"
+            required
+          />
+        </label>
+        <label class="field field--full">
+          <span>Status</span>
+          <select name="status" required>
+            <option value="NEW">New</option>
+            <option value="IN_PROGRESS">In progress</option>
+            <option value="RESOLVED">Resolved</option>
+            <option value="CLOSED">Closed</option>
+          </select>
+        </label>
+      </div>
+      <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+      <div class="form-actions">
+        <button class="button button--primary" type="submit">Update message</button>
+      </div>
+    </form>
+  </aside>
+</div>
+
+<%- include('../includes/footer', { layoutMode, scriptPath }) %>
