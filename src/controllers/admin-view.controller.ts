@@ -11,8 +11,10 @@ interface AdminPageOptions {
 }
 
 function renderAdminPage(res: Response, options: AdminPageOptions): void {
+  const viewFolder = options.layoutMode === 'auth' ? 'auth' : 'admin';
+
   res.set('Cache-Control', 'private, no-store');
-  res.status(HttpCode.OK).render(`admin/${options.viewName}`, {
+  res.status(HttpCode.OK).render(`${viewFolder}/${options.viewName}`, {
     activePage: options.activePage,
     csrfCookieName: env.CSRF_COOKIE_NAME,
     layoutMode: options.layoutMode ?? 'admin',

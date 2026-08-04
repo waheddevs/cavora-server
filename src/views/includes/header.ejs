@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/assets/css/admin-shell.css" />
     <link rel="stylesheet" href="<%= stylesheetPath %>" />
   </head>
-  <body class="<%= layoutMode === 'auth' ? 'auth-page' : 'admin-page' %>">
+  <body class="admin-page">
     <div
       class="admin-notice"
       data-admin-notice
@@ -21,24 +21,11 @@
       <button type="button" data-admin-notice-close>Dismiss</button>
     </div>
 
-    <% if (layoutMode === 'auth') { %>
-      <div class="auth-shell">
-        <header class="auth-header">
-          <a class="admin-brand admin-brand--dark" href="/admin/login" aria-label="Cavora admin">
-            <span class="admin-brand__mark" aria-hidden="true">C</span>
-            <span>
-              <strong>Cavora</strong>
-              <small>Administration</small>
-            </span>
-          </a>
-        </header>
-        <main class="auth-main">
-    <% } else { %>
-      <div
-        class="admin-shell"
-        data-admin-shell
-        data-csrf-cookie-name="<%= csrfCookieName %>"
-      >
+    <div
+      class="admin-shell"
+      data-admin-shell
+      data-csrf-cookie-name="<%= csrfCookieName %>"
+    >
       <aside class="admin-sidebar" id="admin-sidebar" aria-label="Administration navigation">
         <a class="admin-brand" href="/admin" aria-label="Cavora admin dashboard">
           <span class="admin-brand__mark" aria-hidden="true">C</span>
@@ -50,87 +37,28 @@
 
         <nav class="admin-nav">
           <p class="admin-nav__label">Workspace</p>
-          <a
-            class="admin-nav__link <%= activePage === 'dashboard' ? 'is-active' : '' %>"
-            href="/admin"
-            <%- activePage === 'dashboard' ? 'aria-current="page"' : '' %>
-          >
-            Dashboard
-          </a>
-          <a
-            class="admin-nav__link <%= activePage === 'tours' ? 'is-active' : '' %>"
-            href="/admin/tours"
-            <%- activePage === 'tours' ? 'aria-current="page"' : '' %>
-          >
-            Tours
-          </a>
-          <a
-            class="admin-nav__link <%= activePage === 'departures' ? 'is-active' : '' %>"
-            href="/admin/departures"
-            <%- activePage === 'departures' ? 'aria-current="page"' : '' %>
-          >
-            Departures
-          </a>
-          <a
-            class="admin-nav__link <%= activePage === 'homepage' ? 'is-active' : '' %>"
-            href="/admin/homepage"
-            <%- activePage === 'homepage' ? 'aria-current="page"' : '' %>
-          >
-            Homepage
-          </a>
-
-          <p class="admin-nav__label">Operations</p>
-          <a
-            class="admin-nav__link <%= activePage === 'bookings' ? 'is-active' : '' %>"
-            href="/admin/bookings"
-            <%- activePage === 'bookings' ? 'aria-current="page"' : '' %>
-          >
-            Bookings
-          </a>
-          <a
-            class="admin-nav__link <%= activePage === 'payments' ? 'is-active' : '' %>"
-            href="/admin/payments"
-            <%- activePage === 'payments' ? 'aria-current="page"' : '' %>
-          >
-            Payments
-          </a>
-
-          <p class="admin-nav__label">Content</p>
-          <a
-            class="admin-nav__link <%= activePage === 'posts' ? 'is-active' : '' %>"
-            href="/admin/posts"
-            <%- activePage === 'posts' ? 'aria-current="page"' : '' %>
-          >
-            Blog posts
-          </a>
-          <a
-            class="admin-nav__link <%= activePage === 'comments' ? 'is-active' : '' %>"
-            href="/admin/comments"
-            <%- activePage === 'comments' ? 'aria-current="page"' : '' %>
-          >
-            Comments
-          </a>
-
-          <p class="admin-nav__label">Engagement</p>
-          <a
-            class="admin-nav__link <%= activePage === 'contact-messages' ? 'is-active' : '' %>"
-            href="/admin/contact-messages"
-            <%- activePage === 'contact-messages' ? 'aria-current="page"' : '' %>
-          >
-            Contact messages
-          </a>
-          <a
-            class="admin-nav__link <%= activePage === 'newsletter-subscriptions' ? 'is-active' : '' %>"
-            href="/admin/newsletter-subscriptions"
-            <%- activePage === 'newsletter-subscriptions' ? 'aria-current="page"' : '' %>
-          >
-            Newsletter
-          </a>
+          <% const adminLinks = [
+            ['dashboard', 'Dashboard', '/admin'],
+            ['tours', 'Tours', '/admin/tours'],
+            ['departures', 'Departures', '/admin/departures'],
+            ['homepage', 'Homepage', '/admin/homepage'],
+            ['bookings', 'Bookings', '/admin/bookings'],
+            ['payments', 'Payments', '/admin/payments'],
+            ['posts', 'Blog posts', '/admin/posts'],
+            ['comments', 'Comments', '/admin/comments'],
+            ['contact-messages', 'Contact messages', '/admin/contact-messages'],
+            ['newsletter-subscriptions', 'Newsletter', '/admin/newsletter-subscriptions'],
+          ]; %>
+          <% for (const [page, label, href] of adminLinks) { %>
+            <a
+              class="admin-nav__link <%= activePage === page ? 'is-active' : '' %>"
+              href="<%= href %>"
+              <%- activePage === page ? 'aria-current="page"' : '' %>
+            >
+              <%= label %>
+            </a>
+          <% } %>
         </nav>
-
-        <div class="admin-sidebar__meta">
-          <span>Authenticated administrator</span>
-        </div>
       </aside>
 
       <div class="admin-workspace">
@@ -150,10 +78,6 @@
             <h1><%= pageTitle %></h1>
           </div>
           <div class="admin-topbar__actions">
-            <span class="admin-status">
-              <span class="admin-status__dot" aria-hidden="true"></span>
-              Admin session
-            </span>
             <div class="admin-account" data-admin-account>
               <span class="admin-account__avatar" data-admin-initial aria-hidden="true">A</span>
               <span class="admin-account__identity">
@@ -168,4 +92,3 @@
         </header>
 
         <main class="admin-main">
-    <% } %>

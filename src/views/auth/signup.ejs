@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title><%= pageTitle %> | Cavora Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-shell.css" />
+    <link rel="stylesheet" href="<%= stylesheetPath %>" />
+  </head>
+  <body class="auth-page">
+    <div
+      class="admin-notice"
+      data-admin-notice
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      hidden
+    >
+      <span data-admin-notice-message></span>
+      <button type="button" data-admin-notice-close>Dismiss</button>
+    </div>
+
+    <div class="auth-shell">
+      <header class="auth-header">
+        <a class="admin-brand admin-brand--dark" href="/admin/login" aria-label="Cavora admin">
+          <span class="admin-brand__mark" aria-hidden="true">C</span>
+          <span>
+            <strong>Cavora</strong>
+            <small>Administration</small>
+          </span>
+        </a>
+      </header>
+
+      <main class="auth-main">
+        <section class="signup-card" aria-labelledby="signup-heading">
+          <div class="signup-card__header">
+            <p class="section-label">First-time setup</p>
+            <h1 id="signup-heading">Create administrator</h1>
+            <p>Create the initial account for the Cavora administration area.</p>
+          </div>
+
+          <form class="signup-form" data-signup-form novalidate>
+            <div class="signup-grid">
+              <label class="field">
+                <span>First name</span>
+                <input type="text" name="firstName" maxlength="80" required />
+              </label>
+              <label class="field">
+                <span>Last name</span>
+                <input type="text" name="lastName" maxlength="80" required />
+              </label>
+              <label class="field field--full">
+                <span>Username</span>
+                <input
+                  type="text"
+                  name="username"
+                  minlength="3"
+                  maxlength="40"
+                  pattern="[A-Za-z0-9_]+"
+                  required
+                />
+              </label>
+              <label class="field field--full">
+                <span>Email address</span>
+                <input type="email" name="email" maxlength="254" required />
+              </label>
+              <label class="field field--full">
+                <span>Password</span>
+                <span class="password-field">
+                  <input
+                    type="password"
+                    name="password"
+                    minlength="8"
+                    maxlength="128"
+                    required
+                    data-password-input
+                  />
+                  <button type="button" data-password-toggle aria-pressed="false">Show</button>
+                </span>
+              </label>
+              <label class="field field--full">
+                <span>Confirm password</span>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  minlength="8"
+                  maxlength="128"
+                  required
+                  data-password-input
+                />
+              </label>
+            </div>
+
+            <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+            <button class="button button--primary signup-submit" type="submit">
+              Create administrator
+            </button>
+          </form>
+
+          <p class="signup-card__note">Already configured? <a href="/admin/login">Sign in</a></p>
+        </section>
+      </main>
+
+      <footer class="auth-footer">
+        <span>&copy; <span data-current-year></span> Cavora</span>
+        <span>Authorized personnel only</span>
+      </footer>
+    </div>
+
+    <script src="/assets/js/admin-shell.js" defer></script>
+    <script src="<%= scriptPath %>" defer></script>
+  </body>
+</html>

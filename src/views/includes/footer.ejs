@@ -1,20 +1,11 @@
-    <% if (layoutMode === 'auth') { %>
         </main>
-        <footer class="auth-footer">
+
+        <footer class="admin-footer">
           <span>&copy; <span data-current-year></span> Cavora</span>
-          <span>Authorized personnel only</span>
+          <span>Internal administration</span>
         </footer>
       </div>
-    <% } else { %>
-          </main>
-
-          <footer class="admin-footer">
-            <span>&copy; <span data-current-year></span> Cavora</span>
-            <span>Internal administration</span>
-          </footer>
-        </div>
-      </div>
-    <% } %>
+    </div>
 
     <script src="/assets/js/admin-shell.js" defer></script>
     <script src="<%= scriptPath %>" defer></script>
