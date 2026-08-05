@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { paginationFields } from './common.validator';
 
 const optionalDate = z
   .string()
@@ -24,8 +25,7 @@ export const tourListQuerySchema = z
     sort: z
       .enum(['price-asc', 'price-desc', 'rating', 'duration', 'popularity'])
       .default('popularity'),
-    page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(50).default(9),
+    ...paginationFields(9, 50),
   })
   .strict()
   .superRefine((query, context) => {

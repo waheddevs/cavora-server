@@ -1,4 +1,21 @@
 import { env } from './env';
+import { BlogCommentStatus, BlogPostStatus } from '../libs/enums/blog.enum';
+import { BookingStatus } from '../libs/enums/booking.enum';
+import { ContactMessageStatus } from '../libs/enums/engagement.enum';
+import { MemberRole, MemberStatus } from '../libs/enums/member.enum';
+import { PaymentStatus } from '../libs/enums/payment.enum';
+import { TourDepartureStatus, TourStatus } from '../libs/enums/tour.enum';
+
+const blogCommentStatuses = Object.values(BlogCommentStatus);
+const blogPostStatuses = Object.values(BlogPostStatus);
+const bookingStatuses = Object.values(BookingStatus);
+const contactMessageStatuses = Object.values(ContactMessageStatus);
+const memberRoles = Object.values(MemberRole);
+const memberStatuses = Object.values(MemberStatus);
+const paymentStatuses = Object.values(PaymentStatus);
+const tourDepartureStatuses = Object.values(TourDepartureStatus);
+const tourStatuses = Object.values(TourStatus);
+const adminBookingStatuses = [BookingStatus.CANCELLED, BookingStatus.COMPLETED];
 
 const adminSecurity = [{ sessionCookie: [] }] as const;
 const adminReadResponses = {
@@ -142,7 +159,7 @@ const sectionEightPaths = {
         {
           name: 'status',
           in: 'query',
-          schema: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+          schema: { type: 'string', enum: tourStatuses },
         },
         { name: 'type', in: 'query', schema: { type: 'string', maxLength: 80 } },
       ],
@@ -314,7 +331,7 @@ const sectionEightPaths = {
           in: 'query',
           schema: {
             type: 'string',
-            enum: ['SCHEDULED', 'SOLD_OUT', 'CANCELLED', 'COMPLETED'],
+            enum: tourDepartureStatuses,
           },
         },
         { name: 'from', in: 'query', schema: { type: 'string', format: 'date-time' } },
@@ -388,7 +405,7 @@ const sectionEightPaths = {
         {
           name: 'status',
           in: 'query',
-          schema: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+          schema: { type: 'string', enum: blogPostStatuses },
         },
       ],
       responses: {
@@ -461,7 +478,7 @@ const sectionEightPaths = {
         {
           name: 'status',
           in: 'query',
-          schema: { type: 'string', enum: ['PENDING', 'APPROVED', 'REJECTED', 'SPAM'] },
+          schema: { type: 'string', enum: blogCommentStatuses },
         },
       ],
       responses: {
@@ -506,7 +523,7 @@ const sectionEightPaths = {
         {
           name: 'status',
           in: 'query',
-          schema: { type: 'string', enum: ['NEW', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] },
+          schema: { type: 'string', enum: contactMessageStatuses },
         },
       ],
       responses: {
@@ -548,11 +565,11 @@ const sectionEightPaths = {
         { $ref: '#/components/parameters/AdminListPage' },
         { $ref: '#/components/parameters/AdminListLimit' },
         { $ref: '#/components/parameters/AdminListQuery' },
-        { name: 'role', in: 'query', schema: { type: 'string', enum: ['USER', 'ADMIN'] } },
+        { name: 'role', in: 'query', schema: { type: 'string', enum: memberRoles } },
         {
           name: 'status',
           in: 'query',
-          schema: { type: 'string', enum: ['ACTIVE', 'BLOCKED', 'DELETED'] },
+          schema: { type: 'string', enum: memberStatuses },
         },
       ],
       responses: {
@@ -809,7 +826,7 @@ const sectionEightSchemas = {
       itinerary: { type: 'array', items: { type: 'object' } },
       included: { type: 'array', items: { type: 'string' } },
       notIncluded: { type: 'array', items: { type: 'string' } },
-      status: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+      status: { type: 'string', enum: tourStatuses },
       publishedAt: { type: 'string', format: 'date-time' },
     },
   },
@@ -842,7 +859,7 @@ const sectionEightSchemas = {
       currency: { type: 'string', pattern: '^[A-Z]{3}$' },
       status: {
         type: 'string',
-        enum: ['SCHEDULED', 'SOLD_OUT', 'CANCELLED', 'COMPLETED'],
+        enum: tourDepartureStatuses,
       },
     },
   },
@@ -869,7 +886,7 @@ const sectionEightSchemas = {
       imageUrl: { type: 'string' },
       authorName: { type: 'string' },
       authorImageUrl: { type: 'string' },
-      status: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+      status: { type: 'string', enum: blogPostStatuses },
       publishedAt: { type: 'string', format: 'date-time' },
     },
   },
@@ -886,7 +903,7 @@ const sectionEightSchemas = {
       image: { type: 'string', format: 'binary' },
       authorName: { type: 'string' },
       authorImageUrl: { type: 'string' },
-      status: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+      status: { type: 'string', enum: blogPostStatuses },
       publishedAt: { type: 'string', format: 'date-time' },
     },
   },
@@ -904,7 +921,7 @@ const sectionEightSchemas = {
       imageUrl: { type: 'string' },
       authorName: { type: 'string' },
       authorImageUrl: { type: 'string' },
-      status: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+      status: { type: 'string', enum: blogPostStatuses },
       publishedAt: { type: 'string', format: 'date-time' },
     },
   },
@@ -913,7 +930,7 @@ const sectionEightSchemas = {
     additionalProperties: false,
     required: ['status'],
     properties: {
-      status: { type: 'string', enum: ['PENDING', 'APPROVED', 'REJECTED', 'SPAM'] },
+      status: { type: 'string', enum: blogCommentStatuses },
     },
   },
   PasswordChangeInput: {
@@ -930,7 +947,7 @@ const sectionEightSchemas = {
     additionalProperties: false,
     required: ['status'],
     properties: {
-      status: { type: 'string', enum: ['ACTIVE', 'BLOCKED', 'DELETED'] },
+      status: { type: 'string', enum: memberStatuses },
     },
   },
   ContactStatusInput: {
@@ -938,14 +955,14 @@ const sectionEightSchemas = {
     additionalProperties: false,
     required: ['status'],
     properties: {
-      status: { type: 'string', enum: ['NEW', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] },
+      status: { type: 'string', enum: contactMessageStatuses },
     },
   },
   BookingStatusInput: {
     type: 'object',
     additionalProperties: false,
     required: ['status'],
-    properties: { status: { type: 'string', enum: ['CANCELLED', 'COMPLETED'] } },
+    properties: { status: { type: 'string', enum: adminBookingStatuses } },
   },
   RefundInput: {
     type: 'object',
@@ -1053,17 +1070,7 @@ const sectionSevenSchemas = {
       providerIntentId: { type: 'string' },
       status: {
         type: 'string',
-        enum: [
-          'REQUIRES_PAYMENT_METHOD',
-          'REQUIRES_ACTION',
-          'PROCESSING',
-          'SUCCEEDED',
-          'FAILED',
-          'CANCELLED',
-          'REFUND_PENDING',
-          'PARTIALLY_REFUNDED',
-          'REFUNDED',
-        ],
+        enum: paymentStatuses,
       },
       amountCents: { type: 'integer', minimum: 0 },
       currency: { type: 'string', pattern: '^[A-Z]{3}$' },
@@ -1496,15 +1503,7 @@ const sectionFivePaths = {
           in: 'query',
           schema: {
             type: 'string',
-            enum: [
-              'PENDING_PAYMENT',
-              'CONFIRMED',
-              'COMPLETED',
-              'CANCELLATION_REQUESTED',
-              'CANCELLED',
-              'REFUNDED',
-              'EXPIRED',
-            ],
+            enum: bookingStatuses,
           },
         },
       ],
@@ -1608,8 +1607,8 @@ const sectionFiveSchemas = {
       phone: { type: 'string' },
       location: { type: 'string' },
       avatarUrl: { type: 'string', format: 'uri' },
-      role: { type: 'string', enum: ['USER', 'ADMIN'] },
-      status: { type: 'string', enum: ['ACTIVE', 'BLOCKED', 'DELETED'] },
+      role: { type: 'string', enum: memberRoles },
+      status: { type: 'string', enum: memberStatuses },
       emailVerified: { type: 'boolean' },
       createdAt: { type: 'string', format: 'date-time' },
     },

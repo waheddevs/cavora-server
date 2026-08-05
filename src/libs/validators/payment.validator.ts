@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { objectId } from './common.validator';
 
 const idempotencyKey = z
   .string()
@@ -12,7 +13,7 @@ const idempotencyKey = z
 
 export const paymentIntentBodySchema = z
   .object({
-    bookingId: z.string().regex(/^[a-fA-F0-9]{24}$/, 'Must be a valid booking ID.'),
+    bookingId: objectId('booking ID'),
   })
   .strict();
 

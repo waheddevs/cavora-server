@@ -14,7 +14,6 @@ import { env } from './config/env';
 import { logger } from './config/logger';
 import router from './router';
 import adminViewRouter from './router.admin-view';
-import adminRouter from './router.admin';
 
 const app = express();
 const projectRoot = path.resolve(__dirname, '..');
@@ -100,7 +99,6 @@ app.use(
 );
 
 app.use('/admin', adminViewRouter);
-app.use('/cavora/admin', adminRouter);
 app.use('/cavora', router);
 
 app.use(notFound);

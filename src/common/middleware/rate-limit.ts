@@ -1,4 +1,5 @@
 import rateLimit from 'express-rate-limit';
+import { AppError } from '../errors/app-error';
 import { ErrorCode, HttpCode } from '../errors/error-codes';
 
 interface RateLimitOptions {
@@ -12,13 +13,14 @@ function createRateLimiter(options: RateLimitOptions) {
     limit: options.limit,
     standardHeaders: 'draft-8',
     windowMs: options.windowMs,
-    handler(req, res) {
-      res.status(HttpCode.TOO_MANY_REQUESTS).json({
-        status: HttpCode.TOO_MANY_REQUESTS,
-        code: ErrorCode.RATE_LIMIT_EXCEEDED,
-        message: 'Too many requests. Please try again later.',
-        requestId: req.requestId,
-      });
+    handler(_req, _res, next) {
+      next(
+        new AppError(
+          HttpCode.TOO_MANY_REQUESTS,
+          ErrorCode.RATE_LIMIT_EXCEEDED,
+          'Too many requests. Please try again later.',
+        ),
+      );
     },
   });
 }

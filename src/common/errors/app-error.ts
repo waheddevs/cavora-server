@@ -33,4 +33,13 @@ export class AppError extends Error {
       { fieldErrors },
     );
   }
+
+  public static internal(cause: unknown): AppError {
+    return new AppError(
+      HttpCode.INTERNAL_SERVER_ERROR,
+      ErrorCode.INTERNAL_SERVER_ERROR,
+      'Something went wrong. Please try again later.',
+      { cause },
+    );
+  }
 }

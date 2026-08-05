@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
-import { optionalAuth, requireAuth } from './common/middleware/auth';
+import { optionalAuth, requireAdmin, requireAuth } from './common/middleware/auth';
 import { requireCsrf, requireCsrfIfAuthenticated } from './common/middleware/csrf';
 import {
   accountRecoveryRateLimiter,
@@ -18,7 +18,7 @@ import paymentController from './controllers/payment.controller';
 import systemController from './controllers/system.controller';
 import tourController from './controllers/tour.controller';
 import { validate } from './common/middleware/validate';
-import { uploadAccountImage } from './common/middleware/upload';
+import { uploadAccountImage, uploadImage } from './common/middleware/upload';
 import {
   availabilityQuerySchema,
   tourIdParamsSchema,
@@ -50,6 +50,34 @@ import {
   blogPostSlugParamsSchema,
 } from './libs/validators/blog.validator';
 import { contactMessageBodySchema } from './libs/validators/engagement.validator';
+import adminController from './controllers/admin.controller';
+import {
+  adminBlogPostCreateBodySchema,
+  adminBlogPostListQuerySchema,
+  adminBlogPostUpdateBodySchema,
+  adminBookingListQuerySchema,
+  adminBookingStatusBodySchema,
+  adminCommentListQuerySchema,
+  adminCommentStatusBodySchema,
+  adminContactListQuerySchema,
+  adminContactStatusBodySchema,
+  adminDepartureCreateBodySchema,
+  adminDepartureListQuerySchema,
+  adminDepartureUpdateBodySchema,
+  adminHomepageSelectionsBodySchema,
+  adminMemberListQuerySchema,
+  adminMemberStatusBodySchema,
+  adminObjectIdParamsSchema,
+  adminPaymentListQuerySchema,
+  adminRefundBodySchema,
+  adminTourCreateBodySchema,
+  adminTourIdParamsSchema,
+  adminTourImageBodySchema,
+  adminTourImageParamsSchema,
+  adminTourImageUploadBodySchema,
+  adminTourListQuerySchema,
+  adminTourUpdateBodySchema,
+} from './libs/validators/admin.validator';
 const router = Router();
 
 /* SYSTEM */
@@ -221,6 +249,165 @@ router.post(
   requireCsrfIfAuthenticated,
   validate({ body: contactMessageBodySchema }),
   engagementController.submitContactMessage,
+);
+
+/* ADMINISTRATION */
+router.use('/admin', requireAuth, requireAdmin);
+
+/* ADMINISTRATION: TOURS & IMAGES */
+router.get('/admin/tours', validate({ query: adminTourListQuerySchema }), adminController.getTours);
+router.get(
+  '/admin/tours/:id',
+  validate({ params: adminTourIdParamsSchema }),
+  adminController.getTour,
+);
+router.post(
+  '/admin/tours',
+  requireCsrf,
+  validate({ body: adminTourCreateBodySchema }),
+  adminController.createTour,
+);
+router.patch(
+  '/admin/tours/:id',
+  requireCsrf,
+  validate({ params: adminTourIdParamsSchema, body: adminTourUpdateBodySchema }),
+  adminController.updateTour,
+);
+router.post(
+  '/admin/tours/:id/images',
+  requireCsrf,
+  uploadImage('tours', 'image'),
+  validate({ params: adminTourIdParamsSchema, body: adminTourImageUploadBodySchema }),
+  adminController.uploadTourImage,
+);
+router.put(
+  '/admin/tours/:id/images/:position',
+  requireCsrf,
+  uploadImage('tours', 'image'),
+  validate({ params: adminTourImageParamsSchema, body: adminTourImageBodySchema }),
+  adminController.upsertTourImage,
+);
+router.delete(
+  '/admin/tours/:id/images/:position',
+  requireCsrf,
+  validate({ params: adminTourImageParamsSchema }),
+  adminController.deleteTourImage,
+);
+
+/* ADMINISTRATION: DEPARTURES */
+router.get(
+  '/admin/departures',
+  validate({ query: adminDepartureListQuerySchema }),
+  adminController.getDepartures,
+);
+router.post(
+  '/admin/tours/:id/departures',
+  requireCsrf,
+  validate({ params: adminTourIdParamsSchema, body: adminDepartureCreateBodySchema }),
+  adminController.createDeparture,
+);
+router.patch(
+  '/admin/departures/:id',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema, body: adminDepartureUpdateBodySchema }),
+  adminController.updateDeparture,
+);
+
+/* ADMINISTRATION: HOMEPAGE */
+router.get('/admin/homepage/selections', adminController.getHomepageSelections);
+router.put(
+  '/admin/homepage/selections',
+  requireCsrf,
+  validate({ body: adminHomepageSelectionsBodySchema }),
+  adminController.updateHomepageSelections,
+);
+
+/* ADMINISTRATION: BLOG */
+router.get(
+  '/admin/posts',
+  validate({ query: adminBlogPostListQuerySchema }),
+  adminController.getBlogPosts,
+);
+router.post(
+  '/admin/posts',
+  requireCsrf,
+  uploadImage('blog', 'image'),
+  validate({ body: adminBlogPostCreateBodySchema }),
+  adminController.createBlogPost,
+);
+router.patch(
+  '/admin/posts/:id',
+  requireCsrf,
+  uploadImage('blog', 'image'),
+  validate({ params: adminObjectIdParamsSchema, body: adminBlogPostUpdateBodySchema }),
+  adminController.updateBlogPost,
+);
+router.get(
+  '/admin/comments',
+  validate({ query: adminCommentListQuerySchema }),
+  adminController.getComments,
+);
+router.patch(
+  '/admin/comments/:id/status',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema, body: adminCommentStatusBodySchema }),
+  adminController.moderateComment,
+);
+
+/* ADMINISTRATION: CONTACT MESSAGES */
+router.get(
+  '/admin/contact-messages',
+  validate({ query: adminContactListQuerySchema }),
+  adminController.getContactMessages,
+);
+router.patch(
+  '/admin/contact-messages/:id/status',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema, body: adminContactStatusBodySchema }),
+  adminController.updateContactStatus,
+);
+
+/* ADMINISTRATION: BOOKINGS */
+router.get(
+  '/admin/bookings',
+  validate({ query: adminBookingListQuerySchema }),
+  adminController.getBookings,
+);
+router.patch(
+  '/admin/bookings/:id/status',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema, body: adminBookingStatusBodySchema }),
+  adminController.updateBookingStatus,
+);
+
+/* ADMINISTRATION: PAYMENTS & REFUNDS */
+router.get(
+  '/admin/payments',
+  validate({ query: adminPaymentListQuerySchema }),
+  adminController.getPayments,
+);
+router.post(
+  '/admin/payments/:id/refunds',
+  requireCsrf,
+  validate({
+    params: adminObjectIdParamsSchema,
+    headers: paymentIntentHeadersSchema,
+    body: adminRefundBodySchema,
+  }),
+  adminController.refundPayment,
+);
+
+/* ADMINISTRATION: MEMBERS */
+router.get(
+  '/admin/users',
+  validate({ query: adminMemberListQuerySchema }),
+  adminController.getMembers,
+);
+router.patch(
+  '/admin/users/:id/status',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema, body: adminMemberStatusBodySchema }),
+  adminController.updateMemberStatus,
 );
 
 export default router;

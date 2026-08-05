@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { BookingStatus } from '../enums/booking.enum';
+import { localOrRemoteUrl, paginationFields } from './common.validator';
 
 const email = z.string().trim().toLowerCase().email().max(254);
 const username = z
@@ -11,12 +12,7 @@ const username = z
 const password = z.string().min(8).max(128);
 const accountToken = z.string().min(40).max(200);
 const avatarUrl = z.union([
-  z.string().trim().url().max(2_048),
-  z
-    .string()
-    .trim()
-    .regex(/^\/(?!\/)/, 'Must be an absolute URL or a local absolute path.')
-    .max(2_048),
+  localOrRemoteUrl('Must be an absolute URL or a local absolute path.'),
   z.literal(''),
 ]);
 
@@ -84,8 +80,7 @@ export const wishlistTourParamsSchema = z
 
 export const bookingHistoryQuerySchema = z
   .object({
-    page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(50).default(10),
+    ...paginationFields(10, 50),
     status: z.enum(BookingStatus).optional(),
   })
   .strict();

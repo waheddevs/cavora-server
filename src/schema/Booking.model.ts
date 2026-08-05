@@ -79,5 +79,6 @@ bookingSchema.index({ reference: 1 }, { unique: true });
 bookingSchema.index({ memberId: 1, status: 1, createdAt: -1 });
 bookingSchema.index({ departureId: 1, status: 1 });
 bookingSchema.index({ status: 1, holdExpiresAt: 1 });
+bookingSchema.index({ status: 1, createdAt: -1 });
 
 export default mongoose.model<Booking>('Booking', bookingSchema);

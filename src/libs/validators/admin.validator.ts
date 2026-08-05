@@ -5,32 +5,14 @@ import { ContactMessageStatus } from '../enums/engagement.enum';
 import { MemberRole, MemberStatus } from '../enums/member.enum';
 import { PaymentStatus } from '../enums/payment.enum';
 import { TourDepartureStatus, TourStatus } from '../enums/tour.enum';
+import { localOrRemoteUrl, objectId, paginationFields, slug } from './common.validator';
 
-const objectId = z.string().regex(/^[a-fA-F0-9]{24}$/, 'Must be a valid ID.');
 const currency = z
   .string()
   .trim()
   .toUpperCase()
   .regex(/^[A-Z]{3}$/, 'Must be a three-letter currency code.');
-const slug = z
-  .string()
-  .trim()
-  .toLowerCase()
-  .min(1)
-  .max(200)
-  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Must be a URL-safe slug.');
-const url = z.union([
-  z.string().trim().url().max(2_048),
-  z
-    .string()
-    .trim()
-    .regex(/^\/(?!\/)/, 'Must be a URL or local absolute path.')
-    .max(2_048),
-]);
-const pageQuery = {
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
-};
+const pageQuery = paginationFields(20, 100);
 const listQuery = z.string().trim().min(1).max(200).optional();
 const itineraryItem = z
   .object({
@@ -85,9 +67,9 @@ const blogPostFields = {
   excerpt: z.string().trim().min(1).max(1_000),
   body: jsonDocument,
   category: z.string().trim().min(1).max(100),
-  imageUrl: url.optional(),
+  imageUrl: localOrRemoteUrl().optional(),
   authorName: z.string().trim().min(1).max(160),
-  authorImageUrl: url.optional(),
+  authorImageUrl: localOrRemoteUrl().optional(),
   status: z.enum(BlogPostStatus).default(BlogPostStatus.DRAFT),
   publishedAt: z.coerce.date().optional(),
 };
@@ -96,7 +78,7 @@ const blogPostUpdateFields = {
   status: z.enum(BlogPostStatus),
 };
 
-export const adminObjectIdParamsSchema = z.object({ id: objectId }).strict();
+export const adminObjectIdParamsSchema = z.object({ id: objectId() }).strict();
 export const adminTourIdParamsSchema = z
   .object({ id: z.coerce.number().int().positive() })
   .strict();
@@ -119,7 +101,7 @@ export const adminTourUpdateBodySchema = z
   });
 export const adminTourImageBodySchema = z
   .object({
-    url: url.optional(),
+    url: localOrRemoteUrl().optional(),
     altText: z.string().trim().min(1).max(300),
   })
   .strict();
@@ -197,7 +179,7 @@ export const adminBlogPostListQuerySchema = z
 export const adminCommentListQuerySchema = z
   .object({
     ...pageQuery,
-    postId: objectId.optional(),
+    postId: objectId().optional(),
     query: listQuery,
     status: z.enum(BlogCommentStatus).optional(),
   })

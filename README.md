@@ -27,9 +27,9 @@ those workflows.
 
 ## Routing
 
-- `src/router.ts` owns system, home, authentication, member, tour, booking, payment, blog, and
-  engagement APIs.
-- `src/router.admin.ts` owns administrator APIs and is mounted at `/cavora/admin`.
+- `src/router.ts` owns every REST API, including protected administrator APIs below
+  `/cavora/admin`.
+- `src/router.admin-view.ts` owns the server-rendered administrator pages below `/admin`.
 
 ## Verification
 
@@ -53,5 +53,5 @@ npm run format
 - Stripe confirms payments only through verified webhooks; browser redirects are not payment
   confirmation.
 
-`src/views` is reserved for a possible future administrator interface and is not registered,
-rendered, or served by the current REST application.
+The operational administrator interface is server-rendered from `src/views/admin` and consumes the
+same protected REST APIs used by other trusted clients.

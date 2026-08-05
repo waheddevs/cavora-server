@@ -2,25 +2,31 @@ import type { NextFunction, Request, Response } from 'express';
 import { env } from '../../config/env';
 import { AppError } from '../errors/app-error';
 import { ErrorCode, HttpCode } from '../errors/error-codes';
+import { clearAuthenticationCookies } from '../security/cookies';
 import { MemberRole } from '../../libs/enums/member.enum';
 import MemberService from '../../models/Member.service';
 
 const memberService = new MemberService();
 
-export async function requireAuth(req: Request, _res: Response, next: NextFunction): Promise<void> {
+function isAuthenticationRequired(error: unknown): error is AppError {
+  return error instanceof AppError && error.code === ErrorCode.AUTHENTICATION_REQUIRED;
+}
+
+export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const cookieValue: unknown = req.cookies[env.SESSION_COOKIE_NAME];
     const sessionToken = typeof cookieValue === 'string' ? cookieValue : undefined;
     req.auth = await memberService.authenticateSession(sessionToken);
     next();
   } catch (err) {
+    if (isAuthenticationRequired(err)) clearAuthenticationCookies(res);
     next(err);
   }
 }
 
 export async function optionalAuth(
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction,
 ): Promise<void> {
   try {
@@ -30,6 +36,11 @@ export async function optionalAuth(
     }
     next();
   } catch (err) {
+    if (isAuthenticationRequired(err)) {
+      clearAuthenticationCookies(res);
+      next();
+      return;
+    }
     next(err);
   }
 }
