@@ -5,6 +5,6 @@ export enum MemberRole {
 
 export enum MemberStatus {
   ACTIVE = 'ACTIVE',
-  SUSPENDED = 'SUSPENDED',
+  BLOCKED = 'BLOCKED',
   DELETED = 'DELETED',
 }

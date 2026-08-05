@@ -129,42 +129,6 @@ const sectionEightPaths = {
       },
     },
   },
-  '/newsletter-subscriptions': {
-    post: {
-      operationId: 'subscribeNewsletter',
-      summary: 'Subscribe an email address idempotently',
-      tags: ['Engagement'],
-      requestBody: {
-        required: true,
-        content: {
-          'application/json': { schema: { $ref: '#/components/schemas/NewsletterInput' } },
-        },
-      },
-      responses: {
-        '200': {
-          description: 'A non-enumerating subscription acknowledgement.',
-          content: {
-            'application/json': { schema: { $ref: '#/components/schemas/MessageResponse' } },
-          },
-        },
-        '422': { $ref: '#/components/responses/ValidationError' },
-        '429': { $ref: '#/components/responses/RateLimitExceeded' },
-      },
-    },
-  },
-  '/newsletter-subscriptions/{token}': {
-    delete: {
-      operationId: 'unsubscribeNewsletter',
-      summary: 'Unsubscribe using a one-time opaque link token',
-      tags: ['Engagement'],
-      parameters: [{ $ref: '#/components/parameters/UnsubscribeToken' }],
-      responses: {
-        '204': { description: 'The subscription is inactive, if it existed.' },
-        '422': { $ref: '#/components/responses/ValidationError' },
-        '429': { $ref: '#/components/responses/RateLimitExceeded' },
-      },
-    },
-  },
   '/admin/tours': {
     get: {
       operationId: 'adminGetTours',
@@ -238,6 +202,39 @@ const sectionEightPaths = {
       },
     },
   },
+  '/admin/tours/{id}/images': {
+    post: {
+      operationId: 'adminUploadTourImage',
+      summary: 'Upload a tour image and append it at the next position',
+      description: 'A tour can contain at most four images in positions 0 through 3.',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminTourId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['image', 'altText'],
+              properties: {
+                image: { type: 'string', format: 'binary' },
+                altText: { type: 'string', minLength: 1, maxLength: 300 },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        '201': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/AdminNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
   '/admin/tours/{id}/images/{position}': {
     put: {
       operationId: 'adminUpsertTourImage',
@@ -253,6 +250,9 @@ const sectionEightPaths = {
         required: true,
         content: {
           'application/json': { schema: { $ref: '#/components/schemas/AdminTourImageInput' } },
+          'multipart/form-data': {
+            schema: { $ref: '#/components/schemas/AdminTourImageMultipartInput' },
+          },
         },
       },
       responses: {
@@ -406,6 +406,9 @@ const sectionEightPaths = {
         required: true,
         content: {
           'application/json': { schema: { $ref: '#/components/schemas/AdminBlogPostInput' } },
+          'multipart/form-data': {
+            schema: { $ref: '#/components/schemas/AdminBlogPostMultipartInput' },
+          },
         },
       },
       responses: {
@@ -426,7 +429,12 @@ const sectionEightPaths = {
       ],
       requestBody: {
         required: true,
-        content: { 'application/json': { schema: { type: 'object', minProperties: 1 } } },
+        content: {
+          'application/json': { schema: { type: 'object', minProperties: 1 } },
+          'multipart/form-data': {
+            schema: { $ref: '#/components/schemas/AdminBlogPostMultipartUpdateInput' },
+          },
+        },
       },
       responses: {
         '200': { $ref: '#/components/responses/AdminDataResponse' },
@@ -530,20 +538,21 @@ const sectionEightPaths = {
       },
     },
   },
-  '/admin/newsletter-subscriptions': {
+  '/admin/users': {
     get: {
-      operationId: 'adminGetNewsletterSubscriptions',
-      summary: 'List newsletter subscriptions',
+      operationId: 'adminGetMembers',
+      summary: 'List registered members',
       tags: ['Administration'],
       security: adminSecurity,
       parameters: [
         { $ref: '#/components/parameters/AdminListPage' },
         { $ref: '#/components/parameters/AdminListLimit' },
         { $ref: '#/components/parameters/AdminListQuery' },
+        { name: 'role', in: 'query', schema: { type: 'string', enum: ['USER', 'ADMIN'] } },
         {
           name: 'status',
           in: 'query',
-          schema: { type: 'string', enum: ['PENDING', 'ACTIVE', 'UNSUBSCRIBED'] },
+          schema: { type: 'string', enum: ['ACTIVE', 'BLOCKED', 'DELETED'] },
         },
       ],
       responses: {
@@ -552,10 +561,10 @@ const sectionEightPaths = {
       },
     },
   },
-  '/admin/newsletter-subscriptions/{id}/status': {
+  '/admin/users/{id}/status': {
     patch: {
-      operationId: 'adminUpdateNewsletterStatus',
-      summary: 'Update a newsletter subscription status',
+      operationId: 'adminUpdateMemberStatus',
+      summary: 'Update a member account status and revoke sessions',
       tags: ['Administration'],
       security: adminSecurity,
       parameters: [
@@ -565,7 +574,7 @@ const sectionEightPaths = {
       requestBody: {
         required: true,
         content: {
-          'application/json': { schema: { $ref: '#/components/schemas/NewsletterStatusInput' } },
+          'application/json': { schema: { $ref: '#/components/schemas/MemberStatusInput' } },
         },
       },
       responses: {
@@ -753,16 +762,6 @@ const sectionEightSchemas = {
       message: { type: 'string', minLength: 10, maxLength: 10000 },
     },
   },
-  NewsletterInput: {
-    type: 'object',
-    additionalProperties: false,
-    required: ['email', 'consent'],
-    properties: {
-      email: { type: 'string', format: 'email', maxLength: 254 },
-      source: { type: 'string', default: 'website', maxLength: 100 },
-      consent: { type: 'boolean', const: true },
-    },
-  },
   MessageResponse: {
     type: 'object',
     required: ['message'],
@@ -823,6 +822,15 @@ const sectionEightSchemas = {
       altText: { type: 'string', minLength: 1, maxLength: 300 },
     },
   },
+  AdminTourImageMultipartInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['image', 'altText'],
+    properties: {
+      image: { type: 'string', format: 'binary' },
+      altText: { type: 'string', minLength: 1, maxLength: 300 },
+    },
+  },
   AdminDepartureInput: {
     type: 'object',
     additionalProperties: false,
@@ -865,6 +873,41 @@ const sectionEightSchemas = {
       publishedAt: { type: 'string', format: 'date-time' },
     },
   },
+  AdminBlogPostMultipartInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['slug', 'title', 'excerpt', 'body', 'category', 'image', 'authorName'],
+    properties: {
+      slug: { type: 'string' },
+      title: { type: 'string' },
+      excerpt: { type: 'string' },
+      body: { type: 'string', description: 'JSON-encoded blog document.' },
+      category: { type: 'string' },
+      image: { type: 'string', format: 'binary' },
+      authorName: { type: 'string' },
+      authorImageUrl: { type: 'string' },
+      status: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+      publishedAt: { type: 'string', format: 'date-time' },
+    },
+  },
+  AdminBlogPostMultipartUpdateInput: {
+    type: 'object',
+    additionalProperties: false,
+    minProperties: 1,
+    properties: {
+      slug: { type: 'string' },
+      title: { type: 'string' },
+      excerpt: { type: 'string' },
+      body: { type: 'string', description: 'JSON-encoded blog document.' },
+      category: { type: 'string' },
+      image: { type: 'string', format: 'binary' },
+      imageUrl: { type: 'string' },
+      authorName: { type: 'string' },
+      authorImageUrl: { type: 'string' },
+      status: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+      publishedAt: { type: 'string', format: 'date-time' },
+    },
+  },
   CommentStatusInput: {
     type: 'object',
     additionalProperties: false,
@@ -873,20 +916,29 @@ const sectionEightSchemas = {
       status: { type: 'string', enum: ['PENDING', 'APPROVED', 'REJECTED', 'SPAM'] },
     },
   },
+  PasswordChangeInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['currentPassword', 'newPassword'],
+    properties: {
+      currentPassword: { type: 'string', minLength: 1, maxLength: 128 },
+      newPassword: { type: 'string', minLength: 8, maxLength: 128 },
+    },
+  },
+  MemberStatusInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['status'],
+    properties: {
+      status: { type: 'string', enum: ['ACTIVE', 'BLOCKED', 'DELETED'] },
+    },
+  },
   ContactStatusInput: {
     type: 'object',
     additionalProperties: false,
     required: ['status'],
     properties: {
       status: { type: 'string', enum: ['NEW', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] },
-    },
-  },
-  NewsletterStatusInput: {
-    type: 'object',
-    additionalProperties: false,
-    required: ['status'],
-    properties: {
-      status: { type: 'string', enum: ['PENDING', 'ACTIVE', 'UNSUBSCRIBED'] },
     },
   },
   BookingStatusInput: {
@@ -1360,6 +1412,68 @@ const sectionFivePaths = {
       },
     },
   },
+  '/users/me/password': {
+    post: {
+      operationId: 'changePassword',
+      summary: 'Change the authenticated member password',
+      tags: ['Members'],
+      security: [{ sessionCookie: [] }],
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { $ref: '#/components/schemas/PasswordChangeInput' } },
+        },
+      },
+      responses: {
+        '200': {
+          description: 'The password was replaced and other sessions were revoked.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/MessageResponse' } },
+          },
+        },
+        '401': { $ref: '#/components/responses/AuthenticationRequired' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+  },
+  '/users/me/avatar': {
+    post: {
+      operationId: 'uploadAvatar',
+      summary: 'Upload a profile photo',
+      tags: ['Members'],
+      security: [{ sessionCookie: [] }],
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      requestBody: {
+        required: true,
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['image'],
+              properties: { image: { type: 'string', format: 'binary' } },
+            },
+          },
+        },
+      },
+      responses: {
+        '200': { description: 'The stored profile including the new avatar URL.' },
+        '401': { $ref: '#/components/responses/AuthenticationRequired' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+    delete: {
+      operationId: 'removeAvatar',
+      summary: 'Remove the profile photo',
+      tags: ['Members'],
+      security: [{ sessionCookie: [] }],
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      responses: {
+        '200': { description: 'The stored profile without an avatar URL.' },
+        '401': { $ref: '#/components/responses/AuthenticationRequired' },
+      },
+    },
+  },
   '/users/me/bookings': {
     get: {
       operationId: 'getCurrentMemberBookings',
@@ -1481,6 +1595,7 @@ const sectionFiveSchemas = {
       'firstName',
       'lastName',
       'role',
+      'status',
       'emailVerified',
       'createdAt',
     ],
@@ -1494,6 +1609,7 @@ const sectionFiveSchemas = {
       location: { type: 'string' },
       avatarUrl: { type: 'string', format: 'uri' },
       role: { type: 'string', enum: ['USER', 'ADMIN'] },
+      status: { type: 'string', enum: ['ACTIVE', 'BLOCKED', 'DELETED'] },
       emailVerified: { type: 'boolean' },
       createdAt: { type: 'string', format: 'date-time' },
     },
@@ -1510,10 +1626,12 @@ const sectionFiveSchemas = {
         type: 'object',
         required: ['stats'],
         properties: {
+          lastSignInAt: { type: 'string', format: 'date-time' },
           stats: {
             type: 'object',
-            required: ['bookings', 'wishlist'],
+            required: ['activeSessions', 'bookings', 'wishlist'],
             properties: {
+              activeSessions: { type: 'integer', minimum: 0 },
               bookings: { type: 'integer', minimum: 0 },
               wishlist: { type: 'integer', minimum: 0 },
             },
@@ -1660,7 +1778,7 @@ export const openApiDocument = {
     { name: 'Bookings', description: 'Owned booking holds and cancellation.' },
     { name: 'Payments', description: 'Stripe PaymentIntents and verified webhooks.' },
     { name: 'Blog', description: 'Published posts and moderated comments.' },
-    { name: 'Engagement', description: 'Contact and newsletter workflows.' },
+    { name: 'Engagement', description: 'Customer contact workflows.' },
     { name: 'Administration', description: 'Protected operational management APIs.' },
   ],
   paths: {
@@ -1979,12 +2097,6 @@ export const openApiDocument = {
         required: true,
         schema: { type: 'string', pattern: '^[a-fA-F0-9]{24}$' },
       },
-      UnsubscribeToken: {
-        name: 'token',
-        in: 'path',
-        required: true,
-        schema: { type: 'string', minLength: 43, maxLength: 200 },
-      },
       AdminObjectId: {
         name: 'id',
         in: 'path',
@@ -2001,7 +2113,7 @@ export const openApiDocument = {
         name: 'position',
         in: 'path',
         required: true,
-        schema: { type: 'integer', minimum: 0 },
+        schema: { type: 'integer', minimum: 0, maximum: 3 },
       },
       AdminListPage: {
         name: 'page',
@@ -2225,7 +2337,7 @@ export const openApiDocument = {
         properties: {
           url: { type: 'string' },
           altText: { type: 'string' },
-          position: { type: 'integer', minimum: 0 },
+          position: { type: 'integer', minimum: 0, maximum: 3 },
         },
       },
       TourSummary: {
@@ -2263,6 +2375,7 @@ export const openApiDocument = {
           maxGroupSize: { type: 'integer', minimum: 1 },
           images: {
             type: 'array',
+            maxItems: 4,
             items: { $ref: '#/components/schemas/TourImage' },
           },
         },

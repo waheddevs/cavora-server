@@ -9,6 +9,7 @@ import { errorHandler } from './common/middleware/error-handler';
 import { notFound } from './common/middleware/not-found';
 import { globalRateLimiter } from './common/middleware/rate-limit';
 import { requestId } from './common/middleware/request-id';
+import { UPLOAD_ROOT, UPLOAD_ROUTE } from './common/middleware/upload';
 import { env } from './config/env';
 import { logger } from './config/logger';
 import router from './router';
@@ -45,21 +46,17 @@ app.use(
   pinoHttp({
     genReqId: (req) => req.requestId,
     logger,
-    serializers: {
-      req(req) {
-        const url =
-          typeof req.url === 'string'
-            ? req.url.replace(
-                /^(\/cavora\/newsletter-subscriptions\/)[A-Za-z0-9_-]+/,
-                '$1[REDACTED]',
-              )
-            : req.url;
-        return { ...req, url };
+  }),
+);
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        imgSrc: ["'self'", 'data:', 'blob:'],
       },
     },
   }),
 );
-app.use(helmet());
 app.use(
   cors((req, callback) => {
     const origin = firstHeader(req.headers.origin);
@@ -91,6 +88,14 @@ app.use(
     etag: true,
     index: false,
     maxAge: env.NODE_ENV === 'production' ? '1d' : 0,
+  }),
+);
+app.use(
+  UPLOAD_ROUTE,
+  express.static(UPLOAD_ROOT, {
+    etag: true,
+    index: false,
+    maxAge: env.NODE_ENV === 'production' ? '7d' : 0,
   }),
 );
 

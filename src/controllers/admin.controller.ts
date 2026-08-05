@@ -1,24 +1,21 @@
 import type { NextFunction, Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { HttpCode } from '../common/errors/error-codes';
+import { AppError } from '../common/errors/app-error';
+import { ErrorCode, HttpCode } from '../common/errors/error-codes';
+import { markUploadPersisted } from '../common/middleware/upload';
 import type { BlogCommentStatus } from '../libs/enums/blog.enum';
 import type { BookingStatus } from '../libs/enums/booking.enum';
-import type {
-  ContactMessageStatus,
-  NewsletterSubscriptionStatus,
-} from '../libs/enums/engagement.enum';
+import type { ContactMessageStatus } from '../libs/enums/engagement.enum';
 import type {
   AdminBlogCommentInquiry,
   AdminBlogPostInquiry,
-  BlogPostInput,
-  BlogPostUpdateInput,
+  BlogPostWriteInput,
+  BlogPostWriteUpdateInput,
 } from '../libs/types/blog';
 import type { BookingInquiry } from '../libs/types/booking';
-import type {
-  ContactMessageInquiry,
-  NewsletterSubscriptionInquiry,
-} from '../libs/types/engagement';
-import type { AuthContext, RequestContext } from '../libs/types/member';
+import type { ContactMessageInquiry } from '../libs/types/engagement';
+import type { MemberStatus } from '../libs/enums/member.enum';
+import type { AuthContext, MemberInquiry, RequestContext } from '../libs/types/member';
 import type { PaymentInquiry, PaymentRefundInput } from '../libs/types/payment';
 import type {
   AdminDepartureInquiry,
@@ -26,6 +23,7 @@ import type {
   HomepageSelectionsInput,
   TourDepartureInput,
   TourDepartureUpdateInput,
+  TourImageWriteInput,
   TourInput,
   TourUpdateInput,
 } from '../libs/types/tour';
@@ -113,19 +111,50 @@ const adminController = {
     try {
       req.log.info('adminUpsertTourImage');
       const { id, position } = req.validated.params as { id: number; position: number };
+      const input: TourImageWriteInput = {
+        tourId: id,
+        position,
+        ...(req.validated.body as Omit<TourImageWriteInput, 'tourId' | 'position'>),
+      };
       const result = await adminService.upsertTourImage(
         auth(req),
-        {
-          tourId: id,
-          position,
-          ...(req.validated.body as { altText: string; url: string }),
-        },
+        input,
         context(req),
+        req.file?.filename,
       );
+      markUploadPersisted(req);
       noStore(res);
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on adminUpsertTourImage');
+      next(err);
+    }
+  },
+
+  async uploadTourImage(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminUploadTourImage');
+      if (!req.file) {
+        throw new AppError(
+          HttpCode.UNPROCESSABLE_ENTITY,
+          ErrorCode.VALIDATION_ERROR,
+          'An image file is required.',
+        );
+      }
+      const { id } = req.validated.params as { id: number };
+      const { altText } = req.validated.body as { altText: string };
+      const result = await adminService.uploadTourImage(
+        auth(req),
+        id,
+        req.file.filename,
+        altText,
+        context(req),
+      );
+      markUploadPersisted(req);
+      noStore(res);
+      res.status(HttpCode.CREATED).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminUploadTourImage');
       next(err);
     }
   },
@@ -240,9 +269,11 @@ const adminController = {
       req.log.info('adminCreateBlogPost');
       const result = await adminService.createBlogPost(
         auth(req),
-        req.validated.body as BlogPostInput,
+        req.validated.body as BlogPostWriteInput,
         context(req),
+        req.file?.filename,
       );
+      markUploadPersisted(req);
       noStore(res);
       res.status(HttpCode.CREATED).json({ data: result });
     } catch (err) {
@@ -255,11 +286,17 @@ const adminController = {
     try {
       req.log.info('adminUpdateBlogPost');
       const { id } = req.validated.params as { id: string };
-      const input: BlogPostUpdateInput = {
+      const input: BlogPostWriteUpdateInput = {
         _id: new Types.ObjectId(id),
-        ...(req.validated.body as Omit<BlogPostUpdateInput, '_id'>),
+        ...(req.validated.body as Omit<BlogPostWriteUpdateInput, '_id'>),
       };
-      const result = await adminService.updateBlogPost(auth(req), input, context(req));
+      const result = await adminService.updateBlogPost(
+        auth(req),
+        input,
+        context(req),
+        req.file?.filename,
+      );
+      markUploadPersisted(req);
       noStore(res);
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
@@ -342,40 +379,6 @@ const adminController = {
     }
   },
 
-  async getNewsletterSubscriptions(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      req.log.info('adminGetNewsletterSubscriptions');
-      const result = await adminService.getNewsletterSubscriptions(
-        auth(req),
-        req.validated.query as NewsletterSubscriptionInquiry,
-      );
-      noStore(res);
-      res.status(HttpCode.OK).json(result);
-    } catch (err) {
-      req.log.error({ err }, 'ERROR on adminGetNewsletterSubscriptions');
-      next(err);
-    }
-  },
-
-  async updateNewsletterStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      req.log.info('adminUpdateNewsletterStatus');
-      const { id } = req.validated.params as { id: string };
-      const { status } = req.validated.body as { status: NewsletterSubscriptionStatus };
-      const result = await adminService.updateNewsletterStatus(
-        auth(req),
-        new Types.ObjectId(id),
-        status,
-        context(req),
-      );
-      noStore(res);
-      res.status(HttpCode.OK).json({ data: result });
-    } catch (err) {
-      req.log.error({ err }, 'ERROR on adminUpdateNewsletterStatus');
-      next(err);
-    }
-  },
-
   async getBookings(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       req.log.info('adminGetBookings');
@@ -443,6 +446,37 @@ const adminController = {
       res.status(HttpCode.ACCEPTED).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on adminRefundPayment');
+      next(err);
+    }
+  },
+
+  async getMembers(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminGetMembers');
+      const result = await adminService.getMembers(auth(req), req.validated.query as MemberInquiry);
+      noStore(res);
+      res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminGetMembers');
+      next(err);
+    }
+  },
+
+  async updateMemberStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminUpdateMemberStatus');
+      const { id } = req.validated.params as { id: string };
+      const { status } = req.validated.body as { status: MemberStatus };
+      const result = await adminService.updateMemberStatus(
+        auth(req),
+        new Types.ObjectId(id),
+        status,
+        context(req),
+      );
+      noStore(res);
+      res.status(HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminUpdateMemberStatus');
       next(err);
     }
   },

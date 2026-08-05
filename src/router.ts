@@ -7,7 +7,6 @@ import {
   commentRateLimiter,
   contactRateLimiter,
   loginRateLimiter,
-  newsletterRateLimiter,
   registrationRateLimiter,
 } from './common/middleware/rate-limit';
 import blogController from './controllers/blog.controller';
@@ -19,6 +18,7 @@ import paymentController from './controllers/payment.controller';
 import systemController from './controllers/system.controller';
 import tourController from './controllers/tour.controller';
 import { validate } from './common/middleware/validate';
+import { uploadAccountImage } from './common/middleware/upload';
 import {
   availabilityQuerySchema,
   tourIdParamsSchema,
@@ -29,6 +29,7 @@ import {
   bookingHistoryQuerySchema,
   forgotPasswordBodySchema,
   loginBodySchema,
+  passwordChangeBodySchema,
   profileUpdateBodySchema,
   registerBodySchema,
   resetPasswordBodySchema,
@@ -48,11 +49,7 @@ import {
   blogPostListQuerySchema,
   blogPostSlugParamsSchema,
 } from './libs/validators/blog.validator';
-import {
-  contactMessageBodySchema,
-  newsletterSubscriptionBodySchema,
-  newsletterUnsubscribeParamsSchema,
-} from './libs/validators/engagement.validator';
+import { contactMessageBodySchema } from './libs/validators/engagement.validator';
 const router = Router();
 
 /* SYSTEM */
@@ -112,6 +109,21 @@ router.patch(
   validate({ body: profileUpdateBodySchema }),
   memberController.updateProfile,
 );
+router.post(
+  '/users/me/password',
+  requireAuth,
+  requireCsrf,
+  validate({ body: passwordChangeBodySchema }),
+  memberController.changePassword,
+);
+router.post(
+  '/users/me/avatar',
+  requireAuth,
+  requireCsrf,
+  uploadAccountImage('image'),
+  memberController.uploadAvatar,
+);
+router.delete('/users/me/avatar', requireAuth, requireCsrf, memberController.removeAvatar);
 router.get(
   '/users/me/bookings',
   requireAuth,
@@ -209,18 +221,6 @@ router.post(
   requireCsrfIfAuthenticated,
   validate({ body: contactMessageBodySchema }),
   engagementController.submitContactMessage,
-);
-router.post(
-  '/newsletter-subscriptions',
-  newsletterRateLimiter,
-  validate({ body: newsletterSubscriptionBodySchema }),
-  engagementController.subscribeNewsletter,
-);
-router.delete(
-  '/newsletter-subscriptions/:token',
-  newsletterRateLimiter,
-  validate({ params: newsletterUnsubscribeParamsSchema }),
-  engagementController.unsubscribeNewsletter,
 );
 
 export default router;

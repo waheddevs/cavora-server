@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { requireAdmin, requireAuth } from './common/middleware/auth';
 import { requireCsrf } from './common/middleware/csrf';
+import { uploadImage } from './common/middleware/upload';
 import { validate } from './common/middleware/validate';
 import adminController from './controllers/admin.controller';
 import {
@@ -17,8 +18,8 @@ import {
   adminDepartureListQuerySchema,
   adminDepartureUpdateBodySchema,
   adminHomepageSelectionsBodySchema,
-  adminNewsletterListQuerySchema,
-  adminNewsletterStatusBodySchema,
+  adminMemberListQuerySchema,
+  adminMemberStatusBodySchema,
   adminObjectIdParamsSchema,
   adminPaymentListQuerySchema,
   adminRefundBodySchema,
@@ -26,6 +27,7 @@ import {
   adminTourIdParamsSchema,
   adminTourImageBodySchema,
   adminTourImageParamsSchema,
+  adminTourImageUploadBodySchema,
   adminTourUpdateBodySchema,
   adminTourListQuerySchema,
 } from './libs/validators/admin.validator';
@@ -54,9 +56,17 @@ adminRouter.patch(
   validate({ params: adminTourIdParamsSchema, body: adminTourUpdateBodySchema }),
   adminController.updateTour,
 );
+adminRouter.post(
+  '/tours/:id/images',
+  requireCsrf,
+  uploadImage('tours', 'image'),
+  validate({ params: adminTourIdParamsSchema, body: adminTourImageUploadBodySchema }),
+  adminController.uploadTourImage,
+);
 adminRouter.put(
   '/tours/:id/images/:position',
   requireCsrf,
+  uploadImage('tours', 'image'),
   validate({ params: adminTourImageParamsSchema, body: adminTourImageBodySchema }),
   adminController.upsertTourImage,
 );
@@ -104,12 +114,14 @@ adminRouter.get(
 adminRouter.post(
   '/posts',
   requireCsrf,
+  uploadImage('blog', 'image'),
   validate({ body: adminBlogPostCreateBodySchema }),
   adminController.createBlogPost,
 );
 adminRouter.patch(
   '/posts/:id',
   requireCsrf,
+  uploadImage('blog', 'image'),
   validate({ params: adminObjectIdParamsSchema, body: adminBlogPostUpdateBodySchema }),
   adminController.updateBlogPost,
 );
@@ -136,19 +148,6 @@ adminRouter.patch(
   requireCsrf,
   validate({ params: adminObjectIdParamsSchema, body: adminContactStatusBodySchema }),
   adminController.updateContactStatus,
-);
-
-/* NEWSLETTER */
-adminRouter.get(
-  '/newsletter-subscriptions',
-  validate({ query: adminNewsletterListQuerySchema }),
-  adminController.getNewsletterSubscriptions,
-);
-adminRouter.patch(
-  '/newsletter-subscriptions/:id/status',
-  requireCsrf,
-  validate({ params: adminObjectIdParamsSchema, body: adminNewsletterStatusBodySchema }),
-  adminController.updateNewsletterStatus,
 );
 
 /* BOOKINGS */
@@ -179,6 +178,19 @@ adminRouter.post(
     body: adminRefundBodySchema,
   }),
   adminController.refundPayment,
+);
+
+/* MEMBERS */
+adminRouter.get(
+  '/users',
+  validate({ query: adminMemberListQuerySchema }),
+  adminController.getMembers,
+);
+adminRouter.patch(
+  '/users/:id/status',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema, body: adminMemberStatusBodySchema }),
+  adminController.updateMemberStatus,
 );
 
 export default adminRouter;

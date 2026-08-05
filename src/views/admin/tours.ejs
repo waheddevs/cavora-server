@@ -8,7 +8,7 @@
 <section class="page-heading">
   <div>
     <p class="section-label">Inventory</p>
-    <h2>Tour catalogue</h2>
+    <h1>Tour catalogue</h1>
     <p>Create and maintain the public tour records used across Cavora.</p>
   </div>
   <button
@@ -104,18 +104,34 @@
           required
         />
       </label>
-      <label class="field">
-        <span>Rating average</span>
-        <input type="number" name="ratingAverage" min="0" max="5" step="0.1" value="0" required />
-      </label>
-      <label class="field">
-        <span>Review count</span>
-        <input type="number" name="reviewCount" min="0" step="1" value="0" required />
-      </label>
       <label class="field field--full">
         <span>Overview</span>
         <textarea name="overview" maxlength="20000" required></textarea>
       </label>
+      <%- include('../includes/image-upload', {
+        existingInputName: '',
+        fieldClass: 'tour-image-upload-field image-upload-field--compact',
+        inputDataAttribute: 'data-tour-image-file',
+        inputId: 'tour-primary-image',
+        inputName: 'imageFile',
+        label: 'Tour images',
+        maxFiles: 4,
+        multiple: true,
+      }) %>
+      <div class="tour-image-preview-list" data-tour-image-preview-list hidden>
+        <div class="tour-image-preview-list__header">
+          <strong data-tour-image-preview-count>Selected images</strong>
+          <div class="button-row">
+            <button class="button button--small" type="button" data-tour-images-change>
+              Add images
+            </button>
+            <button class="button button--small" type="button" data-tour-images-remove>
+              Remove all
+            </button>
+          </div>
+        </div>
+        <div class="tour-image-preview-list__grid" data-tour-image-preview-grid></div>
+      </div>
       <label class="field">
         <span>Highlights</span>
         <textarea name="highlights" placeholder="One item per line"></textarea>
@@ -128,13 +144,16 @@
         <span>Not included</span>
         <textarea name="notIncluded" placeholder="One item per line"></textarea>
       </label>
-      <label class="field field--full">
-        <span>Itinerary JSON</span>
-        <textarea
-          name="itinerary"
-          placeholder='[{"day":1,"title":"Arrival","description":"Meet your guide."}]'
-        ></textarea>
-      </label>
+      <div class="field field--full itinerary-builder">
+        <div class="itinerary-builder__heading">
+          <div>
+            <span class="field-label">Daily itinerary</span>
+            <small>Add the title and description for each day of the tour.</small>
+          </div>
+          <button class="button button--small" type="button" data-itinerary-add>Add day</button>
+        </div>
+        <div class="itinerary-builder__list" data-itinerary-list></div>
+      </div>
     </div>
     <p class="form-feedback" data-form-feedback aria-live="polite"></p>
     <div class="form-actions">
@@ -202,42 +221,6 @@
       <button class="button button--small" type="button" data-page-next disabled>Next</button>
     </div>
   </div>
-</section>
-
-<section class="panel image-manager">
-  <div class="panel__header">
-    <div>
-      <h3>Tour image manager</h3>
-      <p>Upsert an ordered image after its parent tour exists.</p>
-    </div>
-  </div>
-  <form data-tour-image-form novalidate>
-    <div class="form-grid form-grid--three">
-      <label class="field">
-        <span>Tour ID</span>
-        <input type="number" name="tourId" min="1" step="1" required />
-      </label>
-      <label class="field">
-        <span>Position</span>
-        <input type="number" name="position" min="0" step="1" required />
-      </label>
-      <label class="field">
-        <span>Image URL or path</span>
-        <input type="text" name="url" maxlength="2048" required />
-      </label>
-      <label class="field field--full">
-        <span>Alternative text</span>
-        <input type="text" name="altText" maxlength="300" required />
-      </label>
-    </div>
-    <p class="form-feedback" data-form-feedback aria-live="polite"></p>
-    <div class="form-actions">
-      <button class="button button--danger" type="button" data-image-delete>
-        Delete image
-      </button>
-      <button class="button button--primary" type="submit">Save image</button>
-    </div>
-  </form>
 </section>
 
 <%- include('../includes/footer', { layoutMode, scriptPath }) %>

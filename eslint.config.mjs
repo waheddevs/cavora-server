@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'node_modules/**'],
+    ignores: ['dist/**', 'node_modules/**', 'public/vendor/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -25,6 +25,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/*.mjs'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
+  {
     files: ['public/js/**/*.js'],
     languageOptions: {
       globals: {
@@ -34,6 +43,7 @@ export default tseslint.config(
         HTMLButtonElement: 'readonly',
         HTMLElement: 'readonly',
         HTMLFormElement: 'readonly',
+        HTMLImageElement: 'readonly',
         HTMLInputElement: 'readonly',
         HTMLLabelElement: 'readonly',
         HTMLSelectElement: 'readonly',

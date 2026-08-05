@@ -25,6 +25,7 @@ const tourImageSchema = new Schema<TourImage>(
       type: Number,
       required: true,
       min: 0,
+      max: 3,
       default: 0,
     },
   },

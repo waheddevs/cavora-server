@@ -4,9 +4,3 @@ export enum ContactMessageStatus {
   RESOLVED = 'RESOLVED',
   CLOSED = 'CLOSED',
 }
-
-export enum NewsletterSubscriptionStatus {
-  PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE',
-  UNSUBSCRIBED = 'UNSUBSCRIBED',
-}

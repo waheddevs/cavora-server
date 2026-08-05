@@ -9,7 +9,6 @@ import Booking from './schema/Booking.model';
 import ContactMessage from './schema/ContactMessage.model';
 import EmailVerificationToken from './schema/EmailVerificationToken.model';
 import Member from './schema/Member.model';
-import NewsletterSubscription from './schema/NewsletterSubscription.model';
 import PasswordResetToken from './schema/PasswordResetToken.model';
 import Payment from './schema/Payment.model';
 import Session from './schema/Session.model';
@@ -72,7 +71,6 @@ const indexedModels: Model<unknown>[] = [
   BlogPost,
   BlogComment,
   ContactMessage,
-  NewsletterSubscription,
   AuditLog,
 ] as Model<unknown>[];
 

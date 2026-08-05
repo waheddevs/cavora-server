@@ -72,6 +72,21 @@ const adminViewController = {
     }
   },
 
+  async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('getAdminProfile');
+      renderAdminPage(res, {
+        activePage: 'profile',
+        pageTitle: 'Profile',
+        scriptName: 'profile',
+        viewName: 'profile',
+      });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on getAdminProfile');
+      next(err);
+    }
+  },
+
   async getTours(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       req.log.info('getAdminTours');
@@ -98,21 +113,6 @@ const adminViewController = {
       });
     } catch (err) {
       req.log.error({ err }, 'ERROR on getAdminDepartures');
-      next(err);
-    }
-  },
-
-  async getHomepage(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      req.log.info('getAdminHomepage');
-      renderAdminPage(res, {
-        activePage: 'homepage',
-        pageTitle: 'Homepage',
-        scriptName: 'homepage',
-        viewName: 'homepage',
-      });
-    } catch (err) {
-      req.log.error({ err }, 'ERROR on getAdminHomepage');
       next(err);
     }
   },
@@ -162,21 +162,6 @@ const adminViewController = {
     }
   },
 
-  async getNewsletterSubscriptions(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      req.log.info('getAdminNewsletterSubscriptions');
-      renderAdminPage(res, {
-        activePage: 'newsletter-subscriptions',
-        pageTitle: 'Newsletter',
-        scriptName: 'newsletter-subscriptions',
-        viewName: 'newsletter-subscriptions',
-      });
-    } catch (err) {
-      req.log.error({ err }, 'ERROR on getAdminNewsletterSubscriptions');
-      next(err);
-    }
-  },
-
   async getBookings(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       req.log.info('getAdminBookings');
@@ -203,6 +188,21 @@ const adminViewController = {
       });
     } catch (err) {
       req.log.error({ err }, 'ERROR on getAdminPayments');
+      next(err);
+    }
+  },
+
+  async getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('getAdminUsers');
+      renderAdminPage(res, {
+        activePage: 'users',
+        pageTitle: 'Users',
+        scriptName: 'users',
+        viewName: 'users',
+      });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on getAdminUsers');
       next(err);
     }
   },

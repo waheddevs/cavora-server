@@ -1,11 +1,12 @@
 import mongoose, { type ClientSession, type Types } from 'mongoose';
 import { AppError } from '../common/errors/app-error';
 import { ErrorCode, HttpCode } from '../common/errors/error-codes';
+import { removeUpload, uploadUrl } from '../common/middleware/upload';
 import { AuditActorType } from '../libs/enums/audit.enum';
 import { BlogPostStatus } from '../libs/enums/blog.enum';
 import type { BlogCommentStatus } from '../libs/enums/blog.enum';
 import { BookingStatus } from '../libs/enums/booking.enum';
-import { ContactMessageStatus, NewsletterSubscriptionStatus } from '../libs/enums/engagement.enum';
+import { ContactMessageStatus } from '../libs/enums/engagement.enum';
 import { TourStatus } from '../libs/enums/tour.enum';
 import type {
   AdminBlogCommentInquiry,
@@ -16,6 +17,8 @@ import type {
   BlogPost,
   BlogPostInput,
   BlogPostUpdateInput,
+  BlogPostWriteInput,
+  BlogPostWriteUpdateInput,
   PaginatedAdminBlogComments,
   PaginatedAdminBlogPosts,
 } from '../libs/types/blog';
@@ -30,14 +33,18 @@ import type {
   ContactMessage,
   ContactMessageInquiry,
   ContactMessageView,
-  NewsletterSubscription,
-  NewsletterSubscriptionInquiry,
-  NewsletterSubscriptionView,
   PaginatedContactMessages,
-  PaginatedNewsletterSubscriptions,
 } from '../libs/types/engagement';
-import type { AuthContext, RequestContext } from '../libs/types/member';
-import { MemberRole } from '../libs/enums/member.enum';
+import type {
+  AdminMemberStats,
+  AdminMemberView,
+  AuthContext,
+  Member,
+  MemberInquiry,
+  PaginatedAdminMembers,
+  RequestContext,
+} from '../libs/types/member';
+import { MemberRole, MemberStatus } from '../libs/enums/member.enum';
 import type {
   AdminPaymentView,
   Payment,
@@ -64,6 +71,7 @@ import type {
   TourDepartureUpdateInput,
   TourImage,
   TourImageInput,
+  TourImageWriteInput,
   TourInput,
   TourUpdateInput,
 } from '../libs/types/tour';
@@ -72,12 +80,15 @@ import BlogComment from '../schema/BlogComment.model';
 import BlogPostModel from '../schema/BlogPost.model';
 import BookingModel from '../schema/Booking.model';
 import ContactMessageModel from '../schema/ContactMessage.model';
-import NewsletterSubscriptionModel from '../schema/NewsletterSubscription.model';
+import MemberModel from '../schema/Member.model';
 import PaymentModel from '../schema/Payment.model';
+import Session from '../schema/Session.model';
 import TourModel from '../schema/Tour.model';
 import TourDepartureModel from '../schema/TourDeparture.model';
 import TourImageModel from '../schema/TourImage.model';
 import PaymentService from './Payment.service';
+
+const MAX_TOUR_IMAGES = 4;
 
 function notFound(code: ErrorCode, message: string): AppError {
   return new AppError(HttpCode.NOT_FOUND, code, message);
@@ -89,6 +100,24 @@ function invalidState(message: string): AppError {
 
 function pagination(page: number, limit: number, total: number): PaginationMeta {
   return { page, limit, total, totalPages: Math.ceil(total / limit) };
+}
+
+function toAdminMemberView(member: Member): AdminMemberView {
+  return {
+    id: member._id.toString(),
+    email: member.email,
+    username: member.username,
+    firstName: member.firstName,
+    lastName: member.lastName,
+    ...(member.phone !== undefined ? { phone: member.phone } : {}),
+    ...(member.location !== undefined ? { location: member.location } : {}),
+    ...(member.avatarUrl !== undefined ? { avatarUrl: member.avatarUrl } : {}),
+    role: member.role,
+    status: member.status,
+    emailVerified: member.emailVerifiedAt !== undefined && member.emailVerifiedAt !== null,
+    createdAt: member.createdAt.toISOString(),
+    updatedAt: member.updatedAt.toISOString(),
+  };
 }
 
 function searchRegex(query: string): RegExp {
@@ -185,18 +214,6 @@ function toContactView(contact: ContactMessage): ContactMessageView {
     status: contact.status,
     ...(contact.resolvedAt ? { resolvedAt: contact.resolvedAt.toISOString() } : {}),
     createdAt: contact.createdAt.toISOString(),
-  };
-}
-
-function toSubscriptionView(subscription: NewsletterSubscription): NewsletterSubscriptionView {
-  return {
-    id: subscription._id.toString(),
-    email: subscription.email,
-    status: subscription.status,
-    source: subscription.source,
-    consentedAt: subscription.consentedAt.toISOString(),
-    ...(subscription.confirmedAt ? { confirmedAt: subscription.confirmedAt.toISOString() } : {}),
-    createdAt: subscription.createdAt.toISOString(),
   };
 }
 
@@ -363,37 +380,146 @@ class AdminService {
 
   public async upsertTourImage(
     auth: AuthContext,
-    input: TourImageInput,
+    input: TourImageWriteInput,
+    context: RequestContext,
+    fileName?: string,
+  ): Promise<AdminTourImageView> {
+    this.assertAdmin(auth);
+    if (input.position >= MAX_TOUR_IMAGES) {
+      throw AppError.validation({
+        'params.position': `Tour image position must be between 0 and ${MAX_TOUR_IMAGES - 1}.`,
+      });
+    }
+    const uploadedImageUrl = fileName ? uploadUrl('tours', fileName) : undefined;
+    const imageUrl = uploadedImageUrl ?? input.url;
+    if (!imageUrl) {
+      throw AppError.validation({ 'body.image': 'A tour image file is required.' });
+    }
+    let result: { image: AdminTourImageView; replacedUrl?: string };
+    try {
+      result = await mongoose.connection.transaction(async (session) => {
+        const tourExists = await TourModel.exists({ _id: input.tourId }).session(session);
+        if (!tourExists) throw notFound(ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
+        const previous = await TourImageModel.findOne({
+          tourId: input.tourId,
+          position: input.position,
+        })
+          .session(session)
+          .lean<TourImage>()
+          .exec();
+        if (!previous) {
+          const imageCount = await TourImageModel.countDocuments({ tourId: input.tourId }).session(
+            session,
+          );
+          if (imageCount >= MAX_TOUR_IMAGES) {
+            throw new AppError(
+              HttpCode.CONFLICT,
+              ErrorCode.RESOURCE_CONFLICT,
+              `A tour can have at most ${MAX_TOUR_IMAGES} images.`,
+            );
+          }
+        }
+        const imageInput: TourImageInput = { ...input, url: imageUrl };
+        const image = await TourImageModel.findOneAndUpdate(
+          { tourId: input.tourId, position: input.position },
+          { $set: imageInput },
+          { new: true, session, setDefaultsOnInsert: true, upsert: true },
+        )
+          .lean<TourImage>()
+          .exec();
+        if (!image) throw new Error('Tour image upsert returned no document.');
+        await this.writeAudit(
+          auth,
+          'admin.tour_image_upserted',
+          'tour_image',
+          image._id.toString(),
+          context,
+          session,
+        );
+        return {
+          image: {
+            id: image._id.toString(),
+            tourId: image.tourId,
+            url: image.url,
+            altText: image.altText,
+            position: image.position,
+          },
+          replacedUrl: previous?.url !== image.url ? previous?.url : undefined,
+        };
+      });
+    } catch (err) {
+      await removeUpload(uploadedImageUrl);
+      throw err;
+    }
+    await removeUpload(result.replacedUrl);
+    return result.image;
+  }
+
+  public async uploadTourImage(
+    auth: AuthContext,
+    tourId: number,
+    fileName: string,
+    altText: string,
     context: RequestContext,
   ): Promise<AdminTourImageView> {
     this.assertAdmin(auth);
-    return mongoose.connection.transaction(async (session) => {
-      const tourExists = await TourModel.exists({ _id: input.tourId }).session(session);
-      if (!tourExists) throw notFound(ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
-      const image = await TourImageModel.findOneAndUpdate(
-        { tourId: input.tourId, position: input.position },
-        { $set: input },
-        { new: true, session, setDefaultsOnInsert: true, upsert: true },
-      )
-        .lean<TourImage>()
-        .exec();
-      if (!image) throw new Error('Tour image upsert returned no document.');
-      await this.writeAudit(
-        auth,
-        'admin.tour_image_upserted',
-        'tour_image',
-        image._id.toString(),
-        context,
-        session,
-      );
-      return {
-        id: image._id.toString(),
-        tourId: image.tourId,
-        url: image.url,
-        altText: image.altText,
-        position: image.position,
-      };
-    });
+    const imageUrl = uploadUrl('tours', fileName);
+    try {
+      return await mongoose.connection.transaction(async (session) => {
+        const tourExists = await TourModel.exists({ _id: tourId }).session(session);
+        if (!tourExists) throw notFound(ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
+
+        const images = await TourImageModel.find({ tourId })
+          .select({ position: 1 })
+          .session(session)
+          .lean<Array<Pick<TourImage, 'position'>>>()
+          .exec();
+        if (images.length >= MAX_TOUR_IMAGES) {
+          throw new AppError(
+            HttpCode.CONFLICT,
+            ErrorCode.RESOURCE_CONFLICT,
+            `A tour can have at most ${MAX_TOUR_IMAGES} images.`,
+          );
+        }
+        const usedPositions = new Set(images.map((image) => image.position));
+        const position = Array.from({ length: MAX_TOUR_IMAGES }, (_, index) => index).find(
+          (index) => !usedPositions.has(index),
+        );
+        if (position === undefined) {
+          throw new AppError(
+            HttpCode.CONFLICT,
+            ErrorCode.RESOURCE_CONFLICT,
+            `A tour can have at most ${MAX_TOUR_IMAGES} images.`,
+          );
+        }
+
+        const [image] = await TourImageModel.create(
+          [{ tourId, position, altText, url: imageUrl }],
+          { session },
+        );
+        if (!image) throw new Error('Tour image insert returned no document.');
+
+        await this.writeAudit(
+          auth,
+          'admin.tour_image_uploaded',
+          'tour_image',
+          image._id.toString(),
+          context,
+          session,
+        );
+
+        return {
+          id: image._id.toString(),
+          tourId: image.tourId,
+          url: image.url,
+          altText: image.altText,
+          position: image.position,
+        };
+      });
+    } catch (err) {
+      await removeUpload(imageUrl);
+      throw err;
+    }
   }
 
   public async deleteTourImage(
@@ -403,7 +529,7 @@ class AdminService {
     context: RequestContext,
   ): Promise<void> {
     this.assertAdmin(auth);
-    await mongoose.connection.transaction(async (session) => {
+    const removedUrl = await mongoose.connection.transaction(async (session) => {
       const image = await TourImageModel.findOneAndDelete({ tourId, position }, { session })
         .lean<TourImage>()
         .exec();
@@ -418,7 +544,9 @@ class AdminService {
         context,
         session,
       );
+      return image.url;
     });
+    await removeUpload(removedUrl);
   }
 
   public async createDeparture(
@@ -630,13 +758,19 @@ class AdminService {
 
   public async createBlogPost(
     auth: AuthContext,
-    input: BlogPostInput,
+    input: BlogPostWriteInput,
     context: RequestContext,
+    fileName?: string,
   ): Promise<AdminBlogPostView> {
     this.assertAdmin(auth);
+    const uploadedImageUrl = fileName ? uploadUrl('blog', fileName) : undefined;
+    const imageUrl = uploadedImageUrl ?? input.imageUrl;
+    if (!imageUrl) {
+      throw AppError.validation({ 'body.image': 'A blog image file is required.' });
+    }
     try {
       return await mongoose.connection.transaction(async (session) => {
-        const payload = this.withBlogPublishingDate(input);
+        const payload = this.withBlogPublishingDate({ ...input, imageUrl });
         const [created] = await BlogPostModel.create([payload], { session });
         if (!created) throw new Error('Blog post creation returned no document.');
         await this.writeAudit(
@@ -650,22 +784,34 @@ class AdminService {
         return toBlogPostView(created.toObject());
       });
     } catch (err) {
+      await removeUpload(uploadedImageUrl);
       this.throwContentConflict(err, 'The blog post slug is already in use.');
     }
   }
 
   public async updateBlogPost(
     auth: AuthContext,
-    input: BlogPostUpdateInput,
+    input: BlogPostWriteUpdateInput,
     context: RequestContext,
+    fileName?: string,
   ): Promise<AdminBlogPostView> {
     this.assertAdmin(auth);
+    const uploadedImageUrl = fileName ? uploadUrl('blog', fileName) : undefined;
+    let result: { post: AdminBlogPostView; replacedUrl?: string };
     try {
-      return await mongoose.connection.transaction(async (session) => {
+      result = await mongoose.connection.transaction(async (session) => {
         const { _id, ...changes } = input;
+        const current = await BlogPostModel.findById(_id).session(session).lean<BlogPost>().exec();
+        if (!current) {
+          throw notFound(ErrorCode.BLOG_POST_NOT_FOUND, 'Blog post not found.');
+        }
+        const normalizedChanges: Partial<BlogPostInput> = {
+          ...changes,
+          ...(uploadedImageUrl ? { imageUrl: uploadedImageUrl } : {}),
+        };
         const post = await BlogPostModel.findByIdAndUpdate(
           _id,
-          { $set: this.withBlogPublishingDate(changes) },
+          { $set: this.withBlogPublishingDate(normalizedChanges) },
           { new: true, session },
         )
           .lean<BlogPost>()
@@ -681,11 +827,17 @@ class AdminService {
           context,
           session,
         );
-        return toBlogPostView(post);
+        return {
+          post: toBlogPostView(post),
+          replacedUrl: current.imageUrl !== post.imageUrl ? current.imageUrl : undefined,
+        };
       });
     } catch (err) {
+      await removeUpload(uploadedImageUrl);
       this.throwContentConflict(err, 'The blog post slug is already in use.');
     }
+    await removeUpload(result.replacedUrl);
+    return result.post;
   }
 
   public async moderateComment(
@@ -803,69 +955,6 @@ class AdminService {
         session,
       );
       return toContactView(contact);
-    });
-  }
-
-  public async getNewsletterSubscriptions(
-    auth: AuthContext,
-    inquiry: NewsletterSubscriptionInquiry,
-  ): Promise<PaginatedNewsletterSubscriptions> {
-    this.assertAdmin(auth);
-    const filter: Record<string, unknown> = {};
-    if (inquiry.status) filter.status = inquiry.status;
-    if (inquiry.query) {
-      const regex = searchRegex(inquiry.query);
-      filter.$or = [{ email: regex }, { source: regex }];
-    }
-    const [subscriptions, total] = await Promise.all([
-      NewsletterSubscriptionModel.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
-        .skip((inquiry.page - 1) * inquiry.limit)
-        .limit(inquiry.limit)
-        .lean<NewsletterSubscription[]>()
-        .exec(),
-      NewsletterSubscriptionModel.countDocuments(filter).exec(),
-    ]);
-    return {
-      data: subscriptions.map(toSubscriptionView),
-      meta: pagination(inquiry.page, inquiry.limit, total),
-    };
-  }
-
-  public async updateNewsletterStatus(
-    auth: AuthContext,
-    subscriptionId: Types.ObjectId,
-    status: NewsletterSubscriptionStatus,
-    context: RequestContext,
-  ): Promise<NewsletterSubscriptionView> {
-    this.assertAdmin(auth);
-    return mongoose.connection.transaction(async (session) => {
-      const active = status === NewsletterSubscriptionStatus.ACTIVE;
-      const subscription = await NewsletterSubscriptionModel.findByIdAndUpdate(
-        subscriptionId,
-        {
-          $set: { status, ...(active ? { confirmedAt: this.now() } : {}) },
-          ...(!active ? { $unset: { confirmedAt: 1 } } : {}),
-        },
-        { new: true, session },
-      )
-        .lean<NewsletterSubscription>()
-        .exec();
-      if (!subscription) {
-        throw notFound(
-          ErrorCode.NEWSLETTER_SUBSCRIPTION_NOT_FOUND,
-          'Newsletter subscription not found.',
-        );
-      }
-      await this.writeAudit(
-        auth,
-        'admin.newsletter_status_updated',
-        'newsletter_subscription',
-        subscription._id.toString(),
-        context,
-        session,
-      );
-      return toSubscriptionView(subscription);
     });
   }
 
@@ -998,6 +1087,91 @@ class AdminService {
   ): Promise<PaymentRefundResult> {
     this.assertAdmin(auth);
     return this.paymentService.refundPayment(auth, input, context);
+  }
+
+  public async getMembers(
+    auth: AuthContext,
+    inquiry: MemberInquiry,
+  ): Promise<PaginatedAdminMembers> {
+    this.assertAdmin(auth);
+    const filter: Record<string, unknown> = {};
+    if (inquiry.role) filter.role = inquiry.role;
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.query) {
+      const regex = searchRegex(inquiry.query);
+      filter.$or = [
+        { email: regex },
+        { username: regex },
+        { firstName: regex },
+        { lastName: regex },
+      ];
+    }
+    const [members, total, statusCounts] = await Promise.all([
+      MemberModel.find(filter)
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((inquiry.page - 1) * inquiry.limit)
+        .limit(inquiry.limit)
+        .lean<Member[]>()
+        .exec(),
+      MemberModel.countDocuments(filter).exec(),
+      MemberModel.aggregate<{ _id: MemberStatus; count: number }>([
+        { $group: { _id: '$status', count: { $sum: 1 } } },
+      ]).exec(),
+    ]);
+
+    const stats: AdminMemberStats = { total: 0, active: 0, blocked: 0, deleted: 0 };
+    for (const entry of statusCounts) {
+      stats.total += entry.count;
+      if (entry._id === MemberStatus.ACTIVE) stats.active = entry.count;
+      else if (entry._id === MemberStatus.BLOCKED) stats.blocked = entry.count;
+      else if (entry._id === MemberStatus.DELETED) stats.deleted = entry.count;
+    }
+
+    return {
+      data: members.map(toAdminMemberView),
+      meta: pagination(inquiry.page, inquiry.limit, total),
+      stats,
+    };
+  }
+
+  public async updateMemberStatus(
+    auth: AuthContext,
+    memberId: Types.ObjectId,
+    status: MemberStatus,
+    context: RequestContext,
+  ): Promise<AdminMemberView> {
+    this.assertAdmin(auth);
+    if (auth.memberId.equals(memberId)) {
+      throw new AppError(
+        HttpCode.CONFLICT,
+        ErrorCode.RESOURCE_CONFLICT,
+        'Administrators cannot change their own account status.',
+      );
+    }
+    return mongoose.connection.transaction(async (session) => {
+      const member = await MemberModel.findByIdAndUpdate(
+        memberId,
+        { $set: { status } },
+        { new: true, session },
+      )
+        .lean<Member>()
+        .exec();
+      if (!member) throw notFound(ErrorCode.MEMBER_NOT_FOUND, 'Member not found.');
+
+      if (status !== MemberStatus.ACTIVE) {
+        await Session.deleteMany({ memberId }, { session }).exec();
+      }
+
+      await this.writeAudit(
+        auth,
+        'admin.member_status_updated',
+        'member',
+        member._id.toString(),
+        context,
+        session,
+      );
+      return toAdminMemberView(member);
+    });
   }
 
   private assertAdmin(auth: AuthContext): void {

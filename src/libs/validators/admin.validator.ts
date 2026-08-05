@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { BlogCommentStatus, BlogPostStatus } from '../enums/blog.enum';
 import { BookingStatus } from '../enums/booking.enum';
-import { ContactMessageStatus, NewsletterSubscriptionStatus } from '../enums/engagement.enum';
+import { ContactMessageStatus } from '../enums/engagement.enum';
+import { MemberRole, MemberStatus } from '../enums/member.enum';
 import { PaymentStatus } from '../enums/payment.enum';
 import { TourDepartureStatus, TourStatus } from '../enums/tour.enum';
 
@@ -38,6 +39,14 @@ const itineraryItem = z
     description: z.string().trim().min(1).max(5_000),
   })
   .strict();
+const jsonDocument = z.preprocess((value) => {
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value) as unknown;
+  } catch {
+    return value;
+  }
+}, z.json());
 const tourFields = {
   slug,
   country: z.string().trim().min(1).max(100),
@@ -74,9 +83,9 @@ const blogPostFields = {
   slug,
   title: z.string().trim().min(1).max(240),
   excerpt: z.string().trim().min(1).max(1_000),
-  body: z.json(),
+  body: jsonDocument,
   category: z.string().trim().min(1).max(100),
-  imageUrl: url,
+  imageUrl: url.optional(),
   authorName: z.string().trim().min(1).max(160),
   authorImageUrl: url.optional(),
   status: z.enum(BlogPostStatus).default(BlogPostStatus.DRAFT),
@@ -94,7 +103,7 @@ export const adminTourIdParamsSchema = z
 export const adminTourImageParamsSchema = z
   .object({
     id: z.coerce.number().int().positive(),
-    position: z.coerce.number().int().min(0),
+    position: z.coerce.number().int().min(0).max(3),
   })
   .strict();
 
@@ -110,7 +119,13 @@ export const adminTourUpdateBodySchema = z
   });
 export const adminTourImageBodySchema = z
   .object({
-    url,
+    url: url.optional(),
+    altText: z.string().trim().min(1).max(300),
+  })
+  .strict();
+
+export const adminTourImageUploadBodySchema = z
+  .object({
     altText: z.string().trim().min(1).max(300),
   })
   .strict();
@@ -202,17 +217,6 @@ export const adminContactStatusBodySchema = z
   .object({ status: z.enum(ContactMessageStatus) })
   .strict();
 
-export const adminNewsletterListQuerySchema = z
-  .object({
-    ...pageQuery,
-    query: listQuery,
-    status: z.enum(NewsletterSubscriptionStatus).optional(),
-  })
-  .strict();
-export const adminNewsletterStatusBodySchema = z
-  .object({ status: z.enum(NewsletterSubscriptionStatus) })
-  .strict();
-
 export const adminBookingListQuerySchema = z
   .object({
     ...pageQuery,
@@ -238,3 +242,13 @@ export const adminRefundBodySchema = z
     amountCents: z.number().int().positive().optional(),
   })
   .strict();
+
+export const adminMemberListQuerySchema = z
+  .object({
+    ...pageQuery,
+    query: listQuery,
+    role: z.enum(MemberRole).optional(),
+    status: z.enum(MemberStatus).optional(),
+  })
+  .strict();
+export const adminMemberStatusBodySchema = z.object({ status: z.enum(MemberStatus) }).strict();

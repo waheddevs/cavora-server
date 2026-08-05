@@ -5,64 +5,127 @@
   stylesheetPath,
 }) %>
 
-<section class="dashboard-intro" aria-labelledby="dashboard-heading">
-  <div>
-    <p class="section-label">Overview</p>
-    <h2 id="dashboard-heading">Travel operations at a glance</h2>
-    <p>
-      Use this workspace to manage Cavora inventory, customer activity, content, and payments.
-    </p>
-  </div>
-  <p class="dashboard-date" data-dashboard-date aria-live="polite"></p>
-</section>
-
-<section class="dashboard-grid" aria-label="Administration areas">
-  <article class="dashboard-card">
-    <div class="dashboard-card__header">
-      <span class="dashboard-card__index">01</span>
-      <span class="dashboard-card__status">API ready</span>
+<div class="dashboard-page">
+  <header class="dashboard-heading" aria-labelledby="dashboard-title">
+    <div>
+      <p class="section-label">Operations overview</p>
+      <h1 id="dashboard-title">Welcome back, <span data-dashboard-name>Administrator</span></h1>
+      <p>Here is what is happening across Cavora today.</p>
     </div>
-    <h3>Tours and departures</h3>
-    <p>Maintain tour details, images, inventory, departure dates, and capacity.</p>
-  </article>
-
-  <article class="dashboard-card">
-    <div class="dashboard-card__header">
-      <span class="dashboard-card__index">02</span>
-      <span class="dashboard-card__status">API ready</span>
+    <div class="dashboard-heading__date">
+      <span>Today</span>
+      <strong data-dashboard-date aria-live="polite"></strong>
     </div>
-    <h3>Bookings and payments</h3>
-    <p>Review booking states, payment records, operational updates, and refunds.</p>
-  </article>
+  </header>
 
-  <article class="dashboard-card">
-    <div class="dashboard-card__header">
-      <span class="dashboard-card__index">03</span>
-      <span class="dashboard-card__status">API ready</span>
-    </div>
-    <h3>Content</h3>
-    <p>Update homepage selections, publish blog posts, and moderate comments.</p>
-  </article>
+  <section class="dashboard-metrics" aria-label="Cavora totals">
+    <a class="metric-card metric-card--tours" href="/admin/tours" data-admin-link>
+      <span class="metric-card__icon" aria-hidden="true">T</span>
+      <span class="metric-card__content">
+        <small>Total tours</small>
+        <strong data-dashboard-tour-count>&mdash;</strong>
+        <span>Travel inventory</span>
+      </span>
+      <span class="metric-card__arrow" aria-hidden="true">&rarr;</span>
+    </a>
 
-  <article class="dashboard-card">
-    <div class="dashboard-card__header">
-      <span class="dashboard-card__index">04</span>
-      <span class="dashboard-card__status">API ready</span>
-    </div>
-    <h3>Engagement</h3>
-    <p>Process contact messages and maintain newsletter subscription statuses.</p>
-  </article>
-</section>
+    <a class="metric-card metric-card--bookings" href="/admin/bookings" data-admin-link>
+      <span class="metric-card__icon" aria-hidden="true">B</span>
+      <span class="metric-card__content">
+        <small>Total bookings</small>
+        <strong data-dashboard-booking-count>&mdash;</strong>
+        <span>Customer reservations</span>
+      </span>
+      <span class="metric-card__arrow" aria-hidden="true">&rarr;</span>
+    </a>
 
-<section class="dashboard-note" aria-labelledby="security-heading">
-  <div class="dashboard-note__marker" aria-hidden="true">i</div>
-  <div>
-    <h2 id="security-heading">Protected workspace</h2>
-    <p>
-      This page requires an active administrator session. All data changes continue through the
-      authenticated Cavora REST APIs with CSRF validation.
-    </p>
-  </div>
-</section>
+    <a class="metric-card metric-card--members" href="/admin/users" data-admin-link>
+      <span class="metric-card__icon" aria-hidden="true">M</span>
+      <span class="metric-card__content">
+        <small>Active members</small>
+        <strong data-dashboard-member-count>&mdash;</strong>
+        <span data-dashboard-member-note>Registered accounts</span>
+      </span>
+      <span class="metric-card__arrow" aria-hidden="true">&rarr;</span>
+    </a>
+
+    <a class="metric-card metric-card--departures" href="/admin/departures" data-admin-link>
+      <span class="metric-card__icon" aria-hidden="true">D</span>
+      <span class="metric-card__content">
+        <small>Scheduled departures</small>
+        <strong data-dashboard-departure-count>&mdash;</strong>
+        <span>Upcoming tour dates</span>
+      </span>
+      <span class="metric-card__arrow" aria-hidden="true">&rarr;</span>
+    </a>
+  </section>
+
+  <section class="dashboard-content" aria-label="Recent Cavora activity">
+    <article class="dashboard-panel dashboard-bookings">
+      <header class="dashboard-panel__header">
+        <div>
+          <span class="dashboard-panel__eyebrow">Latest activity</span>
+          <h2>Recent bookings</h2>
+        </div>
+        <a class="dashboard-panel__link" href="/admin/bookings" data-admin-link>View all</a>
+      </header>
+
+      <div class="dashboard-table-wrap">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Tour</th>
+              <th>Guests</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody data-dashboard-booking-rows>
+            <tr class="dashboard-table__loading">
+              <td colspan="5">Loading recent bookings&hellip;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <aside class="dashboard-sidebar">
+      <article class="dashboard-panel dashboard-departures">
+        <header class="dashboard-panel__header">
+          <div>
+            <span class="dashboard-panel__eyebrow">Travel calendar</span>
+            <h2>Next departures</h2>
+          </div>
+          <a class="dashboard-panel__link" href="/admin/departures" data-admin-link>View all</a>
+        </header>
+        <div class="departure-list" data-dashboard-departures>
+          <p class="dashboard-empty">Loading upcoming departures&hellip;</p>
+        </div>
+      </article>
+
+      <div class="dashboard-mini-grid">
+        <a class="dashboard-mini-card" href="/admin/posts" data-admin-link>
+          <span>Published posts</span>
+          <strong data-dashboard-post-count>&mdash;</strong>
+          <small>Live travel stories</small>
+        </a>
+        <a class="dashboard-mini-card" href="/admin/contact-messages" data-admin-link>
+          <span>New messages</span>
+          <strong data-dashboard-message-count>&mdash;</strong>
+          <small>Awaiting review</small>
+        </a>
+      </div>
+
+      <article class="dashboard-focus">
+        <div>
+          <span>Today&rsquo;s focus</span>
+          <strong data-dashboard-focus>Checking operations&hellip;</strong>
+        </div>
+        <a href="/admin/bookings" data-admin-link>Open bookings <span aria-hidden="true">&rarr;</span></a>
+      </article>
+    </aside>
+  </section>
+</div>
 
 <%- include('../includes/footer', { layoutMode, scriptPath }) %>

@@ -9,21 +9,3 @@ export const contactMessageBodySchema = z
     message: z.string().trim().min(10).max(10_000),
   })
   .strict();
-
-export const newsletterSubscriptionBodySchema = z
-  .object({
-    email: z.string().trim().toLowerCase().email().max(254),
-    source: z.string().trim().min(1).max(100).default('website'),
-    consent: z.literal(true),
-  })
-  .strict();
-
-export const newsletterUnsubscribeParamsSchema = z
-  .object({
-    token: z
-      .string()
-      .min(43)
-      .max(200)
-      .regex(/^[A-Za-z0-9_-]+$/, 'Must be a valid unsubscribe token.'),
-  })
-  .strict();

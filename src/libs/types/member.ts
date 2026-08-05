@@ -1,13 +1,14 @@
 import type { Types } from 'mongoose';
 import type { MemberRole, MemberStatus } from '../enums/member.enum';
+import type { PaginationMeta } from './tour';
 
 export interface Member {
   _id: Types.ObjectId;
   email: string;
   username: string;
-  passwordHash: string;
   firstName: string;
   lastName: string;
+  password: string;
   phone?: string;
   location?: string;
   avatarUrl?: string;
@@ -21,9 +22,9 @@ export interface Member {
 export interface MemberInput {
   email: string;
   username: string;
-  passwordHash: string;
   firstName: string;
   lastName: string;
+  password: string;
   phone?: string;
   location?: string;
   avatarUrl?: string;
@@ -43,11 +44,40 @@ export interface MemberUpdateInput {
 }
 
 export interface MemberInquiry {
-  page: number;
   limit: number;
+  page: number;
+  query?: string;
   role?: MemberRole;
   status?: MemberStatus;
-  search?: string;
+}
+
+export interface AdminMemberView {
+  id: string;
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  location?: string;
+  avatarUrl?: string;
+  role: MemberRole;
+  status: MemberStatus;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminMemberStats {
+  total: number;
+  active: number;
+  blocked: number;
+  deleted: number;
+}
+
+export interface PaginatedAdminMembers {
+  data: AdminMemberView[];
+  meta: PaginationMeta;
+  stats: AdminMemberStats;
 }
 
 export interface RegisterInput {
@@ -100,21 +130,24 @@ export interface AuthContext {
 }
 
 export interface MemberView {
-  avatarUrl?: string;
-  createdAt: string;
-  email: string;
-  emailVerified: boolean;
-  firstName: string;
   id: string;
-  lastName: string;
-  location?: string;
-  phone?: string;
-  role: MemberRole;
+  email: string;
   username: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  location?: string;
+  avatarUrl?: string;
+  role: MemberRole;
+  status: MemberStatus;
+  emailVerified: boolean;
+  createdAt: string;
 }
 
 export interface MemberProfileResult extends MemberView {
+  lastSignInAt?: string;
   stats: {
+    activeSessions: number;
     bookings: number;
     wishlist: number;
   };
@@ -140,16 +173,21 @@ export interface ResetPasswordInput {
   token: string;
 }
 
+export interface PasswordChangeInput {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface VerifyEmailInput {
   token: string;
 }
 
 export interface ProfileUpdateInput {
-  avatarUrl?: string;
   email?: string;
+  username?: string;
   firstName?: string;
   lastName?: string;
-  location?: string;
   phone?: string;
-  username?: string;
+  location?: string;
+  avatarUrl?: string;
 }

@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <title><%= pageTitle %> | Cavora Admin</title>
+    <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css" />
     <link rel="stylesheet" href="/assets/css/admin-shell.css" />
-    <link rel="stylesheet" href="<%= stylesheetPath %>" />
+    <link rel="stylesheet" href="/assets/css/sweetalert-theme.css" />
+    <link rel="stylesheet" href="<%= stylesheetPath %>" data-page-stylesheet />
   </head>
   <body class="admin-page">
     <div
@@ -27,27 +29,33 @@
       data-csrf-cookie-name="<%= csrfCookieName %>"
     >
       <aside class="admin-sidebar" id="admin-sidebar" aria-label="Administration navigation">
-        <a class="admin-brand" href="/admin" aria-label="Cavora admin dashboard">
-          <span class="admin-brand__mark" aria-hidden="true">C</span>
-          <span>
-            <strong>Cavora</strong>
-            <small>Administration</small>
-          </span>
-        </a>
+        <div class="admin-sidebar__profile">
+          <a class="admin-identity" href="/admin/profile" aria-label="Open your profile">
+            <span class="admin-identity__avatar" aria-hidden="true">
+              <img data-identity-avatar alt="" hidden />
+              <span data-identity-initial>A</span>
+            </span>
+            <strong data-identity-name>Administrator</strong>
+          </a>
+          <button class="admin-sidebar__logout" type="button" data-admin-logout>
+            <span>Log out</span>
+            <span aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
 
         <nav class="admin-nav">
           <p class="admin-nav__label">Workspace</p>
           <% const adminLinks = [
             ['dashboard', 'Dashboard', '/admin'],
+            ['profile', 'Profile', '/admin/profile'],
             ['tours', 'Tours', '/admin/tours'],
             ['departures', 'Departures', '/admin/departures'],
-            ['homepage', 'Homepage', '/admin/homepage'],
             ['bookings', 'Bookings', '/admin/bookings'],
             ['payments', 'Payments', '/admin/payments'],
+            ['users', 'Users', '/admin/users'],
             ['posts', 'Blog posts', '/admin/posts'],
             ['comments', 'Comments', '/admin/comments'],
             ['contact-messages', 'Contact messages', '/admin/contact-messages'],
-            ['newsletter-subscriptions', 'Newsletter', '/admin/newsletter-subscriptions'],
           ]; %>
           <% for (const [page, label, href] of adminLinks) { %>
             <a
@@ -62,33 +70,17 @@
       </aside>
 
       <div class="admin-workspace">
-        <header class="admin-topbar">
-          <button
-            class="admin-menu-button"
-            type="button"
-            aria-controls="admin-sidebar"
-            aria-expanded="false"
-            data-sidebar-toggle
-          >
-            <span aria-hidden="true">☰</span>
-            <span>Menu</span>
-          </button>
-          <div>
-            <p class="admin-topbar__eyebrow">Cavora operations</p>
-            <h1><%= pageTitle %></h1>
-          </div>
-          <div class="admin-topbar__actions">
-            <div class="admin-account" data-admin-account>
-              <span class="admin-account__avatar" data-admin-initial aria-hidden="true">A</span>
-              <span class="admin-account__identity">
-                <strong data-admin-name>Administrator</strong>
-                <small data-admin-email>Loading account…</small>
-              </span>
-              <button class="button button--small" type="button" data-admin-logout>
-                Log out
-              </button>
-            </div>
-          </div>
-        </header>
+        <button
+          class="admin-menu-button admin-menu-button--floating"
+          type="button"
+          aria-controls="admin-sidebar"
+          aria-expanded="false"
+          data-sidebar-toggle
+        >
+          <span aria-hidden="true">&#9776;</span>
+          <span>Menu</span>
+        </button>
+
+        <script src="/assets/js/admin-bootstrap.js"></script>
 
         <main class="admin-main">

@@ -65,6 +65,17 @@ export const profileUpdateBodySchema = z
     message: 'At least one profile field is required.',
   });
 
+export const passwordChangeBodySchema = z
+  .object({
+    currentPassword: z.string().min(1).max(128),
+    newPassword: password,
+  })
+  .strict()
+  .refine((input) => input.currentPassword !== input.newPassword, {
+    message: 'The new password must be different from the current password.',
+    path: ['newPassword'],
+  });
+
 export const wishlistTourParamsSchema = z
   .object({
     tourId: z.coerce.number().int().positive(),

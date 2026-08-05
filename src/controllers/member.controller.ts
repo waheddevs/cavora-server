@@ -1,11 +1,14 @@
 import type { NextFunction, Request, Response } from 'express';
-import { HttpCode } from '../common/errors/error-codes';
+import { AppError } from '../common/errors/app-error';
+import { ErrorCode, HttpCode } from '../common/errors/error-codes';
+import { markUploadPersisted } from '../common/middleware/upload';
 import { clearAuthenticationCookies, setAuthenticationCookies } from '../common/security/cookies';
 import type { BookingInquiry } from '../libs/types/booking';
 import type {
   AuthContext,
   ForgotPasswordInput,
   LoginInput,
+  PasswordChangeInput,
   ProfileUpdateInput,
   RegisterInput,
   RequestContext,
@@ -165,6 +168,58 @@ const memberController = {
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on updateProfile');
+      next(err);
+    }
+  },
+
+  async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('changePassword');
+      const result = await memberService.changePassword(
+        authenticated(req),
+        req.validated.body as PasswordChangeInput,
+        requestContext(req),
+      );
+      preventPrivateCaching(res);
+      res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on changePassword');
+      next(err);
+    }
+  },
+
+  async uploadAvatar(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('uploadAvatar');
+      if (!req.file) {
+        throw new AppError(
+          HttpCode.UNPROCESSABLE_ENTITY,
+          ErrorCode.VALIDATION_ERROR,
+          'An image file is required.',
+        );
+      }
+      const result = await memberService.updateAvatar(
+        authenticated(req),
+        req.file.filename,
+        requestContext(req),
+      );
+      markUploadPersisted(req);
+      preventPrivateCaching(res);
+      res.status(HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on uploadAvatar');
+      next(err);
+    }
+  },
+
+  async removeAvatar(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('removeAvatar');
+      const result = await memberService.removeAvatar(authenticated(req), requestContext(req));
+      preventPrivateCaching(res);
+      res.status(HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on removeAvatar');
       next(err);
     }
   },

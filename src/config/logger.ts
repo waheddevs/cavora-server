@@ -23,7 +23,6 @@ export const logger = pino({
       'req.headers.x-csrf-token',
       'password',
       '*.password',
-      '*.passwordHash',
       '*.sessionToken',
       '*.csrfToken',
       '*.csrfTokenHash',

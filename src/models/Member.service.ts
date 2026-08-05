@@ -7,6 +7,7 @@ import {
 } from '../common/email/account-email.adapter';
 import { argonPasswordAdapter, type PasswordAdapter } from '../common/security/passwords';
 import { createOpaqueToken, hashOpaqueToken } from '../common/security/tokens';
+import { accountUploadFolder, removeUpload, uploadUrl } from '../common/middleware/upload';
 import { env } from '../config/env';
 import { AuditActorType } from '../libs/enums/audit.enum';
 import { MemberRole, MemberStatus } from '../libs/enums/member.enum';
@@ -25,6 +26,7 @@ import type {
   Member,
   MemberProfileResult,
   MemberView,
+  PasswordChangeInput,
   ProfileUpdateInput,
   RegisterInput,
   RequestContext,
@@ -56,6 +58,7 @@ type MemberViewSource = Pick<
   | 'location'
   | 'phone'
   | 'role'
+  | 'status'
   | 'username'
 >;
 
@@ -89,6 +92,7 @@ function toMemberView(member: MemberViewSource): MemberView {
     ...(member.location !== undefined ? { location: member.location } : {}),
     ...(member.avatarUrl !== undefined ? { avatarUrl: member.avatarUrl } : {}),
     role: member.role,
+    status: member.status,
     emailVerified: member.emailVerifiedAt !== undefined && member.emailVerifiedAt !== null,
     createdAt: member.createdAt.toISOString(),
   };
@@ -120,13 +124,13 @@ class MemberService {
     context: RequestContext,
   ): Promise<AuthenticationResult> {
     await this.assertIdentityAvailable(input.email, input.username);
-    const passwordHash = await this.passwordAdapter.hash(input.password);
+    const password = await this.passwordAdapter.hash(input.password);
 
     try {
       const member = await MemberModel.create({
         email: input.email,
         username: input.username,
-        passwordHash,
+        password,
         firstName: input.firstName,
         lastName: input.lastName,
       });
@@ -157,13 +161,13 @@ class MemberService {
     const adminCreatedWhileIndexing = await MemberModel.exists({ role: MemberRole.ADMIN });
     if (adminCreatedWhileIndexing) this.throwAdminAlreadyExists();
     await this.assertIdentityAvailable(input.email, input.username);
-    const passwordHash = await this.passwordAdapter.hash(input.password);
+    const password = await this.passwordAdapter.hash(input.password);
 
     try {
       const member = await MemberModel.create({
         email: input.email,
         username: input.username,
-        passwordHash,
+        password,
         firstName: input.firstName,
         lastName: input.lastName,
         role: MemberRole.ADMIN,
@@ -185,10 +189,10 @@ class MemberService {
 
   public async login(input: LoginInput, context: RequestContext): Promise<AuthenticationResult> {
     const member = await MemberModel.findOne({ email: input.email })
-      .select('+passwordHash')
+      .select('+password')
       .lean<Member>()
       .exec();
-    if (!member || !(await this.passwordAdapter.verify(member.passwordHash, input.password))) {
+    if (!member || !(await this.passwordAdapter.verify(member.password, input.password))) {
       throw new AppError(
         HttpCode.UNAUTHORIZED,
         ErrorCode.INVALID_CREDENTIALS,
@@ -207,7 +211,6 @@ class MemberService {
     await this.writeAudit(member._id, 'account.logged_in', 'session', undefined, context);
 
     return { member: toMemberView(member), tokens };
-  
   }
 
   public async authenticateSession(sessionToken: string | undefined): Promise<AuthContext> {
@@ -302,7 +305,7 @@ class MemberService {
     context: RequestContext,
   ): Promise<{ message: string }> {
     const now = this.now();
-    const passwordHash = await this.passwordAdapter.hash(input.password);
+    const password = await this.passwordAdapter.hash(input.password);
     const token = await PasswordResetToken.findOneAndUpdate(
       {
         tokenHash: hashOpaqueToken(input.token, 'password-reset'),
@@ -318,7 +321,7 @@ class MemberService {
 
     const updated = await MemberModel.updateOne(
       { _id: token.memberId, status: MemberStatus.ACTIVE },
-      { $set: { passwordHash } },
+      { $set: { password } },
     ).exec();
     if (updated.matchedCount === 0) this.throwInvalidAccountToken();
 
@@ -443,6 +446,115 @@ class MemberService {
       if (err instanceof AppError) throw err;
       this.throwIdentityConflict(err);
     }
+  }
+
+  public async changePassword(
+    auth: AuthContext,
+    input: PasswordChangeInput,
+    context: RequestContext,
+  ): Promise<{ message: string }> {
+    const member = await MemberModel.findById(auth.memberId)
+      .select('+password')
+      .lean<Member>()
+      .exec();
+    if (!member) {
+      throw new AppError(HttpCode.NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, 'Member not found.');
+    }
+
+    const matches = await this.passwordAdapter.verify(member.password, input.currentPassword);
+    if (!matches) {
+      throw new AppError(
+        HttpCode.UNAUTHORIZED,
+        ErrorCode.INVALID_CREDENTIALS,
+        'The current password is incorrect.',
+      );
+    }
+
+    const password = await this.passwordAdapter.hash(input.newPassword);
+    await MemberModel.updateOne({ _id: auth.memberId }, { $set: { password } }).exec();
+    await Session.deleteMany({ memberId: auth.memberId, _id: { $ne: auth.sessionId } }).exec();
+    await this.writeAudit(
+      auth.memberId,
+      'account.password_changed',
+      'member',
+      auth.memberId.toString(),
+      context,
+    );
+
+    return { message: 'Your password has been updated. Other sessions were signed out.' };
+  }
+
+  public async updateAvatar(
+    auth: AuthContext,
+    fileName: string,
+    context: RequestContext,
+  ): Promise<MemberProfileResult> {
+    const avatarUrl = uploadUrl(accountUploadFolder(auth), fileName);
+    const current = await MemberModel.findById(auth.memberId).lean<Member>().exec();
+    if (!current) {
+      throw new AppError(HttpCode.NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, 'Member not found.');
+    }
+
+    let member: Member | null;
+    try {
+      member = await MemberModel.findByIdAndUpdate(
+        auth.memberId,
+        { $set: { avatarUrl } },
+        { new: true, runValidators: true },
+      )
+        .lean<Member>()
+        .exec();
+    } catch (err) {
+      await removeUpload(avatarUrl);
+      throw err;
+    }
+    if (!member) {
+      await removeUpload(avatarUrl);
+      throw new AppError(HttpCode.NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, 'Member not found.');
+    }
+
+    await removeUpload(current.avatarUrl);
+    await this.writeAudit(
+      auth.memberId,
+      'account.avatar_updated',
+      'member',
+      auth.memberId.toString(),
+      context,
+    );
+
+    return this.buildProfile(member);
+  }
+
+  public async removeAvatar(
+    auth: AuthContext,
+    context: RequestContext,
+  ): Promise<MemberProfileResult> {
+    const current = await MemberModel.findById(auth.memberId).lean<Member>().exec();
+    if (!current) {
+      throw new AppError(HttpCode.NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, 'Member not found.');
+    }
+
+    const member = await MemberModel.findByIdAndUpdate(
+      auth.memberId,
+      { $unset: { avatarUrl: 1 } },
+      { new: true },
+    )
+      .lean<Member>()
+      .exec();
+    if (!member) {
+      throw new AppError(HttpCode.NOT_FOUND, ErrorCode.MEMBER_NOT_FOUND, 'Member not found.');
+    }
+
+    await removeUpload(current.avatarUrl);
+    await this.writeAudit(
+      auth.memberId,
+      'account.avatar_removed',
+      'member',
+      auth.memberId.toString(),
+      context,
+    );
+
+    return this.buildProfile(member);
   }
 
   public async getBookings(
@@ -737,11 +849,23 @@ class MemberService {
   }
 
   private async buildProfile(member: MemberViewSource): Promise<MemberProfileResult> {
-    const [bookings, wishlist] = await Promise.all([
+    const now = this.now();
+    const [bookings, wishlist, activeSessions, latestSession] = await Promise.all([
       Booking.countDocuments({ memberId: member._id }).exec(),
       Wishlist.countDocuments({ memberId: member._id }).exec(),
+      Session.countDocuments({ memberId: member._id, expiresAt: { $gt: now } }).exec(),
+      Session.findOne({ memberId: member._id })
+        .sort({ lastUsedAt: -1 })
+        .select({ lastUsedAt: 1 })
+        .lean<MemberSession>()
+        .exec(),
     ]);
-    return { ...toMemberView(member), stats: { bookings, wishlist } };
+
+    return {
+      ...toMemberView(member),
+      ...(latestSession ? { lastSignInAt: latestSession.lastUsedAt.toISOString() } : {}),
+      stats: { activeSessions, bookings, wishlist },
+    };
   }
 
   private async getPublishedTourSummary(tourId: number): Promise<TourSummary | null> {

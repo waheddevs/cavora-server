@@ -8,7 +8,7 @@
 <section class="page-heading">
   <div>
     <p class="section-label">Editorial</p>
-    <h2>Blog posts</h2>
+    <h1>Blog posts</h1>
     <p>Create, publish, archive, and maintain Cavora travel content.</p>
   </div>
   <button
@@ -62,10 +62,17 @@
           <option value="ARCHIVED">Archived</option>
         </select>
       </label>
-      <label class="field">
-        <span>Image URL or path</span>
-        <input type="text" name="imageUrl" maxlength="2048" required />
-      </label>
+      <%- include('../includes/image-upload', {
+        existingInputName: 'imageUrl',
+        fieldClass: '',
+        inputDataAttribute: 'data-blog-image-file',
+        inputId: 'blog-featured-image',
+        inputName: 'image',
+        label: 'Featured image',
+        maxFiles: 1,
+        multiple: false,
+      }) %>
+      <input type="hidden" name="imageUrl" />
       <label class="field">
         <span>Author image URL or path</span>
         <input type="text" name="authorImageUrl" maxlength="2048" />

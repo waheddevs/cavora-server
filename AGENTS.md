@@ -8,7 +8,7 @@ This file defines how those requirements must be implemented in this repository.
 
 Cavora is a REST/JSON backend for a separate React travel-booking frontend. Its domains are
 members, tours, departures and availability, wishlists, bookings, payments, blog content, contact
-messages, newsletter subscriptions, and administration. Cavora also includes a small,
+messages, and administration. Cavora also includes a small,
 server-rendered EJS administration interface approved for operational use.
 
 The repository originally contained restaurant, menu-product, and food-ordering code. That domain
@@ -91,7 +91,6 @@ src/
 │   ├── BlogPost.model.ts
 │   ├── BlogComment.model.ts
 │   ├── ContactMessage.model.ts
-│   ├── NewsletterSubscription.model.ts
 │   └── AuditLog.model.ts
 ├── libs/
 │   ├── enums/
@@ -322,8 +321,7 @@ that convention.
 - Email-verification and password-reset tokens are random, hashed, expiring, and one-time.
 - Add CSRF protection to cookie-authenticated state-changing browser requests.
 - Use strict credentialed CORS for the configured frontend origin only.
-- Apply focused rate limits to login, registration, password reset, comments, contact, and
-  newsletter APIs.
+- Apply focused rate limits to login, registration, password reset, comments, and contact APIs.
 - Enforce resource ownership in services and administrator roles in middleware/services.
 - Record important account, booking, payment, and admin actions in audit logs.
 
@@ -344,7 +342,6 @@ Translate the data design in `BACKEND.md` into Mongoose schemas and MongoDB coll
 - `blog_posts`
 - `blog_comments`
 - `contact_messages`
-- `newsletter_subscriptions`
 - `audit_logs`
 
 Preserve the existing frontend integer tour IDs. Other internal records may use MongoDB ObjectIds;
@@ -417,11 +414,9 @@ with `BACKEND.md`.
 ### Engagement
 
 - `POST /contact-messages`
-- `POST /newsletter-subscriptions`
-- `DELETE /newsletter-subscriptions/:token`
 
 Administrative REST endpoints manage tours/images, departures/capacity, homepage selections, blog
-moderation, contacts, subscribers, bookings, payments, and refunds. Place all of them under the
+moderation, contacts, bookings, payments, and refunds. Place all of them under the
 administration router comment and protect them with admin authorization.
 
 Do not add legacy aliases such as `/member/signup`, `/product/all`, `/order/create`, or restaurant
@@ -536,7 +531,7 @@ Obtain user permission before each section and report verification before reques
 5. Members, registration/login/logout, sessions, verification/reset, profiles, and wishlists.
 6. Departures, pricing, booking holds, expiration, booking history, and cancellation.
 7. Stripe PaymentIntents, verified webhooks, confirmation, idempotency, and refund foundations.
-8. Blog, comments, contact, newsletter, and administrative REST APIs.
+8. Blog, comments, contact, and administrative REST APIs.
 9. Full security, OpenAPI, caching, audit, end-to-end, and restaurant-removal verification.
 
 Each permission request must state the files/systems affected, APIs delivered, external

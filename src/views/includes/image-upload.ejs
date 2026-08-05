@@ -1,0 +1,62 @@
+<div class="field <%= fieldClass ?? '' %>">
+  <span id="<%= inputId %>-label"><%= label %></span>
+  <div
+    class="image-upload"
+    data-image-upload
+    <% if (existingInputName) { %>data-existing-input="<%= existingInputName %>"<% } %>
+  >
+    <input
+      class="image-upload__input"
+      id="<%= inputId %>"
+      type="file"
+      name="<%= inputName %>"
+      accept="image/jpeg,image/png,image/webp,image/avif"
+      data-max-files="<%= maxFiles %>"
+      aria-labelledby="<%= inputId %>-label"
+      aria-describedby="<%= inputId %>-help"
+      <% if (multiple) { %>multiple<% } %>
+      <%- inputDataAttribute %>
+    />
+
+    <button class="image-upload__dropzone" type="button" data-image-upload-dropzone>
+      <span class="image-upload__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.8"
+            d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3"
+          />
+        </svg>
+      </span>
+      <span class="image-upload__prompt">
+        <strong>Drag and drop an image</strong>
+        <span>or <span class="image-upload__browse">browse files</span></span>
+      </span>
+      <small id="<%= inputId %>-help">
+        JPG, PNG, WEBP, or AVIF &middot; Maximum 5 MB<% if (multiple) { %> each &middot; Up to <%= maxFiles %> images<% } %>
+      </small>
+    </button>
+
+    <div class="image-upload__preview" data-image-upload-preview hidden>
+      <img data-image-upload-thumbnail alt="Selected image preview" />
+      <span class="image-upload__thumbnail-fallback" data-image-upload-fallback hidden>
+        Image unavailable
+      </span>
+      <span class="image-upload__details">
+        <strong data-image-upload-name></strong>
+        <small data-image-upload-size></small>
+      </span>
+      <span class="image-upload__actions">
+        <button class="button button--small" type="button" data-image-upload-change>
+          Change
+        </button>
+        <button class="button button--small" type="button" data-image-upload-remove>
+          Remove
+        </button>
+      </span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,199 @@
+/* Cavora admin theme for SweetAlert2. Buttons reuse the shared .button classes
+   via `buttonsStyling: false`; the overrides below are scoped to dialogs only. */
+
+.swal2-container {
+  padding: 20px;
+}
+
+.swal2-container.swal2-backdrop-show {
+  background: rgb(26 26 26 / 52%);
+  backdrop-filter: blur(2px);
+}
+
+.swal2-popup {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 430px;
+  padding: 30px 28px 26px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid #e8dfcd;
+  border-radius: 18px;
+  box-shadow: 0 22px 54px rgb(26 26 26 / 22%);
+  font-family: inherit;
+  text-align: center;
+}
+
+.swal2-popup::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  content: '';
+  background: var(--accent);
+}
+
+.swal2-popup.swal-danger::before {
+  background: var(--danger);
+}
+
+.swal2-popup .swal2-title {
+  padding: 0;
+  color: var(--text);
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.swal2-popup .swal2-html-container {
+  margin: 10px 0 0;
+  padding: 0;
+  overflow: visible;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Actions: two equal buttons side by side */
+.swal2-popup .swal2-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin: 26px 0 0;
+  padding: 0;
+}
+
+.swal2-popup .swal2-actions button {
+  flex: 1 1 0;
+  min-height: 46px;
+  margin: 0;
+  border-radius: 10px;
+  font-size: 0.88rem;
+}
+
+.swal2-popup .swal2-actions .swal2-cancel {
+  color: var(--text);
+  background: #f8f7f4;
+  border-color: var(--border);
+}
+
+.swal2-popup .swal2-actions .swal2-cancel:hover,
+.swal2-popup .swal2-actions .swal2-cancel:focus-visible {
+  background: #f1ede4;
+  border-color: var(--border-strong);
+}
+
+/* Solid destructive fill inside dialogs only; the global .button--danger
+   stays a soft tint for inline table actions. */
+.swal2-popup .swal2-actions .swal2-confirm.button--danger {
+  color: #ffffff;
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+.swal2-popup .swal2-actions .swal2-confirm.button--danger:hover,
+.swal2-popup .swal2-actions .swal2-confirm.button--danger:focus-visible {
+  background: var(--danger-dark);
+  border-color: var(--danger-dark);
+}
+
+.swal2-popup .swal2-close {
+  color: var(--text-muted);
+  font-size: 1.6rem;
+  box-shadow: none;
+}
+
+.swal2-popup .swal2-close:hover,
+.swal2-popup .swal2-close:focus-visible {
+  color: var(--text);
+  outline: none;
+}
+
+/* Icon: soft tinted circle, no ring */
+.swal2-popup .swal2-icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 20px;
+  border: 0;
+}
+
+.swal2-popup .swal2-icon .swal2-icon-content {
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+
+.swal2-popup .swal2-icon.swal2-question {
+  color: #7b5500;
+  background: var(--accent-soft);
+}
+
+.swal2-popup .swal2-icon.swal2-warning {
+  color: var(--warning);
+  background: var(--warning-soft);
+}
+
+.swal2-popup .swal2-icon.swal2-error {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.swal2-popup .swal2-icon.swal2-info,
+.swal2-popup .swal2-icon.swal2-success {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.swal2-popup .swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: var(--success);
+}
+
+.swal2-popup .swal2-icon.swal2-success .swal2-success-ring {
+  border-color: transparent;
+}
+
+/* Destructive dialogs tint the icon red regardless of which glyph is used */
+.swal2-popup.swal-danger .swal2-icon {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* Toast variant keeps the compact inline treatment */
+.swal2-popup.swal2-toast {
+  max-width: 360px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  border-left: 4px solid var(--accent);
+  box-shadow: 0 10px 28px rgb(26 26 26 / 16%);
+  text-align: left;
+}
+
+.swal2-popup.swal2-toast .swal2-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.swal2-popup.swal2-toast .swal2-icon {
+  width: 22px;
+  height: 22px;
+  margin: 0 10px 0 0;
+}
+
+.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .swal2-popup {
+    padding: 24px 20px 20px;
+  }
+
+  .swal2-popup .swal2-actions {
+    flex-direction: column-reverse;
+  }
+}

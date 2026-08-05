@@ -3,8 +3,37 @@
   const notice = document.querySelector('[data-admin-notice]');
   const noticeMessage = document.querySelector('[data-admin-notice-message]');
   const selectEnhancements = new WeakMap();
+  const ACCOUNT_CACHE_KEY = 'cavora.admin.account.v1';
+  const ACCOUNT_CACHE_MAX_AGE_MS = 5 * 60 * 1_000;
   let openSelect;
   let selectSequence = 0;
+  let accountRequest;
+  let customSelectGlobalsBound = false;
+
+  const readAccountCache = () => {
+    try {
+      const cached = JSON.parse(window.sessionStorage.getItem(ACCOUNT_CACHE_KEY) ?? 'null');
+      return cached?.member && Number.isFinite(cached.cachedAt) ? cached : undefined;
+    } catch {
+      window.sessionStorage.removeItem(ACCOUNT_CACHE_KEY);
+      return undefined;
+    }
+  };
+
+  const writeAccountCache = (member) => {
+    try {
+      window.sessionStorage.setItem(
+        ACCOUNT_CACHE_KEY,
+        JSON.stringify({ cachedAt: Date.now(), member }),
+      );
+    } catch {
+      // The account still renders when browser storage is unavailable.
+    }
+  };
+
+  const clearAccountCache = () => {
+    window.sessionStorage.removeItem(ACCOUNT_CACHE_KEY);
+  };
 
   const enhancedSelectTrigger = (control) =>
     control instanceof HTMLSelectElement ? selectEnhancements.get(control)?.trigger : undefined;
@@ -219,22 +248,47 @@
       sync();
     }
 
-    document.addEventListener('pointerdown', (event) => {
-      if (openSelect && !openSelect.control.contains(event.target)) openSelect.close();
-    });
-    window.addEventListener('resize', () => openSelect?.close());
+    if (!customSelectGlobalsBound) {
+      document.addEventListener('pointerdown', (event) => {
+        if (openSelect && !openSelect.control.contains(event.target)) openSelect.close();
+      });
+      window.addEventListener('resize', () => openSelect?.close());
+      customSelectGlobalsBound = true;
+    }
+  };
+
+  const NOTICE_TRANSITION_MS = 220;
+  const NOTICE_DURATION_MS = Object.freeze({
+    error: 6_000,
+    info: 3_500,
+    success: 3_000,
+  });
+  let noticeTimer;
+  let noticeTransitionTimer;
+
+  const hideNotice = () => {
+    window.clearTimeout(noticeTimer);
+    window.clearTimeout(noticeTransitionTimer);
+    if (!(notice instanceof HTMLElement) || notice.hidden) return;
+    notice.classList.remove('is-visible');
+    noticeTransitionTimer = window.setTimeout(() => {
+      notice.hidden = true;
+    }, NOTICE_TRANSITION_MS);
   };
 
   const notify = (message, type = 'info') => {
     if (!(notice instanceof HTMLElement) || !(noticeMessage instanceof HTMLElement)) return;
+    window.clearTimeout(noticeTimer);
+    window.clearTimeout(noticeTransitionTimer);
     noticeMessage.textContent = message;
     notice.dataset.noticeType = type;
     notice.hidden = false;
+    window.requestAnimationFrame(() => notice.classList.add('is-visible'));
+    const duration = NOTICE_DURATION_MS[type] ?? NOTICE_DURATION_MS.info;
+    noticeTimer = window.setTimeout(hideNotice, duration);
   };
 
-  document.querySelector('[data-admin-notice-close]')?.addEventListener('click', () => {
-    if (notice instanceof HTMLElement) notice.hidden = true;
-  });
+  document.querySelector('[data-admin-notice-close]')?.addEventListener('click', hideNotice);
 
   const getCookie = (name) => {
     const prefix = `${encodeURIComponent(name)}=`;
@@ -287,12 +341,24 @@
     return payload;
   };
 
+  const feedbackTimers = new WeakMap();
+
   const feedback = (form, message = '', type = 'info') => {
     const element = form?.querySelector('[data-form-feedback]');
     if (!(element instanceof HTMLElement)) return;
+    window.clearTimeout(feedbackTimers.get(element));
     element.textContent = message;
     element.dataset.feedbackType = type;
     element.classList.toggle('is-visible', Boolean(message));
+    // Errors stay until dismissed so the reason for a failure is not lost.
+    if (!message || type === 'error') return;
+    feedbackTimers.set(
+      element,
+      window.setTimeout(() => {
+        element.textContent = '';
+        element.classList.remove('is-visible');
+      }, NOTICE_DURATION_MS[type] ?? NOTICE_DURATION_MS.info),
+    );
   };
 
   const fieldControl = (form, name) => {
@@ -627,32 +693,572 @@
     });
   }
 
-  const loadAdminAccount = async () => {
-    const account = document.querySelector('[data-admin-account]');
-    if (!(account instanceof HTMLElement)) return;
-    try {
-      const member = (await request('/cavora/users/me'))?.data;
-      const displayName = [member?.firstName, member?.lastName].filter(Boolean).join(' ');
-      const name = displayName || member?.username || 'Administrator';
-      account.querySelector('[data-admin-name]')?.replaceChildren(name);
-      account
-        .querySelector('[data-admin-email]')
-        ?.replaceChildren(member?.email ?? 'Administrator account');
-      account
-        .querySelector('[data-admin-initial]')
-        ?.replaceChildren(name.trim().charAt(0).toUpperCase() || 'A');
-    } catch (error) {
-      if (error.status !== 401) reportError(error);
+  const paintAvatar = (
+    initialSelector,
+    imageSelector,
+    letter,
+    avatarUrl,
+    cacheBustAvatar = false,
+  ) => {
+    const initial = document.querySelector(initialSelector);
+    const image = document.querySelector(imageSelector);
+    initial?.replaceChildren(letter);
+    if (initial instanceof HTMLElement) initial.hidden = Boolean(avatarUrl);
+    if (image instanceof HTMLImageElement) {
+      if (avatarUrl) {
+        const separator = String(avatarUrl).includes('?') ? '&' : '?';
+        image.src = cacheBustAvatar ? `${avatarUrl}${separator}v=${Date.now()}` : String(avatarUrl);
+        image.hidden = false;
+      } else {
+        image.removeAttribute('src');
+        image.hidden = true;
+      }
     }
+  };
+
+  const setAccount = (member, options = {}) => {
+    const { cacheBustAvatar = false, persist = true } = options;
+    const displayName = [member?.firstName, member?.lastName].filter(Boolean).join(' ');
+    const name = displayName || member?.username || 'Administrator';
+    const letter = name.trim().charAt(0).toUpperCase() || 'A';
+    const avatarUrl = member?.avatarUrl;
+
+    // Sidebar identity
+    document.querySelector('[data-identity-name]')?.replaceChildren(name);
+    paintAvatar(
+      '[data-identity-initial]',
+      '[data-identity-avatar]',
+      letter,
+      avatarUrl,
+      cacheBustAvatar,
+    );
+
+    if (persist) writeAccountCache(member);
+    document.documentElement.classList.add('is-account-ready');
+  };
+
+  const loadAdminAccount = async (options = {}) => {
+    const { force = false } = options;
+    // Skipped on signed-out auth pages, which do not render the sidebar identity.
+    if (!document.querySelector('[data-identity-name]')) return;
+    const cached = readAccountCache();
+    if (cached) setAccount(cached.member, { persist: false });
+    if (!force && cached && Date.now() - cached.cachedAt < ACCOUNT_CACHE_MAX_AGE_MS) {
+      return cached.member;
+    }
+    if (accountRequest) return accountRequest;
+    accountRequest = request('/cavora/users/me')
+      .then((payload) => {
+        const member = payload?.data;
+        setAccount(member);
+        return member;
+      })
+      .catch((error) => {
+        if (error.status === 401) clearAccountCache();
+        else {
+          document.documentElement.classList.add('is-account-ready');
+          reportError(error);
+        }
+        throw error;
+      })
+      .finally(() => {
+        accountRequest = undefined;
+      });
+    try {
+      return await accountRequest;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const confirmAction = async (options = {}) => {
+    const {
+      title = 'Are you sure?',
+      text = '',
+      confirmText = 'Yes',
+      cancelText = 'No',
+      icon = 'question',
+      danger = false,
+    } = options;
+
+    if (typeof window.Swal === 'undefined') {
+      return window.confirm(text ? `${title}\n\n${text}` : title);
+    }
+
+    const result = await window.Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton: true,
+      confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
+      reverseButtons: true,
+      focusCancel: true,
+      buttonsStyling: false,
+      customClass: {
+        popup: danger ? 'swal-danger' : '',
+        confirmButton: `button ${danger ? 'button--danger' : 'button--primary'}`,
+        cancelButton: 'button',
+      },
+    });
+
+    return result.isConfirmed === true;
+  };
+
+  const imageUploadControllers = new WeakMap();
+  const imageTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
+  const maximumImageBytes = 5 * 1024 * 1024;
+
+  const formatFileSize = (bytes) => {
+    if (!Number.isFinite(bytes) || bytes <= 0) return 'Selected image';
+    if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const imageNameFromUrl = (url) => {
+    const value = String(url ?? '').split(/[?#]/)[0];
+    return value.split('/').filter(Boolean).pop() ?? 'Current image';
+  };
+
+  const setupImageUploads = () => {
+    document.querySelectorAll('[data-image-upload]').forEach((root) => {
+      if (!(root instanceof HTMLElement)) return;
+      const input = root.querySelector('.image-upload__input');
+      const dropzone = root.querySelector('[data-image-upload-dropzone]');
+      const preview = root.querySelector('[data-image-upload-preview]');
+      const thumbnail = root.querySelector('[data-image-upload-thumbnail]');
+      const thumbnailFallback = root.querySelector('[data-image-upload-fallback]');
+      const name = root.querySelector('[data-image-upload-name]');
+      const size = root.querySelector('[data-image-upload-size]');
+      const changeButton = root.querySelector('[data-image-upload-change]');
+      const removeButton = root.querySelector('[data-image-upload-remove]');
+      const form = root.closest('form');
+      if (
+        !(input instanceof HTMLInputElement) ||
+        !(dropzone instanceof HTMLButtonElement) ||
+        !(preview instanceof HTMLElement) ||
+        !(thumbnail instanceof HTMLImageElement) ||
+        !(name instanceof HTMLElement) ||
+        !(size instanceof HTMLElement)
+      ) {
+        return;
+      }
+
+      const existingName = root.dataset.existingInput;
+      const existingControl = existingName ? form?.elements.namedItem(existingName) : undefined;
+      let existingUrl =
+        existingControl && 'value' in existingControl ? String(existingControl.value ?? '') : '';
+      let objectUrl;
+
+      const releaseObjectUrl = () => {
+        if (objectUrl) window.URL.revokeObjectURL(objectUrl);
+        objectUrl = undefined;
+      };
+
+      const showPreview = (url, fileName, fileSize) => {
+        thumbnail.src = url;
+        thumbnail.alt = `Preview of ${fileName}`;
+        thumbnail.hidden = false;
+        if (thumbnailFallback instanceof HTMLElement) thumbnailFallback.hidden = true;
+        name.textContent = fileName;
+        size.textContent = fileSize;
+        dropzone.hidden = true;
+        preview.hidden = false;
+      };
+
+      const showEmpty = () => {
+        releaseObjectUrl();
+        thumbnail.removeAttribute('src');
+        thumbnail.alt = 'Selected image preview';
+        thumbnail.hidden = false;
+        if (thumbnailFallback instanceof HTMLElement) thumbnailFallback.hidden = true;
+        name.textContent = '';
+        size.textContent = '';
+        preview.hidden = true;
+        dropzone.hidden = false;
+      };
+
+      const showExisting = () => {
+        releaseObjectUrl();
+        if (!existingUrl) {
+          showEmpty();
+          return;
+        }
+        showPreview(existingUrl, imageNameFromUrl(existingUrl), 'Current saved image');
+      };
+
+      const showFiles = (files) => {
+        const [firstFile] = files;
+        if (!firstFile) {
+          showExisting();
+          return;
+        }
+        releaseObjectUrl();
+        objectUrl = window.URL.createObjectURL(firstFile);
+        const totalBytes = files.reduce((total, file) => total + file.size, 0);
+        showPreview(
+          objectUrl,
+          files.length === 1 ? firstFile.name : `${files.length} images selected`,
+          files.length === 1
+            ? formatFileSize(firstFile.size)
+            : `${formatFileSize(totalBytes)} total`,
+        );
+      };
+
+      const reportFileError = (message) => {
+        input.value = '';
+        showExisting();
+        if (form instanceof HTMLFormElement) {
+          clearFieldError(form, input.name);
+          setFieldError(form, input.name, message);
+          feedback(form, 'Check the highlighted fields.', 'error');
+        }
+      };
+
+      const acceptFiles = (files) => {
+        const maximumFiles = Math.max(1, Number(input.dataset.maxFiles) || 1);
+        if (files.length > maximumFiles) {
+          reportFileError(`Choose no more than ${maximumFiles} images.`);
+          return;
+        }
+        if (files.some((file) => !imageTypes.has(file.type))) {
+          reportFileError('Choose a JPG, PNG, WEBP, or AVIF image.');
+          return;
+        }
+        if (files.some((file) => file.size > maximumImageBytes)) {
+          reportFileError('Each image must be 5 MB or smaller.');
+          return;
+        }
+        if (form instanceof HTMLFormElement) clearFieldError(form, input.name);
+        showFiles(files);
+      };
+
+      const setExisting = (url) => {
+        input.value = '';
+        existingUrl = String(url ?? '');
+        if (existingControl && 'value' in existingControl) existingControl.value = existingUrl;
+        showExisting();
+      };
+
+      input.addEventListener('change', () => {
+        const files = Array.from(input.files ?? []);
+        if (files.length) acceptFiles(files);
+        else showExisting();
+      });
+      thumbnail.addEventListener('load', () => {
+        thumbnail.hidden = false;
+        if (thumbnailFallback instanceof HTMLElement) thumbnailFallback.hidden = true;
+      });
+      thumbnail.addEventListener('error', () => {
+        thumbnail.hidden = true;
+        if (thumbnailFallback instanceof HTMLElement) thumbnailFallback.hidden = false;
+      });
+      dropzone.addEventListener('click', () => input.click());
+      changeButton?.addEventListener('click', () => input.click());
+      removeButton?.addEventListener('click', () => {
+        if (input.files?.length) {
+          input.value = '';
+          input.dispatchEvent(new window.Event('change', { bubbles: true }));
+          return;
+        }
+        existingUrl = '';
+        if (existingControl && 'value' in existingControl) existingControl.value = '';
+        showEmpty();
+      });
+
+      for (const eventName of ['dragenter', 'dragover']) {
+        dropzone.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          root.classList.add('is-dragging');
+        });
+      }
+      dropzone.addEventListener('dragleave', (event) => {
+        if (
+          !(event.relatedTarget instanceof window.Node) ||
+          !dropzone.contains(event.relatedTarget)
+        ) {
+          root.classList.remove('is-dragging');
+        }
+      });
+      dropzone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        root.classList.remove('is-dragging');
+        const files = Array.from(event.dataTransfer?.files ?? []);
+        if (!files.length) return;
+        const transfer = new window.DataTransfer();
+        for (const file of files) transfer.items.add(file);
+        input.files = transfer.files;
+        input.dispatchEvent(new window.Event('change', { bubbles: true }));
+      });
+      form?.addEventListener('reset', () => {
+        window.setTimeout(() => {
+          existingUrl =
+            existingControl && 'value' in existingControl
+              ? String(existingControl.value ?? '')
+              : '';
+          input.value = '';
+          showExisting();
+        }, 0);
+      });
+
+      imageUploadControllers.set(input, { setExisting });
+      showExisting();
+    });
+  };
+
+  const setImageUploadPreview = (input, url) => {
+    if (!(input instanceof HTMLInputElement)) return;
+    imageUploadControllers.get(input)?.setExisting(url);
+  };
+
+  const PAGE_CACHE_TTL_MS = 30_000;
+  const PAGE_STATE_PREFIX = 'cavora.admin.page-state:';
+  const prefetchedPages = new Map();
+  let navigationSequence = 0;
+  let renderedPageUrl = window.location.href;
+
+  const adminPageUrl = (value) => {
+    const url = new window.URL(value, window.location.href);
+    return url.origin === window.location.origin && url.pathname.startsWith('/admin') ? url : null;
+  };
+
+  const pageStateKey = (url = window.location.href) => {
+    const parsed = new window.URL(url, window.location.href);
+    return `${PAGE_STATE_PREFIX}${parsed.pathname}${parsed.search}`;
+  };
+
+  const savePageState = (url = renderedPageUrl) => {
+    const main = document.querySelector('.admin-main');
+    if (!(main instanceof HTMLElement)) return;
+    const toolbars = [...main.querySelectorAll('form.toolbar')].map((form) => ({
+      values: [...new window.FormData(form).entries()]
+        .filter((entry) => typeof entry[1] === 'string')
+        .map(([name, value]) => [name, value]),
+    }));
+    const openPanels = [...main.querySelectorAll('[id]')]
+      .filter((element) => element instanceof HTMLElement && !element.hidden)
+      .map((element) => element.id)
+      .filter((id) => main.querySelector(`[aria-controls="${window.CSS.escape(id)}"]`));
+    try {
+      window.sessionStorage.setItem(pageStateKey(url), JSON.stringify({ openPanels, toolbars }));
+    } catch {
+      // Navigation still works if browser storage is unavailable.
+    }
+  };
+
+  const restorePageState = (url) => {
+    let state;
+    try {
+      state = JSON.parse(window.sessionStorage.getItem(pageStateKey(url)) ?? 'null');
+    } catch {
+      window.sessionStorage.removeItem(pageStateKey(url));
+    }
+    if (!state) return;
+
+    const main = document.querySelector('.admin-main');
+    if (!(main instanceof HTMLElement)) return;
+    [...main.querySelectorAll('form.toolbar')].forEach((form, index) => {
+      for (const [name, value] of state.toolbars?.[index]?.values ?? []) {
+        const control = form.elements.namedItem(name);
+        if (control && 'value' in control) control.value = value;
+      }
+    });
+    for (const id of state.openPanels ?? []) {
+      const panel = document.getElementById(id);
+      const trigger = main.querySelector(`[aria-controls="${window.CSS.escape(id)}"]`);
+      if (panel instanceof HTMLElement) panel.hidden = false;
+      trigger?.setAttribute('aria-expanded', 'true');
+    }
+  };
+
+  const fetchAdminPage = async (url) => {
+    const key = url.href;
+    const cached = prefetchedPages.get(key);
+    if (cached?.html && Date.now() - cached.cachedAt < PAGE_CACHE_TTL_MS) return cached.html;
+    if (cached?.promise) return cached.promise;
+    const promise = window
+      .fetch(key, {
+        credentials: 'same-origin',
+        headers: { Accept: 'text/html' },
+      })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`Admin page request failed with ${response.status}.`);
+        const responseUrl = new window.URL(response.url);
+        if (responseUrl.pathname === '/admin/login' && url.pathname !== '/admin/login') {
+          window.location.assign(responseUrl.href);
+          throw new Error('The administrator session expired.');
+        }
+        const html = await response.text();
+        prefetchedPages.set(key, { cachedAt: Date.now(), html });
+        return html;
+      })
+      .catch((error) => {
+        prefetchedPages.delete(key);
+        throw error;
+      });
+    prefetchedPages.set(key, { cachedAt: Date.now(), promise });
+    while (prefetchedPages.size > 6) {
+      prefetchedPages.delete(prefetchedPages.keys().next().value);
+    }
+    return promise;
+  };
+
+  const loadPageStylesheet = async (documentFragment) => {
+    const current = document.querySelector('[data-page-stylesheet]');
+    const incoming = documentFragment.querySelector('[data-page-stylesheet]');
+    if (!(incoming instanceof HTMLElement) || incoming.tagName !== 'LINK') return;
+    const incomingHref = new window.URL(incoming.getAttribute('href') ?? '', window.location.origin)
+      .href;
+    if (current instanceof HTMLElement && 'href' in current && current.href === incomingHref)
+      return;
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = incomingHref;
+    stylesheet.dataset.pageStylesheet = '';
+    await new Promise((resolve) => {
+      stylesheet.addEventListener('load', resolve, { once: true });
+      stylesheet.addEventListener('error', resolve, { once: true });
+      document.head.append(stylesheet);
+    });
+    current?.remove();
+  };
+
+  const loadPageScript = async (documentFragment) => {
+    const current = document.querySelector('[data-page-script]');
+    const incoming = documentFragment.querySelector('[data-page-script]');
+    current?.remove();
+    if (!(incoming instanceof HTMLElement) || incoming.tagName !== 'SCRIPT') return;
+    const incomingSource = incoming.getAttribute('src');
+    if (!incomingSource) return;
+    const script = document.createElement('script');
+    script.src = new window.URL(incomingSource, window.location.origin).href;
+    script.dataset.pageScript = '';
+    await new Promise((resolve, reject) => {
+      script.addEventListener('load', resolve, { once: true });
+      script.addEventListener('error', reject, { once: true });
+      document.body.append(script);
+    });
+  };
+
+  const updateActiveNavigation = (url) => {
+    document.querySelectorAll('.admin-nav__link').forEach((link) => {
+      if (!(link instanceof HTMLElement) || link.tagName !== 'A' || !('href' in link)) return;
+      const active = new window.URL(link.href).pathname === url.pathname;
+      link.classList.toggle('is-active', active);
+      if (active) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+  };
+
+  const navigateAdmin = async (url, options = {}) => {
+    const { pushHistory = true } = options;
+    const main = document.querySelector('.admin-main');
+    if (!(main instanceof HTMLElement)) {
+      window.location.assign(url.href);
+      return;
+    }
+    const navigationId = ++navigationSequence;
+    savePageState(renderedPageUrl);
+    main.classList.add('is-page-leaving');
+    main.setAttribute('aria-busy', 'true');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduceMotion) {
+      await new Promise((resolve) => window.setTimeout(resolve, 150));
+    }
+
+    try {
+      const html = await fetchAdminPage(url);
+      if (navigationId !== navigationSequence) return;
+      const parsed = new window.DOMParser().parseFromString(html, 'text/html');
+      const incomingMain = parsed.querySelector('.admin-main');
+      if (!(incomingMain instanceof HTMLElement)) throw new Error('Admin page content is missing.');
+
+      await loadPageStylesheet(parsed);
+      main.innerHTML = incomingMain.innerHTML;
+      document.title = parsed.title || document.title;
+      updateActiveNavigation(url);
+      restorePageState(url.href);
+      setupCustomSelects();
+      setupImageUploads();
+      await loadPageScript(parsed);
+      if (pushHistory) window.history.pushState({ cavoraAdmin: true }, '', url.href);
+      renderedPageUrl = url.href;
+      main.classList.remove('is-page-leaving');
+      main.classList.add('is-page-entering');
+      main.removeAttribute('aria-busy');
+      window.requestAnimationFrame(() => {
+        main.classList.remove('is-page-entering');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      });
+      window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 250);
+    } catch {
+      if (navigationId !== navigationSequence) return;
+      window.location.assign(url.href);
+    }
+  };
+
+  const setupAdminNavigation = () => {
+    if (!document.querySelector('.admin-nav')) return;
+    if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
+    window.history.replaceState({ cavoraAdmin: true }, '', window.location.href);
+    restorePageState(renderedPageUrl);
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'auto' }));
+    window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 250);
+    const findLink = (target) => {
+      const link =
+        target instanceof window.Element
+          ? target.closest('.admin-nav__link, .admin-identity, [data-admin-link]')
+          : null;
+      return link instanceof HTMLElement && link.tagName === 'A' && 'href' in link ? link : null;
+    };
+    const prefetchLink = (target) => {
+      const link = findLink(target);
+      const url = link ? adminPageUrl(link.href) : null;
+      if (url && url.href !== renderedPageUrl) void fetchAdminPage(url).catch(() => undefined);
+    };
+    document.addEventListener('pointerover', (event) => prefetchLink(event.target));
+    document.addEventListener('focusin', (event) => prefetchLink(event.target));
+    document.addEventListener('click', (event) => {
+      const link = findLink(event.target);
+      if (
+        !link ||
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        link.target === '_blank'
+      ) {
+        return;
+      }
+      const url = adminPageUrl(link.href);
+      if (!url || url.href === renderedPageUrl) return;
+      event.preventDefault();
+      void navigateAdmin(url);
+    });
+    window.addEventListener('popstate', () => {
+      const url = adminPageUrl(window.location.href);
+      if (url) void navigateAdmin(url, { pushHistory: false });
+    });
   };
 
   const logoutButton = document.querySelector('[data-admin-logout]');
   if (logoutButton instanceof HTMLButtonElement) {
     logoutButton.addEventListener('click', async () => {
+      const confirmed = await confirmAction({
+        title: 'Do you want to logout?',
+        text: 'You will need to sign in again to reach the admin workspace.',
+        confirmText: 'Yes',
+        cancelText: 'No',
+      });
+      if (!confirmed) return;
+
       logoutButton.disabled = true;
       logoutButton.textContent = 'Logging out...';
       try {
         await request('/cavora/auth/logout', { method: 'POST' });
+        clearAccountCache();
         window.location.assign('/admin/login');
       } catch (error) {
         reportError(error);
@@ -662,23 +1268,29 @@
     });
   }
 
+  setupAdminNavigation();
   setupCustomSelects();
+  setupImageUploads();
 
   window.CavoraAdmin = Object.freeze({
     actionButton,
     badge,
     cell,
     clearValidation,
+    confirm: confirmAction,
     feedback,
     formatDate,
     formatMoney,
+    getAccount: loadAdminAccount,
     getCookie,
     listUrl,
     notify,
     renderRows,
     reportError,
     request,
+    setAccount,
     setFieldError,
+    setImageUploadPreview,
     setBusy,
     setPagination,
     setupValidation,

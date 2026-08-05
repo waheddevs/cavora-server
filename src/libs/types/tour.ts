@@ -86,9 +86,9 @@ export interface AvailabilityInquiry {
 }
 
 export interface TourImageView {
+  url: string;
   altText: string;
   position: number;
-  url: string;
 }
 
 export interface TourSummary {
@@ -144,19 +144,23 @@ export interface AvailabilityResult {
 }
 
 export interface TourImageInput {
-  altText: string;
-  position: number;
   tourId: number;
   url: string;
+  altText: string;
+  position: number;
+}
+
+export interface TourImageWriteInput extends Omit<TourImageInput, 'url'> {
+  url?: string;
 }
 
 export interface TourDepartureInput {
-  capacity: number;
-  currency: string;
-  priceCents: number;
-  startDate: Date;
-  status: TourDepartureStatus;
   tourId: number;
+  startDate: Date;
+  capacity: number;
+  priceCents: number;
+  currency: string;
+  status: TourDepartureStatus;
 }
 
 export interface TourDepartureUpdateInput extends Partial<Omit<TourDepartureInput, 'tourId'>> {
@@ -181,9 +185,9 @@ export interface AdminTourView extends Omit<
   Tour,
   '_id' | 'createdAt' | 'publishedAt' | 'updatedAt'
 > {
-  createdAt: string;
   id: number;
   publishedAt?: string;
+  createdAt: string;
   updatedAt: string;
 }
 
@@ -191,9 +195,9 @@ export interface AdminTourDepartureView extends Omit<
   TourDeparture,
   '_id' | 'createdAt' | 'startDate' | 'updatedAt'
 > {
-  createdAt: string;
   id: string;
   startDate: string;
+  createdAt: string;
   updatedAt: string;
 }
 

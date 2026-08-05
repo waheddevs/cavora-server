@@ -45,15 +45,15 @@ export interface BlogCommentInput {
 }
 
 export interface BlogPostSummaryView {
-  authorImageUrl?: string;
-  authorName: string;
-  category: string;
-  excerpt: string;
   id: string;
-  imageUrl: string;
-  publishedAt: string;
   slug: string;
   title: string;
+  excerpt: string;
+  category: string;
+  imageUrl: string;
+  authorName: string;
+  authorImageUrl?: string;
+  publishedAt: string;
 }
 
 export interface BlogPostView extends BlogPostSummaryView {
@@ -62,11 +62,11 @@ export interface BlogPostView extends BlogPostSummaryView {
 }
 
 export interface BlogCommentView {
-  body: string;
-  createdAt: string;
   id: string;
   memberId?: string;
   name: string;
+  body: string;
+  createdAt: string;
 }
 
 export interface PaginatedBlogPosts {
@@ -86,19 +86,27 @@ export interface BlogCommentInquiry {
 }
 
 export interface BlogPostInput {
-  authorImageUrl?: string;
-  authorName: string;
+  slug: string;
+  title: string;
+  excerpt: string;
   body: unknown;
   category: string;
-  excerpt: string;
   imageUrl: string;
-  publishedAt?: Date;
-  slug: string;
+  authorName: string;
+  authorImageUrl?: string;
   status: BlogPostStatus;
-  title: string;
+  publishedAt?: Date;
+}
+
+export interface BlogPostWriteInput extends Omit<BlogPostInput, 'imageUrl'> {
+  imageUrl?: string;
 }
 
 export interface BlogPostUpdateInput extends Partial<BlogPostInput> {
+  _id: Types.ObjectId;
+}
+
+export interface BlogPostWriteUpdateInput extends Partial<BlogPostWriteInput> {
   _id: Types.ObjectId;
 }
 
@@ -106,9 +114,9 @@ export interface AdminBlogPostView extends Omit<
   BlogPost,
   '_id' | 'createdAt' | 'publishedAt' | 'updatedAt'
 > {
-  createdAt: string;
   id: string;
   publishedAt?: string;
+  createdAt: string;
   updatedAt: string;
 }
 
@@ -128,14 +136,14 @@ export interface AdminBlogCommentInquiry {
 }
 
 export interface AdminBlogCommentView {
-  body: string;
-  createdAt: string;
-  email: string;
   id: string;
+  postId: string;
   memberId?: string;
   name: string;
-  postId: string;
+  email: string;
+  body: string;
   status: BlogCommentStatus;
+  createdAt: string;
   updatedAt: string;
 }
 

@@ -28,26 +28,26 @@ export interface PaymentIntentInput {
 }
 
 export interface PaymentIntentResult {
-  amountCents: number;
-  bookingId: string;
-  clientSecret: string;
-  currency: string;
   id: string;
+  bookingId: string;
   providerIntentId: string;
+  clientSecret: string;
   status: PaymentStatus;
+  amountCents: number;
+  currency: string;
 }
 
 export interface PaymentRefundInput {
-  amountCents?: number;
-  idempotencyKey: string;
   paymentId: Types.ObjectId;
+  idempotencyKey: string;
+  amountCents?: number;
 }
 
 export interface PaymentRefundResult {
-  amountCents: number;
   id: string;
   paymentId: string;
   status: PaymentStatus;
+  amountCents: number;
 }
 
 export interface PaymentInquiry {
@@ -58,16 +58,16 @@ export interface PaymentInquiry {
 }
 
 export interface AdminPaymentView {
-  amountCents: number;
-  bookingId: string;
-  createdAt: string;
-  currency: string;
   id: string;
-  paidAt?: string;
-  pendingRefundAmountCents: number;
+  bookingId: string;
   providerIntentId: string;
-  refundedAmountCents: number;
   status: PaymentStatus;
+  amountCents: number;
+  pendingRefundAmountCents: number;
+  refundedAmountCents: number;
+  currency: string;
+  paidAt?: string;
+  createdAt: string;
   updatedAt: string;
 }
 

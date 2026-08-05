@@ -29,21 +29,21 @@ export interface BookingHoldInput {
 }
 
 export interface BookingView {
-  cancelledAt?: string;
-  confirmedAt?: string;
-  createdAt: string;
-  currency: string;
-  departureId: string;
-  holdExpiresAt: string;
   id: string;
   reference: string;
-  serviceFeeCents: number;
-  status: BookingStatus;
-  subtotalCents: number;
-  totalCents: number;
   tourId: number;
+  departureId: string;
+  status: BookingStatus;
   travelers: number;
   unitPriceCents: number;
+  subtotalCents: number;
+  serviceFeeCents: number;
+  totalCents: number;
+  currency: string;
+  holdExpiresAt: string;
+  confirmedAt?: string;
+  cancelledAt?: string;
+  createdAt: string;
 }
 
 export interface BookingInquiry {
@@ -59,17 +59,17 @@ export interface AdminBookingView extends BookingView {
 }
 
 export interface MemberBookingView {
-  createdAt: string;
-  currency: string;
-  departureId: string;
-  holdExpiresAt: string;
   id: string;
   reference: string;
-  status: BookingStatus;
-  totalCents: number;
-  tour: TourSummary | null;
   tourId: number;
+  tour: TourSummary | null;
+  departureId: string;
+  status: BookingStatus;
   travelers: number;
+  totalCents: number;
+  currency: string;
+  holdExpiresAt: string;
+  createdAt: string;
 }
 
 export interface MemberBookingHistory {

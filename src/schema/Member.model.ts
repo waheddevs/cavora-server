@@ -18,11 +18,6 @@ const memberSchema = new Schema<Member>(
       minlength: 3,
       maxlength: 40,
     },
-    passwordHash: {
-      type: String,
-      required: true,
-      select: false,
-    },
     firstName: {
       type: String,
       required: true,
@@ -34,6 +29,11 @@ const memberSchema = new Schema<Member>(
       required: true,
       trim: true,
       maxlength: 80,
+    },
+    password: {
+      type: String,
+      required: true,
+      select: false,
     },
     phone: {
       type: String,

@@ -1,0 +1,170 @@
+<%- include('../includes/header', {
+  activePage,
+  layoutMode,
+  pageTitle,
+  stylesheetPath,
+}) %>
+
+<section class="page-heading">
+  <div>
+    <p class="section-label">Membership</p>
+    <h1>Users</h1>
+    <p>Review every registered member and control account access.</p>
+  </div>
+</section>
+
+<div class="summary-grid user-summary">
+  <article class="summary-card">
+    <span>Total members</span>
+    <strong data-user-total>—</strong>
+    <small>All registered accounts</small>
+  </article>
+  <article class="summary-card">
+    <span>Active</span>
+    <strong data-user-active>—</strong>
+    <small>Able to sign in and book</small>
+  </article>
+  <article class="summary-card">
+    <span>Blocked</span>
+    <strong data-user-blocked>—</strong>
+    <small>Denied access, sessions revoked</small>
+  </article>
+  <article class="summary-card">
+    <span>Deleted</span>
+    <strong data-user-deleted>—</strong>
+    <small>Retained for audit only</small>
+  </article>
+</div>
+
+<form class="toolbar" data-user-filters>
+  <label class="field field--wide">
+    <span>Search users</span>
+    <input type="search" name="query" maxlength="200" placeholder="Email, username, or name" />
+  </label>
+  <label class="field">
+    <span>Role</span>
+    <select name="role">
+      <option value="">All roles</option>
+      <option value="USER">User</option>
+      <option value="ADMIN">Administrator</option>
+    </select>
+  </label>
+  <label class="field">
+    <span>Status</span>
+    <select name="status">
+      <option value="">All statuses</option>
+      <option value="ACTIVE">Active</option>
+      <option value="BLOCKED">Blocked</option>
+      <option value="DELETED">Deleted</option>
+    </select>
+  </label>
+  <button class="button" type="submit">Apply</button>
+  <button class="button" type="button" data-filter-reset>Reset</button>
+</form>
+
+<section class="table-card user-table" aria-label="Member records">
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th scope="col">Member</th>
+          <th scope="col">Username</th>
+          <th scope="col">Email</th>
+          <th scope="col">Role</th>
+          <th scope="col">Verified</th>
+          <th scope="col">Joined</th>
+          <th scope="col">Status</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody data-user-rows></tbody>
+    </table>
+  </div>
+  <div class="empty-state" data-user-empty>
+    <div class="empty-state__mark" aria-hidden="true">U</div>
+    <h3>No users loaded</h3>
+    <p>No members match the current filters.</p>
+  </div>
+  <div class="pagination">
+    <span data-page-summary>Page 1 of 1</span>
+    <div class="pagination__actions">
+      <button class="button button--small" type="button" data-page-prev disabled>Previous</button>
+      <button class="button button--small" type="button" data-page-next disabled>Next</button>
+    </div>
+  </div>
+</section>
+
+<section class="panel user-panel" aria-labelledby="user-status-heading">
+  <div class="panel__header">
+    <div>
+      <h3 id="user-status-heading">Update access</h3>
+      <p>Blocking or deleting an account immediately revokes its active sessions.</p>
+    </div>
+    <span class="badge" data-user-selected-badge hidden></span>
+  </div>
+
+  <p class="user-hint" data-user-hint>
+    Select a member from the table above to manage their access.
+  </p>
+
+  <div data-user-editor hidden>
+    <dl class="user-detail">
+      <div>
+        <dt>Name</dt>
+        <dd data-user-detail-name>—</dd>
+      </div>
+      <div>
+        <dt>Email</dt>
+        <dd data-user-detail-email>—</dd>
+      </div>
+      <div>
+        <dt>Username</dt>
+        <dd data-user-detail-username>—</dd>
+      </div>
+      <div>
+        <dt>Phone</dt>
+        <dd data-user-detail-phone>—</dd>
+      </div>
+      <div>
+        <dt>Location</dt>
+        <dd data-user-detail-location>—</dd>
+      </div>
+      <div>
+        <dt>Joined</dt>
+        <dd data-user-detail-joined>—</dd>
+      </div>
+    </dl>
+
+    <form data-user-status-form novalidate>
+      <div class="form-grid">
+        <label class="field">
+          <span>Member ID</span>
+          <input
+            type="text"
+            name="id"
+            minlength="24"
+            maxlength="24"
+            pattern="[a-fA-F0-9]{24}"
+            readonly
+            required
+          />
+        </label>
+        <label class="field">
+          <span>Status</span>
+          <select name="status" required>
+            <option value="ACTIVE">Active</option>
+            <option value="BLOCKED">Blocked</option>
+            <option value="DELETED">Deleted</option>
+          </select>
+        </label>
+      </div>
+      <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+      <div class="form-actions">
+        <button class="button" type="button" data-user-clear>Cancel</button>
+        <button class="button button--primary" type="submit">Update access</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<%- include('../includes/footer', { layoutMode, scriptPath }) %>

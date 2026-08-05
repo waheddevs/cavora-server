@@ -2,18 +2,235 @@
   min-height: 150px;
 }
 
-.tour-editor textarea[name='itinerary'] {
-  min-height: 130px;
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+.tour-image-upload-field {
+  grid-column: 1 / -1;
+}
+
+.tour-image-upload-field .image-upload__preview {
+  display: none;
+}
+
+.image-upload-field--compact .image-upload__dropzone {
+  min-height: 120px;
+  grid-template-areas:
+    'icon prompt'
+    'icon help';
+  grid-template-columns: auto auto;
+  align-content: center;
+  justify-content: center;
+  justify-items: start;
+  gap: 4px 14px;
+  text-align: left;
+}
+
+.image-upload-field--compact .image-upload__icon {
+  grid-area: icon;
+}
+
+.image-upload-field--compact .image-upload__prompt {
+  grid-area: prompt;
+}
+
+.image-upload-field--compact .image-upload__dropzone > small {
+  grid-area: help;
+}
+
+.tour-image-preview-list {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 12px;
+}
+
+.tour-image-preview-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tour-image-preview-list__header > strong {
+  font-size: 0.8rem;
+}
+
+.tour-image-preview-list__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tour-image-preview-card {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  gap: 9px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  box-shadow: 0 2px 5px rgb(26 26 26 / 5%);
+}
+
+.tour-image-preview-card > img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  background: var(--accent-soft);
+  border-radius: 7px;
+}
+
+.tour-image-preview-card__file {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  padding: 0 3px 2px;
+}
+
+.tour-image-preview-card__file strong {
+  overflow: hidden;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tour-image-preview-card__file small {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+
+.tour-image-preview-card__position {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  background: rgb(26 26 26 / 78%);
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 750;
+  place-items: center;
+}
+
+.tour-image-preview-card__remove {
+  justify-self: start;
+  margin: 0 3px 2px;
+}
+
+.itinerary-builder {
+  gap: 12px;
+}
+
+.itinerary-builder__heading,
+.itinerary-day__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.itinerary-builder__heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.itinerary-builder__list {
+  display: grid;
+  gap: 12px;
+}
+
+.itinerary-builder__empty {
+  margin: 0;
+  padding: 16px;
+  color: var(--text-muted);
+  background: var(--surface-muted);
+  border: 1px dashed var(--border-strong);
+  border-radius: 8px;
   font-size: 0.76rem;
+  text-align: center;
 }
 
-.image-manager {
-  margin-top: 18px;
+.itinerary-day {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 9px;
 }
 
-@media (min-width: 1100px) {
-  .image-manager .form-grid {
-    grid-template-columns: 0.6fr 0.6fr 1.8fr;
+.itinerary-day__heading strong {
+  font-size: 0.8rem;
+}
+
+.itinerary-day__fields {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.itinerary-day__description {
+  grid-column: 1 / -1;
+}
+
+.itinerary-day__description textarea {
+  min-height: 90px;
+}
+
+@media (max-width: 1100px) {
+  .tour-image-preview-list__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .tour-image-upload-field {
+    grid-column: auto;
+  }
+
+  .tour-image-preview-list {
+    grid-column: auto;
+  }
+
+  .tour-image-preview-list__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .tour-image-preview-list__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tour-image-preview-card > img {
+    height: 180px;
+  }
+
+  .itinerary-builder__heading,
+  .itinerary-day__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .itinerary-day__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .itinerary-day__description {
+    grid-column: auto;
+  }
+
+  .image-upload-field--compact .image-upload__dropzone {
+    min-height: 154px;
+    grid-template-areas: none;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .image-upload-field--compact .image-upload__icon,
+  .image-upload-field--compact .image-upload__prompt,
+  .image-upload-field--compact .image-upload__dropzone > small {
+    grid-area: auto;
   }
 }

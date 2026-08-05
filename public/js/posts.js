@@ -42,6 +42,7 @@
       setField(name, post[name]);
     }
     setField('body', JSON.stringify(post.body, null, 2));
+    admin.setImageUploadPreview(form.elements.namedItem('image'), post.imageUrl);
     if (
       editor instanceof HTMLElement &&
       editor.hidden &&
@@ -92,17 +93,16 @@
     event.preventDefault();
     const raw = admin.values(form);
     const errors = [];
+    const imageInput = form.querySelector('[data-blog-image-file]');
+    const imageFile = imageInput instanceof HTMLInputElement ? imageInput.files?.[0] : undefined;
     let bodyDocument;
     try {
       bodyDocument = JSON.parse(raw.body);
     } catch {
       errors.push({ name: 'body', message: 'Body must contain valid JSON.' });
     }
-    if (raw.imageUrl && !admin.validationRules.urlOrPath(raw.imageUrl)) {
-      errors.push({
-        name: 'imageUrl',
-        message: 'Use a valid URL or a local path beginning with /.',
-      });
+    if (!imageFile && !raw.imageUrl) {
+      errors.push({ name: 'image', message: 'Choose a featured image.' });
     }
     if (raw.authorImageUrl && !admin.validationRules.urlOrPath(raw.authorImageUrl)) {
       errors.push({
@@ -111,17 +111,14 @@
       });
     }
     if (!admin.validateForm(form, errors)) return;
-    const body = {
-      title: raw.title,
-      slug: raw.slug,
-      category: raw.category,
-      authorName: raw.authorName,
-      status: raw.status,
-      imageUrl: raw.imageUrl,
-      excerpt: raw.excerpt,
-      body: bodyDocument,
-      ...(raw.authorImageUrl ? { authorImageUrl: raw.authorImageUrl } : {}),
-    };
+    const body = new FormData();
+    for (const name of ['title', 'slug', 'category', 'authorName', 'status', 'excerpt']) {
+      body.append(name, raw[name]);
+    }
+    body.append('body', JSON.stringify(bodyDocument));
+    if (imageFile) body.append('image', imageFile);
+    if (raw.imageUrl) body.append('imageUrl', raw.imageUrl);
+    if (raw.authorImageUrl) body.append('authorImageUrl', raw.authorImageUrl);
     admin.setBusy(form, true);
     try {
       const editId = form.dataset.editId;
