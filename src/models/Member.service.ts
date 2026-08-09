@@ -64,8 +64,9 @@ type MemberViewSource = Pick<
 
 interface BookingFacetResult {
   data: Array<
-    Omit<MemberBookingView, 'createdAt' | 'holdExpiresAt'> & {
+    Omit<MemberBookingView, 'createdAt' | 'departureDate' | 'holdExpiresAt'> & {
       createdAt: Date;
+      departureDate?: Date;
       holdExpiresAt: Date;
     }
   >;
@@ -595,6 +596,15 @@ class MemberService {
               },
             },
             {
+              $lookup: {
+                from: 'tour_departures',
+                localField: 'departureId',
+                foreignField: '_id',
+                as: 'departure',
+              },
+            },
+            { $unwind: { path: '$departure', preserveNullAndEmptyArrays: true } },
+            {
               $project: {
                 _id: 0,
                 id: { $toString: '$_id' },
@@ -602,6 +612,7 @@ class MemberService {
                 status: 1,
                 tourId: 1,
                 departureId: { $toString: '$departureId' },
+                departureDate: '$departure.startDate',
                 travelers: 1,
                 totalCents: 1,
                 currency: 1,
@@ -640,9 +651,10 @@ class MemberService {
     const total = result?.metadata[0]?.total ?? 0;
 
     return {
-      data: (result?.data ?? []).map((booking) => ({
+      data: (result?.data ?? []).map(({ departureDate, ...booking }) => ({
         ...booking,
         createdAt: booking.createdAt.toISOString(),
+        ...(departureDate ? { departureDate: departureDate.toISOString() } : {}),
         holdExpiresAt: booking.holdExpiresAt.toISOString(),
       })),
       meta: {

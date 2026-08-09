@@ -14,7 +14,9 @@
     "format": "prettier --check .",
     "format:write": "prettier --write .",
     "seed": "tsx src/seed.ts",
-    "seed:generate": "tsx scripts/generate-tour-seed.ts"
+    "seed:generate": "npm run seed:generate:tours && npm run seed:generate:blog",
+    "seed:generate:tours": "tsx scripts/generate-tour-seed.ts",
+    "seed:generate:blog": "tsx scripts/generate-blog-seed.ts"
   },
   "keywords": [
     "travel",

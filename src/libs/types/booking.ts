@@ -64,6 +64,7 @@ export interface MemberBookingView {
   tourId: number;
   tour: TourSummary | null;
   departureId: string;
+  departureDate?: string;
   status: BookingStatus;
   travelers: number;
   totalCents: number;

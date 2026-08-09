@@ -53,6 +53,7 @@ export interface BlogPostSummaryView {
   imageUrl: string;
   authorName: string;
   authorImageUrl?: string;
+  commentCount: number;
   publishedAt: string;
 }
 

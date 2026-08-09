@@ -54,8 +54,8 @@ function parseFirstInteger(value: string, field: string, tourId: number): number
 
 async function generateTourSeed(): Promise<void> {
   const frontendRoot = path.resolve(process.argv[2] ?? path.join('..', 'cavora-react'));
-  const tourSource = path.join(frontendRoot, 'src', 'ts', 'TourSingle.ts');
-  const homeSource = path.join(frontendRoot, 'src', 'ts', 'Home.ts');
+  const tourSource = path.join(frontendRoot, 'src', 'app', 'data', 'tourData.ts');
+  const homeSource = path.join(frontendRoot, 'src', 'app', 'data', 'homeData.ts');
   const output = path.resolve('src', 'data', 'tours.seed.json');
 
   const tourModule = (await import(pathToFileURL(tourSource).href)) as TourModule;

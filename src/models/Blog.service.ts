@@ -20,7 +20,7 @@ function postNotFound(): AppError {
   return new AppError(HttpCode.NOT_FOUND, ErrorCode.BLOG_POST_NOT_FOUND, 'Blog post not found.');
 }
 
-function toPostSummary(post: BlogPost): BlogPostSummaryView {
+function toPostSummary(post: BlogPost, commentCount: number): BlogPostSummaryView {
   return {
     id: post._id.toString(),
     slug: post.slug,
@@ -30,6 +30,7 @@ function toPostSummary(post: BlogPost): BlogPostSummaryView {
     imageUrl: post.imageUrl,
     authorName: post.authorName,
     ...(post.authorImageUrl ? { authorImageUrl: post.authorImageUrl } : {}),
+    commentCount,
     publishedAt: (post.publishedAt as Date).toISOString(),
   };
 }
@@ -62,8 +63,16 @@ class BlogService {
         .exec(),
       BlogPostModel.countDocuments(filter).exec(),
     ]);
+    const commentCounts = await Promise.all(
+      posts.map((post) =>
+        BlogCommentModel.countDocuments({
+          postId: post._id,
+          status: BlogCommentStatus.APPROVED,
+        }).exec(),
+      ),
+    );
     return {
-      data: posts.map(toPostSummary),
+      data: posts.map((post, index) => toPostSummary(post, commentCounts[index] ?? 0)),
       meta: {
         page: inquiry.page,
         limit: inquiry.limit,
@@ -82,8 +91,12 @@ class BlogService {
       .lean<BlogPost>()
       .exec();
     if (!post) throw postNotFound();
+    const commentCount = await BlogCommentModel.countDocuments({
+      postId: post._id,
+      status: BlogCommentStatus.APPROVED,
+    }).exec();
     return {
-      ...toPostSummary(post),
+      ...toPostSummary(post, commentCount),
       body: post.body,
       updatedAt: post.updatedAt.toISOString(),
     };
