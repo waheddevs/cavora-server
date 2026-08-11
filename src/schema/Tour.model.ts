@@ -99,6 +99,12 @@ const tourSchema = new Schema<Tour>(
       min: 0,
       default: 0,
     },
+    viewCount: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
+    },
     durationDays: {
       type: Number,
       required: true,

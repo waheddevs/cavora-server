@@ -45,6 +45,24 @@ const tourController = {
     }
   },
 
+  async recordView(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('recordTourView');
+      const { id } = req.validated.params as { id: number };
+      const { visitorId } = req.validated.body as { visitorId: string };
+      const result = await tourService.recordView({
+        tourId: id,
+        visitorId,
+        ...(req.auth ? { memberId: req.auth.memberId } : {}),
+      });
+      res.setHeader('Cache-Control', 'no-store');
+      res.status(HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on recordTourView');
+      next(err);
+    }
+  },
+
   async getAvailability(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       req.log.info('getAvailability');

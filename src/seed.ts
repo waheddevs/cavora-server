@@ -10,12 +10,14 @@ import Booking from './schema/Booking.model';
 import ContactMessage from './schema/ContactMessage.model';
 import EmailVerificationToken from './schema/EmailVerificationToken.model';
 import Member from './schema/Member.model';
+import NewsletterSubscriber from './schema/NewsletterSubscriber.model';
 import PasswordResetToken from './schema/PasswordResetToken.model';
 import Payment from './schema/Payment.model';
 import Session from './schema/Session.model';
 import Tour from './schema/Tour.model';
 import TourDeparture from './schema/TourDeparture.model';
 import TourImage from './schema/TourImage.model';
+import TourView from './schema/TourView.model';
 import Wishlist from './schema/Wishlist.model';
 import rawBlogSeedData from './data/blog.seed.json';
 import rawSeedData from './data/tours.seed.json';
@@ -107,11 +109,13 @@ const commentTemplates = [
 ];
 const indexedModels: Model<unknown>[] = [
   Member,
+  NewsletterSubscriber,
   Session,
   PasswordResetToken,
   EmailVerificationToken,
   Tour,
   TourImage,
+  TourView,
   TourDeparture,
   Wishlist,
   Booking,
@@ -130,8 +134,21 @@ async function seed(): Promise<void> {
     seedData.tours.map((tour) => ({
       updateOne: {
         filter: { _id: tour._id },
-        update: { $set: { ...tour, publishedAt: new Date(tour.publishedAt) } },
+        update: {
+          $set: { ...tour, publishedAt: new Date(tour.publishedAt) },
+          $setOnInsert: {
+            viewCount: 240 + tour.reviewCount * 11 + (tour._id % 7) * 73,
+          },
+        },
         upsert: true,
+      },
+    })),
+  );
+  await Tour.bulkWrite(
+    seedData.tours.map((tour) => ({
+      updateOne: {
+        filter: { _id: tour._id, viewCount: { $exists: false } },
+        update: { $set: { viewCount: 240 + tour.reviewCount * 11 + (tour._id % 7) * 73 } },
       },
     })),
   );
@@ -190,29 +207,52 @@ async function seed(): Promise<void> {
   });
   await BlogComment.bulkWrite(commentOperations);
 
-  const departureOperations = seedData.tours.flatMap((tour) =>
-    Array.from({ length: 18 }, (_, index) => {
-      const startDate = new Date(Date.UTC(2026, 8 + index, 4 + ((tour._id * 3 + index * 5) % 20)));
-      const seasonalRate = 1 + ((tour._id + index) % 5) * 0.03;
+  const legacyDepartureFilters = seedData.tours.flatMap((tour) =>
+    Array.from({ length: 18 }, (_, monthIndex) => ({
+      tourId: tour._id,
+      startDate: new Date(
+        Date.UTC(2026, 8 + monthIndex, 4 + ((tour._id * 3 + monthIndex * 5) % 20)),
+      ),
+    })),
+  );
+  const bookedDepartureIds = await Booking.distinct('departureId').exec();
+  const legacyDepartureCleanup = await TourDeparture.deleteMany({
+    $or: legacyDepartureFilters,
+    ...(bookedDepartureIds.length ? { _id: { $nin: bookedDepartureIds } } : {}),
+  }).exec();
 
-      return {
-        updateOne: {
-          filter: { tourId: tour._id, startDate },
-          update: {
-            $setOnInsert: {
-              tourId: tour._id,
-              startDate,
-              capacity: Math.max(tour.maxGroupSize * 3, 18),
-              reservedSeats: 0,
-              priceCents: Math.round(tour.priceCents * seasonalRate),
-              currency: tour.currency,
-              status: TourDepartureStatus.SCHEDULED,
+  const departureOperations = seedData.tours.flatMap((tour) =>
+    Array.from({ length: 18 }, (_, monthIndex) => {
+      const departuresInMonth = 3 + ((tour._id + monthIndex) % 2);
+      const firstBookableDay = monthIndex === 0 ? 14 : 3;
+      const bookableDayRange = monthIndex === 0 ? 16 : 25;
+
+      return Array.from({ length: departuresInMonth }, (_, departureIndex) => {
+        const day =
+          firstBookableDay +
+          ((tour._id * 7 + monthIndex * 5 + departureIndex * 7) % bookableDayRange);
+        const startDate = new Date(Date.UTC(2026, 7 + monthIndex, day, 9));
+        const seasonalRate = 1 + ((tour._id + monthIndex + departureIndex) % 5) * 0.03;
+
+        return {
+          updateOne: {
+            filter: { tourId: tour._id, startDate },
+            update: {
+              $setOnInsert: {
+                tourId: tour._id,
+                startDate,
+                capacity: Math.max(tour.maxGroupSize * 3, 18),
+                reservedSeats: 0,
+                priceCents: Math.round(tour.priceCents * seasonalRate),
+                currency: tour.currency,
+                status: TourDepartureStatus.SCHEDULED,
+              },
             },
+            upsert: true,
           },
-          upsert: true,
-        },
-      };
-    }),
+        };
+      });
+    }).flat(),
   );
   await TourDeparture.bulkWrite(departureOperations);
 
@@ -220,6 +260,7 @@ async function seed(): Promise<void> {
     {
       blogComments: commentOperations.length,
       blogPosts: blogSeedData.posts.length,
+      legacyTourDeparturesRemoved: legacyDepartureCleanup.deletedCount,
       tourDepartures: departureOperations.length,
       tourImages: seedData.tourImages.length,
       tours: seedData.tours.length,

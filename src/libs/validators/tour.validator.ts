@@ -13,6 +13,12 @@ export const tourIdParamsSchema = z
   })
   .strict();
 
+export const tourViewBodySchema = z
+  .object({
+    visitorId: z.uuid(),
+  })
+  .strict();
+
 export const tourListQuerySchema = z
   .object({
     query: z.string().trim().min(1).max(120).optional(),

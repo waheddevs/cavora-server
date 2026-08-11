@@ -138,6 +138,7 @@ function toTourView(tour: Tour): AdminTourView {
     currency: tour.currency,
     ratingAverage: tour.ratingAverage,
     reviewCount: tour.reviewCount,
+    viewCount: tour.viewCount,
     durationDays: tour.durationDays,
     maxGroupSize: tour.maxGroupSize,
     overview: tour.overview,

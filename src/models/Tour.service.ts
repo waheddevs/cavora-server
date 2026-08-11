@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import type { PipelineStage } from 'mongoose';
 import { AppError } from '../common/errors/app-error';
 import { ErrorCode, HttpCode } from '../common/errors/error-codes';
@@ -9,9 +10,12 @@ import type {
   TourDetail,
   TourInquiry,
   TourSummary,
+  TourViewInput,
+  TourViewResult,
 } from '../libs/types/tour';
 import Tour from '../schema/Tour.model';
 import TourDeparture from '../schema/TourDeparture.model';
+import TourView from '../schema/TourView.model';
 
 interface TourListFacetResult {
   data: TourSummary[];
@@ -53,6 +57,7 @@ function summaryProjectionStage(): PipelineStage.Project {
       currency: 1,
       ratingAverage: 1,
       reviewCount: 1,
+      viewCount: 1,
       durationDays: 1,
       maxGroupSize: 1,
       images: 1,
@@ -155,6 +160,49 @@ class TourService {
       throw new AppError(HttpCode.NOT_FOUND, ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
     }
     return tour;
+  }
+
+  public async recordView(input: TourViewInput): Promise<TourViewResult> {
+    const tour = await Tour.findOne({ _id: input.tourId, status: TourStatus.PUBLISHED })
+      .select({ _id: 1, reviewCount: 1, viewCount: 1 })
+      .lean()
+      .exec();
+    if (!tour) {
+      throw new AppError(HttpCode.NOT_FOUND, ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
+    }
+
+    const viewerKey = input.memberId
+      ? `member:${input.memberId.toString()}`
+      : `visitor:${input.visitorId}`;
+    const viewerKeyHash = createHash('sha256').update(viewerKey).digest('hex');
+    let counted = false;
+
+    try {
+      const viewWrite = await TourView.updateOne(
+        { tourId: input.tourId, viewerKeyHash },
+        { $setOnInsert: { tourId: input.tourId, viewerKeyHash } },
+        { upsert: true },
+      ).exec();
+      counted = viewWrite.upsertedCount === 1;
+    } catch (err) {
+      const duplicateKey =
+        typeof err === 'object' && err !== null && 'code' in err && err.code === 11_000;
+      if (!duplicateKey) throw err;
+    }
+
+    const initialViewCount = 240 + tour.reviewCount * 11 + (input.tourId % 7) * 73;
+    const updatedTour = counted
+      ? await Tour.findByIdAndUpdate(input.tourId, { $inc: { viewCount: 1 } }, { new: true })
+          .select({ viewCount: 1 })
+          .lean()
+          .exec()
+      : tour;
+
+    return {
+      counted,
+      tourId: input.tourId,
+      viewCount: updatedTour?.viewCount ?? initialViewCount,
+    };
   }
 
   public async getRelatedTours(tourId: number): Promise<TourSummary[]> {

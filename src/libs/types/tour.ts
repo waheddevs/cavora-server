@@ -20,6 +20,7 @@ export interface Tour {
   currency: string;
   ratingAverage: number;
   reviewCount: number;
+  viewCount: number;
   durationDays: number;
   maxGroupSize: number;
   overview: string;
@@ -36,7 +37,7 @@ export interface Tour {
   updatedAt: Date;
 }
 
-export type TourInput = Omit<Tour, 'createdAt' | 'updatedAt'>;
+export type TourInput = Omit<Tour, 'createdAt' | 'updatedAt' | 'viewCount'>;
 
 export interface TourUpdateInput extends Partial<Omit<TourInput, '_id'>> {
   _id: number;
@@ -104,9 +105,22 @@ export interface TourSummary {
   currency: string;
   ratingAverage: number;
   reviewCount: number;
+  viewCount: number;
   durationDays: number;
   maxGroupSize: number;
   images: TourImageView[];
+}
+
+export interface TourViewInput {
+  memberId?: Types.ObjectId;
+  tourId: number;
+  visitorId: string;
+}
+
+export interface TourViewResult {
+  counted: boolean;
+  tourId: number;
+  viewCount: number;
 }
 
 export interface TourDetail extends TourSummary {

@@ -25,6 +25,7 @@ function toTourSummary(tour: HomeTour): TourSummary {
     currency: tour.currency,
     ratingAverage: tour.ratingAverage,
     reviewCount: tour.reviewCount,
+    viewCount: tour.viewCount,
     durationDays: tour.durationDays,
     maxGroupSize: tour.maxGroupSize,
     images: tour.images,
@@ -33,6 +34,7 @@ function toTourSummary(tour: HomeTour): TourSummary {
 
 class HomeService {
   public async getHome(): Promise<HomeResult> {
+    const galleryTourSlugs = galleryImages.map((image) => image.tourSlug);
     const pipeline: PipelineStage[] = [
       {
         $match: {
@@ -41,7 +43,8 @@ class HomeService {
             { featuredRank: { $exists: true } },
             { popularityRank: { $exists: true } },
             { homepageSpotlight: true },
-            { _id: spotlightContent.tourId },
+            { slug: spotlightContent.tourSlug },
+            { slug: { $in: galleryTourSlugs } },
           ],
         },
       },
@@ -72,6 +75,7 @@ class HomeService {
           currency: 1,
           ratingAverage: 1,
           reviewCount: 1,
+          viewCount: 1,
           durationDays: 1,
           maxGroupSize: 1,
           images: 1,
@@ -92,8 +96,12 @@ class HomeService {
       .map(toTourSummary);
     const spotlight =
       tours.find((tour) => tour.homepageSpotlight) ??
-      tours.find((tour) => tour.id === spotlightContent.tourId);
+      tours.find((tour) => tour.slug === spotlightContent.tourSlug);
     const spotlightTour = spotlight ? toTourSummary(spotlight) : null;
+    const gallery = galleryImages.flatMap(({ tourSlug, ...image }) => {
+      const tour = tours.find((candidate) => candidate.slug === tourSlug);
+      return tour ? [{ ...image, tourId: tour.id }] : [];
+    });
 
     return {
       slides: heroSlides,
@@ -106,7 +114,7 @@ class HomeService {
         subtitle: spotlightContent.subtitle,
         tour: spotlightTour,
       },
-      gallery: galleryImages,
+      gallery,
     };
   }
 }

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { HttpCode } from '../common/errors/error-codes';
-import type { ContactMessageInput } from '../libs/types/engagement';
+import type { ContactMessageInput, NewsletterSubscriptionInput } from '../libs/types/engagement';
 import EngagementService from '../models/Engagement.service';
 
 const engagementService = new EngagementService();
@@ -18,6 +18,20 @@ const engagementController = {
       res.status(HttpCode.CREATED).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on submitContactMessage');
+      next(err);
+    }
+  },
+
+  async subscribeToNewsletter(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('subscribeToNewsletter');
+      const result = await engagementService.subscribeToNewsletter(
+        req.validated.body as NewsletterSubscriptionInput,
+      );
+      res.setHeader('Cache-Control', 'private, no-store');
+      res.status(result.subscribed ? HttpCode.CREATED : HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on subscribeToNewsletter');
       next(err);
     }
   },

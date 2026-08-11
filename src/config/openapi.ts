@@ -1,7 +1,11 @@
 import { env } from './env';
 import { BlogCommentStatus, BlogPostStatus } from '../libs/enums/blog.enum';
 import { BookingStatus } from '../libs/enums/booking.enum';
-import { ContactMessageStatus } from '../libs/enums/engagement.enum';
+import {
+  ContactMessageStatus,
+  NewsletterSource,
+  NewsletterStatus,
+} from '../libs/enums/engagement.enum';
 import { MemberRole, MemberStatus } from '../libs/enums/member.enum';
 import { PaymentStatus } from '../libs/enums/payment.enum';
 import { TourDepartureStatus, TourStatus } from '../libs/enums/tour.enum';
@@ -10,6 +14,8 @@ const blogCommentStatuses = Object.values(BlogCommentStatus);
 const blogPostStatuses = Object.values(BlogPostStatus);
 const bookingStatuses = Object.values(BookingStatus);
 const contactMessageStatuses = Object.values(ContactMessageStatus);
+const newsletterSources = Object.values(NewsletterSource);
+const newsletterStatuses = Object.values(NewsletterStatus);
 const memberRoles = Object.values(MemberRole);
 const memberStatuses = Object.values(MemberStatus);
 const paymentStatuses = Object.values(PaymentStatus);
@@ -139,6 +145,41 @@ const sectionEightPaths = {
           description: 'The message was stored.',
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/ActionDataResponse' } },
+          },
+        },
+        '422': { $ref: '#/components/responses/ValidationError' },
+        '429': { $ref: '#/components/responses/RateLimitExceeded' },
+      },
+    },
+  },
+  '/newsletter-subscriptions': {
+    post: {
+      operationId: 'subscribeToNewsletter',
+      summary: 'Subscribe an email to Cavora updates',
+      tags: ['Engagement'],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/NewsletterSubscriptionInput' },
+          },
+        },
+      },
+      responses: {
+        '200': {
+          description: 'The email was already subscribed.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/NewsletterSubscriptionResponse' },
+            },
+          },
+        },
+        '201': {
+          description: 'The email was subscribed.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/NewsletterSubscriptionResponse' },
+            },
           },
         },
         '422': { $ref: '#/components/responses/ValidationError' },
@@ -777,6 +818,30 @@ const sectionEightSchemas = {
       phone: { type: 'string', maxLength: 30 },
       subject: { type: 'string', minLength: 2, maxLength: 240 },
       message: { type: 'string', minLength: 10, maxLength: 10000 },
+    },
+  },
+  NewsletterSubscriptionInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['email', 'source'],
+    properties: {
+      email: { type: 'string', format: 'email', maxLength: 254 },
+      source: { type: 'string', enum: newsletterSources },
+    },
+  },
+  NewsletterSubscriptionResponse: {
+    type: 'object',
+    required: ['data'],
+    properties: {
+      data: {
+        type: 'object',
+        required: ['message', 'status', 'subscribed'],
+        properties: {
+          message: { type: 'string' },
+          status: { type: 'string', enum: newsletterStatuses },
+          subscribed: { type: 'boolean' },
+        },
+      },
     },
   },
   MessageResponse: {
@@ -1991,6 +2056,43 @@ export const openApiDocument = {
         },
       },
     },
+    '/tours/{id}/views': {
+      post: {
+        operationId: 'recordTourView',
+        summary: 'Count a unique tour view',
+        description:
+          'Counts at most one view per authenticated member or anonymous browser visitor.',
+        tags: ['Tours'],
+        parameters: [{ $ref: '#/components/parameters/TourId' }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['visitorId'],
+                additionalProperties: false,
+                properties: { visitorId: { type: 'string', format: 'uuid' } },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'The current view count and whether this request added a view.',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/TourViewResponse' },
+              },
+            },
+          },
+          '404': { $ref: '#/components/responses/TourNotFound' },
+          '422': { $ref: '#/components/responses/ValidationError' },
+          '429': { $ref: '#/components/responses/RateLimitExceeded' },
+          '500': { $ref: '#/components/responses/InternalServerError' },
+        },
+      },
+    },
     '/tours/{id}/availability': {
       get: {
         operationId: 'getTourAvailability',
@@ -2353,6 +2455,7 @@ export const openApiDocument = {
           'currency',
           'ratingAverage',
           'reviewCount',
+          'viewCount',
           'durationDays',
           'maxGroupSize',
           'images',
@@ -2370,6 +2473,7 @@ export const openApiDocument = {
           currency: { type: 'string', pattern: '^[A-Z]{3}$' },
           ratingAverage: { type: 'number', minimum: 0, maximum: 5 },
           reviewCount: { type: 'integer', minimum: 0 },
+          viewCount: { type: 'integer', minimum: 0 },
           durationDays: { type: 'integer', minimum: 1 },
           maxGroupSize: { type: 'integer', minimum: 1 },
           images: {
@@ -2411,6 +2515,21 @@ export const openApiDocument = {
         required: ['data'],
         properties: {
           data: { $ref: '#/components/schemas/TourDetail' },
+        },
+      },
+      TourViewResponse: {
+        type: 'object',
+        required: ['data'],
+        properties: {
+          data: {
+            type: 'object',
+            required: ['counted', 'tourId', 'viewCount'],
+            properties: {
+              counted: { type: 'boolean' },
+              tourId: { type: 'integer', minimum: 1 },
+              viewCount: { type: 'integer', minimum: 0 },
+            },
+          },
         },
       },
       PaginationMeta: {
@@ -2476,11 +2595,15 @@ export const openApiDocument = {
       },
       GalleryImage: {
         type: 'object',
-        required: ['altText', 'imageUrl', 'tall'],
+        required: ['altText', 'category', 'imageUrl', 'location', 'tall', 'title', 'tourId'],
         properties: {
           altText: { type: 'string' },
+          category: { type: 'string' },
           imageUrl: { type: 'string' },
+          location: { type: 'string' },
           tall: { type: 'boolean' },
+          title: { type: 'string' },
+          tourId: { type: 'integer', minimum: 1 },
         },
       },
       HomeSpotlight: {

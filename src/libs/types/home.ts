@@ -9,8 +9,12 @@ export interface HeroSlide {
 
 export interface GalleryImage {
   altText: string;
+  category: string;
   imageUrl: string;
+  location: string;
   tall: boolean;
+  title: string;
+  tourId: number;
 }
 
 export interface HomeSpotlight {

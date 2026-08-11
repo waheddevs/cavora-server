@@ -7,6 +7,7 @@ import {
   commentRateLimiter,
   contactRateLimiter,
   loginRateLimiter,
+  newsletterRateLimiter,
   registrationRateLimiter,
 } from './common/middleware/rate-limit';
 import blogController from './controllers/blog.controller';
@@ -23,6 +24,7 @@ import {
   availabilityQuerySchema,
   tourIdParamsSchema,
   tourListQuerySchema,
+  tourViewBodySchema,
 } from './libs/validators/tour.validator';
 import {
   adminRegisterBodySchema,
@@ -49,7 +51,10 @@ import {
   blogPostListQuerySchema,
   blogPostSlugParamsSchema,
 } from './libs/validators/blog.validator';
-import { contactMessageBodySchema } from './libs/validators/engagement.validator';
+import {
+  contactMessageBodySchema,
+  newsletterSubscriptionBodySchema,
+} from './libs/validators/engagement.validator';
 import adminController from './controllers/admin.controller';
 import {
   adminBlogPostCreateBodySchema,
@@ -186,6 +191,13 @@ router.get(
   validate({ params: tourIdParamsSchema, query: availabilityQuerySchema }),
   tourController.getAvailability,
 );
+router.post(
+  '/tours/:id/views',
+  optionalAuth,
+  requireCsrfIfAuthenticated,
+  validate({ params: tourIdParamsSchema, body: tourViewBodySchema }),
+  tourController.recordView,
+);
 router.get('/tours/:id', validate({ params: tourIdParamsSchema }), tourController.getTour);
 
 /* BOOKINGS */
@@ -249,6 +261,14 @@ router.post(
   requireCsrfIfAuthenticated,
   validate({ body: contactMessageBodySchema }),
   engagementController.submitContactMessage,
+);
+router.post(
+  '/newsletter-subscriptions',
+  newsletterRateLimiter,
+  optionalAuth,
+  requireCsrfIfAuthenticated,
+  validate({ body: newsletterSubscriptionBodySchema }),
+  engagementController.subscribeToNewsletter,
 );
 
 /* ADMINISTRATION */

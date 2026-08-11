@@ -1,5 +1,9 @@
 import type { GalleryImage, HeroSlide } from '../libs/types/home';
 
+export interface GalleryImageSource extends Omit<GalleryImage, 'tourId'> {
+  tourSlug: string;
+}
+
 export const heroSlides: HeroSlide[] = [
   {
     imageUrl: '/img/slide-img/slide-1.jpg',
@@ -33,36 +37,56 @@ export const heroSlides: HeroSlide[] = [
   },
 ];
 
-export const galleryImages: GalleryImage[] = [
+export const galleryImages: GalleryImageSource[] = [
   {
     imageUrl: '/img/home-page-img/hero.jpg',
     altText: 'Snowy peaks above the clouds',
+    title: 'Above the Clouds',
+    location: 'Jungfrau Region, Switzerland',
+    category: 'Adventure',
+    tourSlug: 'jungfraujoch-top-of-europe',
     tall: true,
   },
   {
     imageUrl: '/img/home-page-img/gallery-1.jpg',
     altText: 'Aerial view of Rome',
+    title: 'Rome From Above',
+    location: 'Rome, Italy',
+    category: 'Cultural',
+    tourSlug: 'rome-ancient-wonders-la-dolce-vita',
     tall: false,
   },
   {
-    imageUrl: '/img/home-page-img/gallery-2.jpg',
-    altText: 'Taj Mahal through an archway',
+    imageUrl: '/img/tour-single/japan-kyoto-1.jpg',
+    altText: 'Historic Kyoto temple surrounded by nature',
+    title: 'Timeless Kyoto',
+    location: 'Kyoto, Japan',
+    category: 'Cultural',
+    tourSlug: 'kyoto-temples-bamboo-groves',
     tall: false,
   },
   {
     imageUrl: '/img/home-page-img/tour-safari.jpg',
     altText: 'Wooden boat on an alpine lake',
+    title: 'Alpine Lake Escape',
+    location: 'Lucerne, Switzerland',
+    category: 'Scenic',
+    tourSlug: 'lucerne-lake-old-town',
     tall: false,
   },
   {
-    imageUrl: '/img/home-page-img/tour-santorini.jpg',
-    altText: 'Pyramids of Giza',
+    imageUrl: '/img/tour-single/maldives-ari-1.jpg',
+    altText: 'Overwater villas in the turquoise Indian Ocean',
+    title: 'Indian Ocean Dreams',
+    location: 'Ari Atoll, Maldives',
+    category: 'Beach',
+    tourSlug: 'ari-atoll-overwater-luxury',
     tall: false,
   },
 ];
 
 export const spotlightContent = {
-  tourId: 18,
+  tourSlug: 'kyoto-temples-bamboo-groves',
   imageUrl: '/img/home-page-img/tour-kyoto.jpg',
   tagline: 'Hidden Gem',
   title: 'Explore Ancient Kyoto',
