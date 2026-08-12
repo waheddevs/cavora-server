@@ -1,5 +1,2 @@
-/* Reference plus the muted member line need room to sit on two lines. */
-.data-table th:first-child,
-.data-table td:first-child {
-  min-width: 190px;
-}
+/* No page-specific table styles: this list is fully covered by the shared
+   .data-table and cell-* rules in admin-shell.css. */

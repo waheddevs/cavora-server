@@ -101,7 +101,8 @@
       position.className = 'tour-image-preview-card__position';
       position.textContent = String(image.position + 1);
       const removeButton = document.createElement('button');
-      removeButton.className = 'button button--small tour-image-preview-card__remove';
+      removeButton.className =
+        'button button--small button--danger tour-image-preview-card__remove';
       removeButton.type = 'button';
       removeButton.textContent = 'Remove';
       removeButton.addEventListener('click', async () => {
@@ -153,7 +154,8 @@
       position.className = 'tour-image-preview-card__position';
       position.textContent = String(existingTourImages.length + index + 1);
       const removeButton = document.createElement('button');
-      removeButton.className = 'button button--small tour-image-preview-card__remove';
+      removeButton.className =
+        'button button--small button--danger tour-image-preview-card__remove';
       removeButton.type = 'button';
       removeButton.textContent = 'Remove';
       removeButton.addEventListener('click', () => {

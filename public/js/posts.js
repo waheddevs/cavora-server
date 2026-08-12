@@ -100,6 +100,7 @@
       row.remove();
       syncBlockEmptyState();
     });
+    removeButton.classList.add('button--danger');
     controls.append(upButton, downButton, removeButton);
     heading.append(kind, controls);
 

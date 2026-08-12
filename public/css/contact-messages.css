@@ -1,10 +1,2 @@
-/* Subject wraps; the message body is clamped by .cell-clamp. */
-.data-table th:nth-child(2),
-.data-table td:nth-child(2) {
-  min-width: 180px;
-  white-space: normal;
-}
-
-.data-table th:nth-child(3) {
-  min-width: 260px;
-}
+/* No page-specific table styles: this list is fully covered by the shared
+   .data-table and cell-* rules in admin-shell.css. */

@@ -10,14 +10,23 @@
 
 .content-builder__heading {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--gap);
 }
 
-.content-builder__heading > div {
+/* Scoped to the label block on purpose: a bare `> div` also caught the
+   .button-row beside it and, being the more specific selector, turned its
+   flex row of Add buttons into a single stacked column. */
+.content-builder__intro {
   display: grid;
+  min-width: 0;
   gap: 4px;
+}
+
+.content-builder__heading .button-row {
+  flex: 0 0 auto;
 }
 
 .content-builder__list {
@@ -81,11 +90,6 @@
 
 .content-block__fields textarea {
   min-height: clamp(64px, 11vh, 96px);
-}
-
-.data-table th:first-child,
-.data-table td:first-child {
-  min-width: 240px;
 }
 
 @media (max-width: 640px) {

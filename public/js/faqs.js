@@ -51,12 +51,7 @@
 
   const renderFaq = (faq) => {
     const row = document.createElement('tr');
-    const question = admin.cell();
-    const title = document.createElement('strong');
-    title.textContent = faq.question;
-    const answer = document.createElement('small');
-    answer.textContent = faq.answer;
-    question.append(title, answer);
+    const question = admin.cellStack(faq.question, faq.answer);
     const status = admin.cell();
     status.append(admin.badge(faq.status));
     const actions = admin.actionsCell(

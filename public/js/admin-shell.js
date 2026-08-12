@@ -1137,12 +1137,11 @@
         .filter((entry) => typeof entry[1] === 'string')
         .map(([name, value]) => [name, value]),
     }));
-    const openPanels = [...main.querySelectorAll('[id]')]
-      .filter((element) => element instanceof HTMLElement && !element.hidden)
-      .map((element) => element.id)
-      .filter((id) => main.querySelector(`[aria-controls="${window.CSS.escape(id)}"]`));
+    // Only the filters are carried across a navigation. An editor panel is
+    // deliberately not: it belongs to a record the reader picked, so it starts
+    // closed on every visit and opens only when they press Edit or Select.
     try {
-      window.sessionStorage.setItem(pageStateKey(url), JSON.stringify({ openPanels, toolbars }));
+      window.sessionStorage.setItem(pageStateKey(url), JSON.stringify({ toolbars }));
     } catch {
       // Navigation still works if browser storage is unavailable.
     }
@@ -1165,12 +1164,6 @@
         if (control && 'value' in control) control.value = value;
       }
     });
-    for (const id of state.openPanels ?? []) {
-      const panel = document.getElementById(id);
-      const trigger = main.querySelector(`[aria-controls="${window.CSS.escape(id)}"]`);
-      if (panel instanceof HTMLElement) panel.hidden = false;
-      trigger?.setAttribute('aria-expanded', 'true');
-    }
   };
 
   const fetchAdminPage = async (url) => {
