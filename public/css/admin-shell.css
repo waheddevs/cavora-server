@@ -497,16 +497,18 @@ a {
     transform 160ms ease;
 }
 
-/* Hover moves the fill, not just the border: a one-shade border shift on a
-   white card was near invisible. Active drops the lift so a press registers. */
+/* Hover fills solid accent, mirroring the way .button--danger fills solid red.
+   Active drops the lift so a press registers. */
 .button:hover:not(:disabled) {
-  background: var(--accent-soft);
+  color: #ffffff;
+  background: var(--accent);
   border-color: var(--accent);
   transform: translateY(-1px);
 }
 
 .button:active:not(:disabled) {
-  background: #ffeec2;
+  color: #ffffff;
+  background: var(--accent-dark);
   border-color: var(--accent-dark);
   transform: none;
 }
@@ -525,7 +527,10 @@ a {
   border-color: var(--accent);
 }
 
+/* The ink is restated on both states: the generic .button hover above is the
+   more specific selector and would otherwise turn this text white on gold. */
 .button--primary:hover:not(:disabled) {
+  color: #1a1a1a;
   background: var(--accent-dark);
   border-color: var(--accent-dark);
   box-shadow: 0 3px 10px rgb(230 162 0 / 20%);
@@ -533,6 +538,7 @@ a {
 }
 
 .button--primary:active:not(:disabled) {
+  color: #1a1a1a;
   background: #cf9200;
   border-color: #cf9200;
   box-shadow: none;
