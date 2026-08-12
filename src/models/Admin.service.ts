@@ -7,6 +7,7 @@ import { BlogPostStatus } from '../libs/enums/blog.enum';
 import type { BlogCommentStatus } from '../libs/enums/blog.enum';
 import { BookingStatus } from '../libs/enums/booking.enum';
 import { ContactMessageStatus } from '../libs/enums/engagement.enum';
+import { faqSectionTitles } from '../libs/enums/faq.enum';
 import { TourStatus } from '../libs/enums/tour.enum';
 import type {
   AdminBlogCommentInquiry,
@@ -35,6 +36,14 @@ import type {
   ContactMessageView,
   PaginatedContactMessages,
 } from '../libs/types/engagement';
+import type {
+  Faq,
+  FaqInquiry,
+  FaqInput,
+  FaqUpdateInput,
+  FaqView,
+  PaginatedAdminFaqs,
+} from '../libs/types/faq';
 import type {
   AdminMemberStats,
   AdminMemberView,
@@ -80,6 +89,7 @@ import BlogComment from '../schema/BlogComment.model';
 import BlogPostModel from '../schema/BlogPost.model';
 import BookingModel from '../schema/Booking.model';
 import ContactMessageModel from '../schema/ContactMessage.model';
+import FaqModel from '../schema/Faq.model';
 import MemberModel from '../schema/Member.model';
 import PaymentModel from '../schema/Payment.model';
 import Session from '../schema/Session.model';
@@ -216,6 +226,20 @@ function toContactView(contact: ContactMessage): ContactMessageView {
     status: contact.status,
     ...(contact.resolvedAt ? { resolvedAt: contact.resolvedAt.toISOString() } : {}),
     createdAt: contact.createdAt.toISOString(),
+  };
+}
+
+function toFaqView(faq: Faq): FaqView {
+  return {
+    id: faq._id.toString(),
+    section: faq.section,
+    sectionTitle: faqSectionTitles[faq.section],
+    question: faq.question,
+    answer: faq.answer,
+    position: faq.position,
+    status: faq.status,
+    createdAt: faq.createdAt.toISOString(),
+    updatedAt: faq.updatedAt.toISOString(),
   };
 }
 
@@ -730,6 +754,68 @@ class AdminService {
       popularTourIds: popular.map((tour) => tour._id),
       ...(spotlight ? { spotlightTourId: spotlight._id } : {}),
     };
+  }
+
+  public async getFaqs(auth: AuthContext, inquiry: FaqInquiry): Promise<PaginatedAdminFaqs> {
+    this.assertAdmin(auth);
+    const filter: Record<string, unknown> = {};
+    if (inquiry.section) filter.section = inquiry.section;
+    if (inquiry.status) filter.status = inquiry.status;
+    if (inquiry.query) {
+      const regex = searchRegex(inquiry.query);
+      filter.$or = [{ question: regex }, { answer: regex }];
+    }
+    const [faqs, total] = await Promise.all([
+      FaqModel.find(filter)
+        .sort({ section: 1, position: 1, createdAt: 1 })
+        .skip((inquiry.page - 1) * inquiry.limit)
+        .limit(inquiry.limit)
+        .lean<Faq[]>()
+        .exec(),
+      FaqModel.countDocuments(filter).exec(),
+    ]);
+    return {
+      data: faqs.map(toFaqView),
+      meta: pagination(inquiry.page, inquiry.limit, total),
+    };
+  }
+
+  public async createFaq(
+    auth: AuthContext,
+    input: FaqInput,
+    context: RequestContext,
+  ): Promise<FaqView> {
+    this.assertAdmin(auth);
+    return mongoose.connection.transaction(async (session) => {
+      const [created] = await FaqModel.create([input], { session });
+      if (!created) throw new Error('FAQ creation returned no document.');
+      await this.writeAudit(
+        auth,
+        'admin.faq_created',
+        'faq',
+        created._id.toString(),
+        context,
+        session,
+      );
+      return toFaqView(created.toObject());
+    });
+  }
+
+  public async updateFaq(
+    auth: AuthContext,
+    input: FaqUpdateInput,
+    context: RequestContext,
+  ): Promise<FaqView> {
+    this.assertAdmin(auth);
+    return mongoose.connection.transaction(async (session) => {
+      const { _id, ...changes } = input;
+      const faq = await FaqModel.findByIdAndUpdate(_id, { $set: changes }, { new: true, session })
+        .lean<Faq>()
+        .exec();
+      if (!faq) throw notFound(ErrorCode.FAQ_NOT_FOUND, 'FAQ not found.');
+      await this.writeAudit(auth, 'admin.faq_updated', 'faq', faq._id.toString(), context, session);
+      return toFaqView(faq);
+    });
   }
 
   public async getBlogPosts(

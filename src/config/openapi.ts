@@ -7,6 +7,7 @@ import {
   NewsletterStatus,
 } from '../libs/enums/engagement.enum';
 import { MemberRole, MemberStatus } from '../libs/enums/member.enum';
+import { FaqSection, FaqStatus } from '../libs/enums/faq.enum';
 import { PaymentStatus } from '../libs/enums/payment.enum';
 import { TourDepartureStatus, TourStatus } from '../libs/enums/tour.enum';
 
@@ -14,6 +15,8 @@ const blogCommentStatuses = Object.values(BlogCommentStatus);
 const blogPostStatuses = Object.values(BlogPostStatus);
 const bookingStatuses = Object.values(BookingStatus);
 const contactMessageStatuses = Object.values(ContactMessageStatus);
+const faqSections = Object.values(FaqSection);
+const faqStatuses = Object.values(FaqStatus);
 const newsletterSources = Object.values(NewsletterSource);
 const newsletterStatuses = Object.values(NewsletterStatus);
 const memberRoles = Object.values(MemberRole);
@@ -35,6 +38,22 @@ const adminMutationResponses = {
 } as const;
 
 const sectionEightPaths = {
+  '/faqs': {
+    get: {
+      operationId: 'getFaqs',
+      summary: 'List published FAQs grouped by section',
+      tags: ['FAQ'],
+      responses: {
+        '200': {
+          description: 'Published FAQ sections in display order.',
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/FaqResponse' } },
+          },
+        },
+        '500': { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
   '/posts': {
     get: {
       operationId: 'getPosts',
@@ -433,6 +452,63 @@ const sectionEightPaths = {
       },
     },
   },
+  '/admin/faqs': {
+    get: {
+      operationId: 'adminGetFaqs',
+      summary: 'List FAQ entries including drafts',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminListPage' },
+        { $ref: '#/components/parameters/AdminListLimit' },
+        { $ref: '#/components/parameters/AdminListQuery' },
+        { name: 'section', in: 'query', schema: { type: 'string', enum: faqSections } },
+        { name: 'status', in: 'query', schema: { type: 'string', enum: faqStatuses } },
+      ],
+      responses: {
+        '200': { $ref: '#/components/responses/AdminListResponse' },
+        ...adminReadResponses,
+      },
+    },
+    post: {
+      operationId: 'adminCreateFaq',
+      summary: 'Create an FAQ entry',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      requestBody: {
+        required: true,
+        content: { 'application/json': { schema: { $ref: '#/components/schemas/FaqInput' } } },
+      },
+      responses: {
+        '201': { $ref: '#/components/responses/AdminDataResponse' },
+        ...adminMutationResponses,
+      },
+    },
+  },
+  '/admin/faqs/{id}': {
+    patch: {
+      operationId: 'adminUpdateFaq',
+      summary: 'Update an FAQ entry',
+      tags: ['Administration'],
+      security: adminSecurity,
+      parameters: [
+        { $ref: '#/components/parameters/AdminObjectId' },
+        { $ref: '#/components/parameters/CsrfToken' },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': { schema: { type: 'object', minProperties: 1 } },
+        },
+      },
+      responses: {
+        '200': { $ref: '#/components/responses/AdminDataResponse' },
+        '404': { $ref: '#/components/responses/AdminNotFound' },
+        ...adminMutationResponses,
+      },
+    },
+  },
   '/admin/posts': {
     get: {
       operationId: 'adminGetBlogPosts',
@@ -729,6 +805,44 @@ const sectionEightPaths = {
 } as const;
 
 const sectionEightSchemas = {
+  FaqInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['section', 'question', 'answer', 'position', 'status'],
+    properties: {
+      section: { type: 'string', enum: faqSections },
+      question: { type: 'string', minLength: 1, maxLength: 500 },
+      answer: { type: 'string', minLength: 1, maxLength: 5000 },
+      position: { type: 'integer', minimum: 1, maximum: 999 },
+      status: { type: 'string', enum: faqStatuses },
+    },
+  },
+  FaqItem: {
+    type: 'object',
+    required: ['id', 'question', 'answer', 'position'],
+    properties: {
+      id: { type: 'string' },
+      question: { type: 'string' },
+      answer: { type: 'string' },
+      position: { type: 'integer' },
+    },
+  },
+  FaqSection: {
+    type: 'object',
+    required: ['section', 'title', 'items'],
+    properties: {
+      section: { type: 'string', enum: faqSections },
+      title: { type: 'string' },
+      items: { type: 'array', items: { $ref: '#/components/schemas/FaqItem' } },
+    },
+  },
+  FaqResponse: {
+    type: 'object',
+    required: ['data'],
+    properties: {
+      data: { type: 'array', items: { $ref: '#/components/schemas/FaqSection' } },
+    },
+  },
   BlogPostSummary: {
     type: 'object',
     required: [
@@ -1584,6 +1698,37 @@ const sectionFivePaths = {
       },
     },
   },
+  '/users/me/bookings/archive': {
+    patch: {
+      operationId: 'archiveCurrentMemberBookings',
+      summary: 'Hide a completed booking group from member history',
+      tags: ['Members'],
+      security: [{ sessionCookie: [] }],
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['group'],
+              properties: {
+                group: { type: 'string', enum: ['past', 'cancelled'] },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        '200': {
+          description: 'The number of booking records hidden from member history.',
+        },
+        '401': { $ref: '#/components/responses/AuthenticationRequired' },
+        '422': { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+  },
   '/users/me/wishlist': {
     get: {
       operationId: 'getCurrentMemberWishlist',
@@ -1597,6 +1742,17 @@ const sectionFivePaths = {
             'application/json': { schema: { $ref: '#/components/schemas/WishlistResponse' } },
           },
         },
+        '401': { $ref: '#/components/responses/AuthenticationRequired' },
+      },
+    },
+    delete: {
+      operationId: 'clearCurrentMemberWishlist',
+      summary: 'Remove all saved tours',
+      tags: ['Wishlists'],
+      security: [{ sessionCookie: [] }],
+      parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
+      responses: {
+        '200': { description: 'The number of saved tours removed.' },
         '401': { $ref: '#/components/responses/AuthenticationRequired' },
       },
     },
@@ -1842,6 +1998,7 @@ export const openApiDocument = {
     { name: 'Bookings', description: 'Owned booking holds and cancellation.' },
     { name: 'Payments', description: 'Stripe PaymentIntents and verified webhooks.' },
     { name: 'Blog', description: 'Published posts and moderated comments.' },
+    { name: 'FAQ', description: 'Published customer questions and answers.' },
     { name: 'Engagement', description: 'Customer contact workflows.' },
     { name: 'Administration', description: 'Protected operational management APIs.' },
   ],

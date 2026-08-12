@@ -1,0 +1,22 @@
+#faq-editor textarea[name='answer'] {
+  min-height: 150px;
+}
+
+[data-faq-rows] td:first-child {
+  min-width: 360px;
+  max-width: 620px;
+}
+
+[data-faq-rows] td:first-child strong,
+[data-faq-rows] td:first-child small {
+  display: block;
+}
+
+[data-faq-rows] td:first-child small {
+  display: -webkit-box;
+  margin-top: 6px;
+  overflow: hidden;
+  color: var(--text-muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}

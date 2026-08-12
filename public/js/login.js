@@ -33,7 +33,7 @@
         await admin.request('/cavora/auth/logout', { method: 'POST' });
         throw new Error('This account does not have administrator access.');
       }
-      window.location.assign('/admin');
+      window.location.assign('/admin/dashboard');
     } catch (error) {
       admin.reportError(error, form);
       admin.setBusy(form, false);

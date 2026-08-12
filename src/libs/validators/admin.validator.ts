@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { BlogCommentStatus, BlogPostStatus } from '../enums/blog.enum';
 import { BookingStatus } from '../enums/booking.enum';
 import { ContactMessageStatus } from '../enums/engagement.enum';
+import { FaqSection, FaqStatus } from '../enums/faq.enum';
 import { MemberRole, MemberStatus } from '../enums/member.enum';
 import { PaymentStatus } from '../enums/payment.enum';
 import { TourDepartureStatus, TourStatus } from '../enums/tour.enum';
@@ -76,6 +77,13 @@ const blogPostFields = {
 const blogPostUpdateFields = {
   ...blogPostFields,
   status: z.enum(BlogPostStatus),
+};
+const faqFields = {
+  section: z.enum(FaqSection),
+  question: z.string().trim().min(1).max(500),
+  answer: z.string().trim().min(1).max(5_000),
+  position: z.number().int().min(1).max(999),
+  status: z.enum(FaqStatus).default(FaqStatus.DRAFT),
 };
 
 export const adminObjectIdParamsSchema = z.object({ id: objectId() }).strict();
@@ -160,6 +168,23 @@ export const adminHomepageSelectionsBodySchema = z
       new Set(input.popularTourIds).size === input.popularTourIds.length,
     { message: 'Homepage tour IDs must be unique within each selection.' },
   );
+
+export const adminFaqCreateBodySchema = z.object(faqFields).strict();
+export const adminFaqUpdateBodySchema = z
+  .object({ ...faqFields, status: z.enum(FaqStatus) })
+  .partial()
+  .strict()
+  .refine((input) => Object.keys(input).length > 0, {
+    message: 'At least one FAQ field is required.',
+  });
+export const adminFaqListQuerySchema = z
+  .object({
+    ...pageQuery,
+    query: listQuery,
+    section: z.enum(FaqSection).optional(),
+    status: z.enum(FaqStatus).optional(),
+  })
+  .strict();
 
 export const adminBlogPostCreateBodySchema = z.object(blogPostFields).strict();
 export const adminBlogPostUpdateBodySchema = z

@@ -18,6 +18,7 @@ export interface Booking {
   holdExpiresAt: Date;
   confirmedAt?: Date;
   cancelledAt?: Date;
+  memberArchivedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,6 +52,16 @@ export interface BookingInquiry {
   limit: number;
   query?: string;
   status?: BookingStatus;
+}
+
+export type MemberBookingArchiveGroup = 'past' | 'cancelled';
+
+export interface MemberBookingArchiveInput {
+  group: MemberBookingArchiveGroup;
+}
+
+export interface MemberBookingArchiveResult {
+  archivedCount: number;
 }
 
 export interface AdminBookingView extends BookingView {

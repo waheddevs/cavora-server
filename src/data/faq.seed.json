@@ -1,0 +1,132 @@
+{
+  "faqs": [
+    {
+      "sourceKey": "overview-why-use-cavora",
+      "section": "OVERVIEW",
+      "question": "Why should we use your services?",
+      "answer": "Cavora brings together handpicked destinations, transparent pricing, and round-the-clock human support so you can travel with confidence. Every itinerary is curated by people who have actually been there.",
+      "position": 1,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "overview-how-we-help",
+      "section": "OVERVIEW",
+      "question": "How do we help you with your services?",
+      "answer": "From the first search to the moment you return home, our team assists with planning, booking, changes, and on-trip questions — all in one place.",
+      "position": 2,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "overview-customer-support",
+      "section": "OVERVIEW",
+      "question": "Is there customer support available?",
+      "answer": "Yes. Our support team is available around the clock by chat and email, and premium bookings include a dedicated travel concierge.",
+      "position": 3,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "overview-update-account",
+      "section": "OVERVIEW",
+      "question": "How can I update my account information?",
+      "answer": "Head to your profile settings, where you can update your personal details, payment methods, and travel preferences at any time.",
+      "position": 4,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "payments-handling",
+      "section": "PAYMENTS",
+      "question": "How does Cavora handle payments?",
+      "answer": "We accept all major cards and popular digital wallets through an encrypted, PCI-compliant gateway, so your payment details are never stored on our servers.",
+      "position": 1,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "payments-invoice",
+      "section": "PAYMENTS",
+      "question": "How do I get my invoice?",
+      "answer": "A detailed invoice is emailed to you automatically after every booking, and you can download it again anytime from the Bookings section of your account.",
+      "position": 2,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "payments-discounts",
+      "section": "PAYMENTS",
+      "question": "Are there opportunities for discounts or promotions?",
+      "answer": "Seasonal promotions, early-bird fares, and loyalty rewards run throughout the year. Subscribe to our newsletter to be the first to hear about them.",
+      "position": 3,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "payments-final-prices",
+      "section": "PAYMENTS",
+      "question": "Are the prices listed always final?",
+      "answer": "The price you see includes all mandatory fees and taxes. Any optional add-ons are shown clearly before you confirm, so there are no surprises at checkout.",
+      "position": 4,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "payments-refunds",
+      "section": "PAYMENTS",
+      "question": "What is the refund procedure?",
+      "answer": "Refunds follow each booking's cancellation policy, shown before you pay. Eligible refunds are processed back to your original payment method within 5–10 business days.",
+      "position": 5,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "payments-browser-support",
+      "section": "PAYMENTS",
+      "question": "Is there browser or payment support available?",
+      "answer": "Yes — Cavora works on all modern browsers, and if a payment fails our support team can help you complete it or suggest an alternative method.",
+      "position": 6,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "safety-security-measures",
+      "section": "SAFETY",
+      "question": "What security measures does Cavora use?",
+      "answer": "We protect your data with secure authentication and continuous monitoring, and we never share your information with third parties without consent.",
+      "position": 1,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "safety-login",
+      "section": "SAFETY",
+      "question": "How do I log in to this system?",
+      "answer": "Log in with your email and password. Your authenticated Cavora session is stored securely in an HTTP-only browser cookie.",
+      "position": 2,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "safety-features",
+      "section": "SAFETY",
+      "question": "Are there any safety features in your system?",
+      "answer": "Every partner is vetted, bookings are verified, and travel information keeps you informed about your destination before and during your trip.",
+      "position": 3,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "safety-feature-requests",
+      "section": "SAFETY",
+      "question": "How can I request more features?",
+      "answer": "We love feedback. Send feature requests through the contact form or your account dashboard, and our product team reviews every suggestion.",
+      "position": 4,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "safety-change-destination",
+      "section": "SAFETY",
+      "question": "Can I change my travel destination?",
+      "answer": "In most cases yes — destinations and dates can be changed subject to the operator's policy. Manage changes from your bookings page or contact support.",
+      "position": 5,
+      "status": "PUBLISHED"
+    },
+    {
+      "sourceKey": "safety-trip-issue",
+      "section": "SAFETY",
+      "question": "How do I report an issue during my trip?",
+      "answer": "If something goes wrong during your trip, use the contact form and a support agent will assist you as soon as possible.",
+      "position": 6,
+      "status": "PUBLISHED"
+    }
+  ]
+}

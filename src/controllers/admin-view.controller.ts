@@ -31,7 +31,7 @@ const adminViewController = {
       renderAdminPage(res, {
         activePage: 'login',
         layoutMode: 'auth',
-        pageTitle: 'Sign in',
+        pageTitle: 'Login',
         scriptName: 'login',
         viewName: 'login',
       });
@@ -47,7 +47,7 @@ const adminViewController = {
       renderAdminPage(res, {
         activePage: 'signup',
         layoutMode: 'auth',
-        pageTitle: 'Create administrator',
+        pageTitle: 'Admin Signup',
         scriptName: 'signup',
         viewName: 'signup',
       });
@@ -113,6 +113,21 @@ const adminViewController = {
       });
     } catch (err) {
       req.log.error({ err }, 'ERROR on getAdminDepartures');
+      next(err);
+    }
+  },
+
+  async getFaqs(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('getAdminFaqs');
+      renderAdminPage(res, {
+        activePage: 'faqs',
+        pageTitle: 'FAQ',
+        scriptName: 'faqs',
+        viewName: 'faqs',
+      });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on getAdminFaqs');
       next(err);
     }
   },

@@ -46,7 +46,7 @@
       if (member?.role !== 'ADMIN') {
         throw new Error('Administrator setup did not complete correctly.');
       }
-      window.location.assign('/admin');
+      window.location.assign('/admin/dashboard');
     } catch (error) {
       admin.reportError(error, form);
       admin.setBusy(form, false);

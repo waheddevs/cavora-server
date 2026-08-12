@@ -3,7 +3,7 @@ import { AppError } from '../common/errors/app-error';
 import { ErrorCode, HttpCode } from '../common/errors/error-codes';
 import { markUploadPersisted } from '../common/middleware/upload';
 import { clearAuthenticationCookies, setAuthenticationCookies } from '../common/security/cookies';
-import type { BookingInquiry } from '../libs/types/booking';
+import type { BookingInquiry, MemberBookingArchiveInput } from '../libs/types/booking';
 import type {
   AuthContext,
   ForgotPasswordInput,
@@ -239,6 +239,22 @@ const memberController = {
     }
   },
 
+  async archiveBookings(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('archiveBookings');
+      const result = await memberService.archiveBookings(
+        authenticated(req).memberId,
+        req.validated.body as MemberBookingArchiveInput,
+        requestContext(req),
+      );
+      preventPrivateCaching(res);
+      res.status(HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on archiveBookings');
+      next(err);
+    }
+  },
+
   async getWishlist(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       req.log.info('getWishlist');
@@ -247,6 +263,21 @@ const memberController = {
       res.status(HttpCode.OK).json(result);
     } catch (err) {
       req.log.error({ err }, 'ERROR on getWishlist');
+      next(err);
+    }
+  },
+
+  async clearWishlist(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('clearWishlist');
+      const result = await memberService.clearWishlist(
+        authenticated(req).memberId,
+        requestContext(req),
+      );
+      preventPrivateCaching(res);
+      res.status(HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on clearWishlist');
       next(err);
     }
   },

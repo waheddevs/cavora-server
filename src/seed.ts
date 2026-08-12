@@ -9,6 +9,7 @@ import BlogPost from './schema/BlogPost.model';
 import Booking from './schema/Booking.model';
 import ContactMessage from './schema/ContactMessage.model';
 import EmailVerificationToken from './schema/EmailVerificationToken.model';
+import Faq from './schema/Faq.model';
 import Member from './schema/Member.model';
 import NewsletterSubscriber from './schema/NewsletterSubscriber.model';
 import PasswordResetToken from './schema/PasswordResetToken.model';
@@ -20,7 +21,9 @@ import TourImage from './schema/TourImage.model';
 import TourView from './schema/TourView.model';
 import Wishlist from './schema/Wishlist.model';
 import rawBlogSeedData from './data/blog.seed.json';
+import rawFaqSeedData from './data/faq.seed.json';
 import rawSeedData from './data/tours.seed.json';
+import type { FaqSection, FaqStatus } from './libs/enums/faq.enum';
 
 interface SeedTour {
   _id: number;
@@ -79,8 +82,22 @@ interface BlogSeedData {
   posts: SeedBlogPost[];
 }
 
+interface SeedFaq {
+  sourceKey: string;
+  section: FaqSection;
+  question: string;
+  answer: string;
+  position: number;
+  status: FaqStatus;
+}
+
+interface FaqSeedData {
+  faqs: SeedFaq[];
+}
+
 const seedData = rawSeedData as TourSeedData;
 const blogSeedData = rawBlogSeedData as BlogSeedData;
+const faqSeedData = rawFaqSeedData as FaqSeedData;
 const commentAuthors = [
   'Emily Watson',
   'Daniel Kim',
@@ -132,6 +149,7 @@ const indexedModels: Model<unknown>[] = [
   BlogPost,
   BlogComment,
   ContactMessage,
+  Faq,
   AuditLog,
 ] as Model<unknown>[];
 
@@ -238,6 +256,16 @@ async function seed(): Promise<void> {
   );
   await BlogComment.bulkWrite(tourCommentOperations);
 
+  await Faq.bulkWrite(
+    faqSeedData.faqs.map((faq) => ({
+      updateOne: {
+        filter: { sourceKey: faq.sourceKey },
+        update: { $setOnInsert: faq },
+        upsert: true,
+      },
+    })),
+  );
+
   const legacyDepartureFilters = seedData.tours.flatMap((tour) =>
     Array.from({ length: 18 }, (_, monthIndex) => ({
       tourId: tour._id,
@@ -292,6 +320,7 @@ async function seed(): Promise<void> {
       blogComments: commentOperations.length,
       tourComments: tourCommentOperations.length,
       blogPosts: blogSeedData.posts.length,
+      faqs: faqSeedData.faqs.length,
       legacyTourDeparturesRemoved: legacyDepartureCleanup.deletedCount,
       tourDepartures: departureOperations.length,
       tourImages: seedData.tourImages.length,

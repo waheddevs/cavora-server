@@ -10,12 +10,15 @@ import { createOpaqueToken, hashOpaqueToken } from '../common/security/tokens';
 import { accountUploadFolder, removeUpload, uploadUrl } from '../common/middleware/upload';
 import { env } from '../config/env';
 import { AuditActorType } from '../libs/enums/audit.enum';
+import { BookingStatus } from '../libs/enums/booking.enum';
 import { MemberRole, MemberStatus } from '../libs/enums/member.enum';
 import { TourStatus } from '../libs/enums/tour.enum';
 import type {
   MemberBookingHistory,
   MemberBookingView,
   BookingInquiry,
+  MemberBookingArchiveInput,
+  MemberBookingArchiveResult,
 } from '../libs/types/booking';
 import type {
   AccountToken,
@@ -562,7 +565,10 @@ class MemberService {
     memberId: Types.ObjectId,
     inquiry: BookingInquiry,
   ): Promise<MemberBookingHistory> {
-    const match: Record<string, unknown> = { memberId };
+    const match: Record<string, unknown> = {
+      memberId,
+      memberArchivedAt: { $exists: false },
+    };
     if (inquiry.status) match.status = inquiry.status;
 
     const pipeline: PipelineStage[] = [
@@ -667,6 +673,35 @@ class MemberService {
     };
   }
 
+  public async archiveBookings(
+    memberId: Types.ObjectId,
+    input: MemberBookingArchiveInput,
+    context: RequestContext,
+  ): Promise<MemberBookingArchiveResult> {
+    const status = input.group === 'past' ? BookingStatus.COMPLETED : BookingStatus.CANCELLED;
+    const result = await Booking.updateMany(
+      {
+        memberId,
+        status,
+        memberArchivedAt: { $exists: false },
+      },
+      { $set: { memberArchivedAt: new Date() } },
+    ).exec();
+
+    if (result.modifiedCount > 0) {
+      await this.writeAudit(
+        memberId,
+        'booking.history_archived',
+        'booking_history',
+        undefined,
+        context,
+        { group: input.group, archivedCount: result.modifiedCount },
+      );
+    }
+
+    return { archivedCount: result.modifiedCount };
+  }
+
   public async getWishlist(memberId: Types.ObjectId): Promise<WishlistResult> {
     const data = await Wishlist.aggregate<TourSummary>([
       { $match: { memberId } },
@@ -723,6 +758,21 @@ class MemberService {
     ]).exec();
 
     return { data };
+  }
+
+  public async clearWishlist(
+    memberId: Types.ObjectId,
+    context: RequestContext,
+  ): Promise<{ removedCount: number }> {
+    const result = await Wishlist.deleteMany({ memberId }).exec();
+
+    if (result.deletedCount > 0) {
+      await this.writeAudit(memberId, 'wishlist.cleared', 'wishlist', undefined, context, {
+        removedCount: result.deletedCount,
+      });
+    }
+
+    return { removedCount: result.deletedCount };
   }
 
   public async addWishlistTour(

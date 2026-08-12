@@ -14,3 +14,9 @@ export const bookingIdParamsSchema = z
     id: objectId('booking ID'),
   })
   .strict();
+
+export const bookingArchiveBodySchema = z
+  .object({
+    group: z.enum(['past', 'cancelled']),
+  })
+  .strict();

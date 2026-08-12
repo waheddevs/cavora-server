@@ -13,6 +13,7 @@ import blogController from './controllers/blog.controller';
 import bookingController from './controllers/booking.controller';
 import engagementController from './controllers/engagement.controller';
 import homeController from './controllers/home.controller';
+import faqController from './controllers/faq.controller';
 import memberController from './controllers/member.controller';
 import paymentController from './controllers/payment.controller';
 import systemController from './controllers/system.controller';
@@ -37,7 +38,11 @@ import {
   verifyEmailBodySchema,
   wishlistTourParamsSchema,
 } from './libs/validators/member.validator';
-import { bookingHoldBodySchema, bookingIdParamsSchema } from './libs/validators/booking.validator';
+import {
+  bookingArchiveBodySchema,
+  bookingHoldBodySchema,
+  bookingIdParamsSchema,
+} from './libs/validators/booking.validator';
 import {
   paymentIntentBodySchema,
   paymentIntentHeadersSchema,
@@ -68,6 +73,9 @@ import {
   adminDepartureCreateBodySchema,
   adminDepartureListQuerySchema,
   adminDepartureUpdateBodySchema,
+  adminFaqCreateBodySchema,
+  adminFaqListQuerySchema,
+  adminFaqUpdateBodySchema,
   adminHomepageSelectionsBodySchema,
   adminMemberListQuerySchema,
   adminMemberStatusBodySchema,
@@ -92,6 +100,7 @@ router.get('/openapi.json', systemController.getOpenApiDocument);
 
 /* HOME */
 router.get('/home', homeController.getHome);
+router.get('/faqs', faqController.getFaqs);
 
 /* AUTHENTICATION */
 router.post(
@@ -162,7 +171,15 @@ router.get(
   validate({ query: bookingHistoryQuerySchema }),
   memberController.getBookings,
 );
+router.patch(
+  '/users/me/bookings/archive',
+  requireAuth,
+  requireCsrf,
+  validate({ body: bookingArchiveBodySchema }),
+  memberController.archiveBookings,
+);
 router.get('/users/me/wishlist', requireAuth, memberController.getWishlist);
+router.delete('/users/me/wishlist', requireAuth, requireCsrf, memberController.clearWishlist);
 router.put(
   '/users/me/wishlist/:tourId',
   requireAuth,
@@ -350,6 +367,21 @@ router.put(
   requireCsrf,
   validate({ body: adminHomepageSelectionsBodySchema }),
   adminController.updateHomepageSelections,
+);
+
+/* ADMINISTRATION: FAQ */
+router.get('/admin/faqs', validate({ query: adminFaqListQuerySchema }), adminController.getFaqs);
+router.post(
+  '/admin/faqs',
+  requireCsrf,
+  validate({ body: adminFaqCreateBodySchema }),
+  adminController.createFaq,
+);
+router.patch(
+  '/admin/faqs/:id',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema, body: adminFaqUpdateBodySchema }),
+  adminController.updateFaq,
 );
 
 /* ADMINISTRATION: BLOG */

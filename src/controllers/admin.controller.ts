@@ -14,6 +14,7 @@ import type {
 } from '../libs/types/blog';
 import type { BookingInquiry } from '../libs/types/booking';
 import type { ContactMessageInquiry } from '../libs/types/engagement';
+import type { FaqInquiry, FaqInput, FaqUpdateInput } from '../libs/types/faq';
 import type { MemberStatus } from '../libs/enums/member.enum';
 import type { AuthContext, MemberInquiry, RequestContext } from '../libs/types/member';
 import type { PaymentInquiry, PaymentRefundInput } from '../libs/types/payment';
@@ -245,6 +246,51 @@ const adminController = {
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on adminGetHomepageSelections');
+      next(err);
+    }
+  },
+
+  async getFaqs(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminGetFaqs');
+      const result = await adminService.getFaqs(auth(req), req.validated.query as FaqInquiry);
+      noStore(res);
+      res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminGetFaqs');
+      next(err);
+    }
+  },
+
+  async createFaq(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminCreateFaq');
+      const result = await adminService.createFaq(
+        auth(req),
+        req.validated.body as FaqInput,
+        context(req),
+      );
+      noStore(res);
+      res.status(HttpCode.CREATED).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminCreateFaq');
+      next(err);
+    }
+  },
+
+  async updateFaq(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminUpdateFaq');
+      const { id } = req.validated.params as { id: string };
+      const input: FaqUpdateInput = {
+        _id: new Types.ObjectId(id),
+        ...(req.validated.body as Omit<FaqUpdateInput, '_id'>),
+      };
+      const result = await adminService.updateFaq(auth(req), input, context(req));
+      noStore(res);
+      res.status(HttpCode.OK).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminUpdateFaq');
       next(err);
     }
   },
