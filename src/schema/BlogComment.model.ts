@@ -7,7 +7,11 @@ const blogCommentSchema = new Schema<BlogComment>(
     postId: {
       type: Schema.Types.ObjectId,
       ref: 'BlogPost',
-      required: true,
+    },
+    tourId: {
+      type: Number,
+      ref: 'Tour',
+      min: 1,
     },
     memberId: {
       type: Schema.Types.ObjectId,
@@ -35,13 +39,14 @@ const blogCommentSchema = new Schema<BlogComment>(
     status: {
       type: String,
       enum: Object.values(BlogCommentStatus),
-      default: BlogCommentStatus.PENDING,
+      default: BlogCommentStatus.APPROVED,
     },
   },
   { timestamps: true, collection: 'blog_comments' },
 );
 
 blogCommentSchema.index({ postId: 1, status: 1, createdAt: 1 });
+blogCommentSchema.index({ tourId: 1, status: 1, createdAt: 1 });
 blogCommentSchema.index({ status: 1, createdAt: -1 });
 blogCommentSchema.index({ memberId: 1, createdAt: -1 });
 

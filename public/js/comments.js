@@ -28,7 +28,7 @@
     const row = document.createElement('tr');
     row.append(
       admin.cell(`${comment.name} · ${comment.email}`),
-      admin.cell(comment.postId),
+      admin.cell(comment.postId ? `Post ${comment.postId}` : `Tour ${comment.tourId}`),
       admin.cell(comment.body),
       admin.cell(admin.formatDate(comment.createdAt)),
     );

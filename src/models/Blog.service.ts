@@ -67,7 +67,7 @@ class BlogService {
       posts.map((post) =>
         BlogCommentModel.countDocuments({
           postId: post._id,
-          status: BlogCommentStatus.APPROVED,
+          status: { $in: [BlogCommentStatus.APPROVED, BlogCommentStatus.PENDING] },
         }).exec(),
       ),
     );
@@ -93,7 +93,7 @@ class BlogService {
     if (!post) throw postNotFound();
     const commentCount = await BlogCommentModel.countDocuments({
       postId: post._id,
-      status: BlogCommentStatus.APPROVED,
+      status: { $in: [BlogCommentStatus.APPROVED, BlogCommentStatus.PENDING] },
     }).exec();
     return {
       ...toPostSummary(post, commentCount),
@@ -112,11 +112,11 @@ class BlogService {
 
     const filter = {
       postId: inquiry.postId,
-      status: BlogCommentStatus.APPROVED,
+      status: { $in: [BlogCommentStatus.APPROVED, BlogCommentStatus.PENDING] },
     };
     const [comments, total] = await Promise.all([
       BlogCommentModel.find(filter)
-        .sort({ createdAt: 1, _id: 1 })
+        .sort({ createdAt: -1, _id: -1 })
         .skip((inquiry.page - 1) * inquiry.limit)
         .limit(inquiry.limit)
         .lean<BlogComment[]>()
@@ -146,12 +146,12 @@ class BlogService {
 
     const comment = await BlogCommentModel.create({
       ...input,
-      status: BlogCommentStatus.PENDING,
+      status: BlogCommentStatus.APPROVED,
     });
     return {
       id: comment._id.toString(),
-      status: BlogCommentStatus.PENDING,
-      message: 'Your comment was submitted for moderation.',
+      status: BlogCommentStatus.APPROVED,
+      message: 'Your comment has been posted.',
     };
   }
 }

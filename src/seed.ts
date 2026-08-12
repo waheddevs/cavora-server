@@ -107,6 +107,15 @@ const commentTemplates = [
   'A very helpful read for anyone visiting this destination for the first time.',
   'I would love a follow-up article with even more local food recommendations.',
 ];
+const tourCommentTemplates = [
+  'The itinerary felt thoughtfully paced, with enough time to enjoy each stop.',
+  'Our guide made the local history easy to understand and genuinely memorable.',
+  'The booking details matched the experience, and every transfer ran smoothly.',
+  'I would recommend this tour to travelers visiting the destination for the first time.',
+  'The small-group format made the journey feel relaxed and personal.',
+  'The scenery was even better in person, especially during the quieter morning stops.',
+  'A well-organized experience with a great balance of culture, food, and free time.',
+];
 const indexedModels: Model<unknown>[] = [
   Member,
   NewsletterSubscriber,
@@ -207,6 +216,28 @@ async function seed(): Promise<void> {
   });
   await BlogComment.bulkWrite(commentOperations);
 
+  const tourCommentOperations = seedData.tours.flatMap((tour) =>
+    Array.from({ length: 7 }, (_, index) => {
+      const name = commentAuthors[(tour._id + index * 2) % commentAuthors.length] as string;
+      const email = `demo-tour-${tour._id}-comment-${index + 1}@example.com`;
+      return {
+        updateOne: {
+          filter: { tourId: tour._id, email },
+          update: {
+            $set: {
+              name,
+              body: tourCommentTemplates[index] as string,
+              status: BlogCommentStatus.APPROVED,
+            },
+            $setOnInsert: { tourId: tour._id, email },
+          },
+          upsert: true,
+        },
+      };
+    }),
+  );
+  await BlogComment.bulkWrite(tourCommentOperations);
+
   const legacyDepartureFilters = seedData.tours.flatMap((tour) =>
     Array.from({ length: 18 }, (_, monthIndex) => ({
       tourId: tour._id,
@@ -259,6 +290,7 @@ async function seed(): Promise<void> {
   logger.info(
     {
       blogComments: commentOperations.length,
+      tourComments: tourCommentOperations.length,
       blogPosts: blogSeedData.posts.length,
       legacyTourDeparturesRemoved: legacyDepartureCleanup.deletedCount,
       tourDepartures: departureOperations.length,

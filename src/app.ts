@@ -54,6 +54,9 @@ app.use(
         imgSrc: ["'self'", 'data:', 'blob:'],
       },
     },
+    // Uploads and public assets are loaded by the browser client from a
+    // different origin, so they must not be restricted to `same-origin`.
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
 );
 app.use(

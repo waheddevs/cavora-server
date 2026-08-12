@@ -192,7 +192,8 @@ function toBlogPostView(post: BlogPost): AdminBlogPostView {
 function toBlogCommentView(comment: BlogCommentEntity): AdminBlogCommentView {
   return {
     id: comment._id.toString(),
-    postId: comment.postId.toString(),
+    ...(comment.postId ? { postId: comment.postId.toString() } : {}),
+    ...(comment.tourId ? { tourId: comment.tourId } : {}),
     ...(comment.memberId ? { memberId: comment.memberId.toString() } : {}),
     name: comment.name,
     email: comment.email,

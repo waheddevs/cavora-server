@@ -1,4 +1,5 @@
 import type { Types } from 'mongoose';
+import type { BlogCommentStatus } from '../enums/blog.enum';
 import type { TourDepartureStatus, TourStatus } from '../enums/tour.enum';
 
 export interface TourItineraryItem {
@@ -141,6 +142,26 @@ export interface PaginationMeta {
 export interface PaginatedTours {
   data: TourSummary[];
   meta: PaginationMeta;
+}
+
+export interface TourCommentInput {
+  tourId: number;
+  memberId?: Types.ObjectId;
+  name: string;
+  email: string;
+  body: string;
+}
+
+export interface TourCommentInquiry {
+  tourId: number;
+  page: number;
+  limit: number;
+}
+
+export interface TourCommentSubmission {
+  id: string;
+  message: string;
+  status: BlogCommentStatus;
 }
 
 export interface AvailableDeparture {

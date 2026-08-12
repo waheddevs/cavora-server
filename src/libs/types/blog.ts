@@ -26,7 +26,8 @@ export interface BlogPostInquiry {
 
 export interface BlogComment {
   _id: Types.ObjectId;
-  postId: Types.ObjectId;
+  postId?: Types.ObjectId;
+  tourId?: number;
   memberId?: Types.ObjectId;
   name: string;
   email: string;
@@ -138,7 +139,8 @@ export interface AdminBlogCommentInquiry {
 
 export interface AdminBlogCommentView {
   id: string;
-  postId: string;
+  postId?: string;
+  tourId?: number;
   memberId?: string;
   name: string;
   email: string;

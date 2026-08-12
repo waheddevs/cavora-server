@@ -42,7 +42,7 @@ const blogController = {
         ...query,
       };
       const result = await blogService.getComments(inquiry);
-      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+      res.setHeader('Cache-Control', 'no-store');
       res.status(HttpCode.OK).json(result);
     } catch (err) {
       req.log.error({ err }, 'ERROR on getComments');
@@ -61,7 +61,7 @@ const blogController = {
       };
       const result = await blogService.submitComment(input);
       res.setHeader('Cache-Control', 'private, no-store');
-      res.status(HttpCode.ACCEPTED).json({ data: result });
+      res.status(HttpCode.CREATED).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on submitComment');
       next(err);

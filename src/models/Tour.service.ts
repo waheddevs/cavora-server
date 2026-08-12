@@ -3,6 +3,8 @@ import type { PipelineStage } from 'mongoose';
 import { AppError } from '../common/errors/app-error';
 import { ErrorCode, HttpCode } from '../common/errors/error-codes';
 import { TourDepartureStatus, TourStatus } from '../libs/enums/tour.enum';
+import { BlogCommentStatus } from '../libs/enums/blog.enum';
+import type { BlogComment, BlogCommentView, PaginatedBlogComments } from '../libs/types/blog';
 import type {
   AvailabilityInquiry,
   AvailabilityResult,
@@ -10,12 +12,16 @@ import type {
   TourDetail,
   TourInquiry,
   TourSummary,
+  TourCommentInput,
+  TourCommentInquiry,
+  TourCommentSubmission,
   TourViewInput,
   TourViewResult,
 } from '../libs/types/tour';
 import Tour from '../schema/Tour.model';
 import TourDeparture from '../schema/TourDeparture.model';
 import TourView from '../schema/TourView.model';
+import BlogCommentModel from '../schema/BlogComment.model';
 
 interface TourListFacetResult {
   data: TourSummary[];
@@ -110,6 +116,13 @@ function buildTourSort(sort: TourInquiry['sort']): Record<string, 1 | -1> {
 }
 
 class TourService {
+  private async assertPublishedTour(tourId: number): Promise<void> {
+    const tourExists = await Tour.exists({ _id: tourId, status: TourStatus.PUBLISHED });
+    if (!tourExists) {
+      throw new AppError(HttpCode.NOT_FOUND, ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
+    }
+  }
+
   public async getTours(inquiry: TourInquiry): Promise<PaginatedTours> {
     const pipeline: PipelineStage[] = [
       { $match: buildTourMatch(inquiry) },
@@ -160,6 +173,51 @@ class TourService {
       throw new AppError(HttpCode.NOT_FOUND, ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
     }
     return tour;
+  }
+
+  public async getComments(inquiry: TourCommentInquiry): Promise<PaginatedBlogComments> {
+    await this.assertPublishedTour(inquiry.tourId);
+    const filter = {
+      tourId: inquiry.tourId,
+      status: { $in: [BlogCommentStatus.APPROVED, BlogCommentStatus.PENDING] },
+    };
+    const [comments, total] = await Promise.all([
+      BlogCommentModel.find(filter)
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((inquiry.page - 1) * inquiry.limit)
+        .limit(inquiry.limit)
+        .lean<BlogComment[]>()
+        .exec(),
+      BlogCommentModel.countDocuments(filter).exec(),
+    ]);
+    return {
+      data: comments.map((comment): BlogCommentView => ({
+        id: comment._id.toString(),
+        name: comment.name,
+        body: comment.body,
+        ...(comment.memberId ? { memberId: comment.memberId.toString() } : {}),
+        createdAt: comment.createdAt.toISOString(),
+      })),
+      meta: {
+        page: inquiry.page,
+        limit: inquiry.limit,
+        total,
+        totalPages: Math.ceil(total / inquiry.limit),
+      },
+    };
+  }
+
+  public async submitComment(input: TourCommentInput): Promise<TourCommentSubmission> {
+    await this.assertPublishedTour(input.tourId);
+    const comment = await BlogCommentModel.create({
+      ...input,
+      status: BlogCommentStatus.APPROVED,
+    });
+    return {
+      id: comment._id.toString(),
+      status: BlogCommentStatus.APPROVED,
+      message: 'Your comment has been posted.',
+    };
   }
 
   public async recordView(input: TourViewInput): Promise<TourViewResult> {

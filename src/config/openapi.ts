@@ -81,7 +81,7 @@ const sectionEightPaths = {
   '/posts/{id}/comments': {
     get: {
       operationId: 'getPostComments',
-      summary: 'List approved comments',
+      summary: 'List public comments',
       tags: ['Blog'],
       parameters: [
         { $ref: '#/components/parameters/BlogPostId' },
@@ -94,7 +94,7 @@ const sectionEightPaths = {
       ],
       responses: {
         '200': {
-          description: 'Paginated approved comments.',
+          description: 'Paginated public comments.',
           content: {
             'application/json': {
               schema: { $ref: '#/components/schemas/BlogCommentListResponse' },
@@ -107,7 +107,7 @@ const sectionEightPaths = {
     },
     post: {
       operationId: 'submitPostComment',
-      summary: 'Submit a comment for moderation',
+      summary: 'Publish a comment',
       tags: ['Blog'],
       parameters: [{ $ref: '#/components/parameters/BlogPostId' }],
       requestBody: {
@@ -117,8 +117,8 @@ const sectionEightPaths = {
         },
       },
       responses: {
-        '202': {
-          description: 'The comment is pending moderation.',
+        '201': {
+          description: 'The comment was published.',
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/ActionDataResponse' } },
           },
@@ -2053,6 +2053,59 @@ export const openApiDocument = {
           '422': { $ref: '#/components/responses/ValidationError' },
           '429': { $ref: '#/components/responses/RateLimitExceeded' },
           '500': { $ref: '#/components/responses/InternalServerError' },
+        },
+      },
+    },
+    '/tours/{id}/comments': {
+      get: {
+        operationId: 'getTourComments',
+        summary: 'List public tour comments',
+        tags: ['Tours'],
+        parameters: [
+          { $ref: '#/components/parameters/TourId' },
+          { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, default: 1 } },
+          {
+            name: 'limit',
+            in: 'query',
+            schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Paginated public tour comments.',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/BlogCommentListResponse' },
+              },
+            },
+          },
+          '404': { $ref: '#/components/responses/TourNotFound' },
+          '422': { $ref: '#/components/responses/ValidationError' },
+        },
+      },
+      post: {
+        operationId: 'submitTourComment',
+        summary: 'Publish a tour comment',
+        tags: ['Tours'],
+        parameters: [{ $ref: '#/components/parameters/TourId' }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/BlogCommentInput' } },
+          },
+        },
+        responses: {
+          '201': {
+            description: 'The tour comment was published.',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ActionDataResponse' },
+              },
+            },
+          },
+          '404': { $ref: '#/components/responses/TourNotFound' },
+          '422': { $ref: '#/components/responses/ValidationError' },
+          '429': { $ref: '#/components/responses/RateLimitExceeded' },
         },
       },
     },

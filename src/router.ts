@@ -4,7 +4,6 @@ import { optionalAuth, requireAdmin, requireAuth } from './common/middleware/aut
 import { requireCsrf, requireCsrfIfAuthenticated } from './common/middleware/csrf';
 import {
   accountRecoveryRateLimiter,
-  commentRateLimiter,
   contactRateLimiter,
   loginRateLimiter,
   newsletterRateLimiter,
@@ -191,6 +190,18 @@ router.get(
   validate({ params: tourIdParamsSchema, query: availabilityQuerySchema }),
   tourController.getAvailability,
 );
+router.get(
+  '/tours/:id/comments',
+  validate({ params: tourIdParamsSchema, query: blogCommentListQuerySchema }),
+  tourController.getComments,
+);
+router.post(
+  '/tours/:id/comments',
+  optionalAuth,
+  requireCsrfIfAuthenticated,
+  validate({ params: tourIdParamsSchema, body: blogCommentBodySchema }),
+  tourController.submitComment,
+);
 router.post(
   '/tours/:id/views',
   optionalAuth,
@@ -246,7 +257,6 @@ router.get(
 );
 router.post(
   '/posts/:id/comments',
-  commentRateLimiter,
   optionalAuth,
   requireCsrfIfAuthenticated,
   validate({ params: blogPostIdParamsSchema, body: blogCommentBodySchema }),

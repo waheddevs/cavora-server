@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { HttpCode } from '../common/errors/error-codes';
-import type { AvailabilityInquiry, TourInquiry } from '../libs/types/tour';
+import type { AvailabilityInquiry, TourCommentInput, TourInquiry } from '../libs/types/tour';
 import TourService from '../models/Tour.service';
 
 const tourService = new TourService();
@@ -41,6 +41,38 @@ const tourController = {
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on getRelatedTours');
+      next(err);
+    }
+  },
+
+  async getComments(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('getTourComments');
+      const { id } = req.validated.params as { id: number };
+      const query = req.validated.query as { limit: number; page: number };
+      const result = await tourService.getComments({ ...query, tourId: id });
+      res.setHeader('Cache-Control', 'no-store');
+      res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on getTourComments');
+      next(err);
+    }
+  },
+
+  async submitComment(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('submitTourComment');
+      const { id } = req.validated.params as { id: number };
+      const input: TourCommentInput = {
+        ...(req.validated.body as Omit<TourCommentInput, 'memberId' | 'tourId'>),
+        tourId: id,
+        ...(req.auth ? { memberId: req.auth.memberId } : {}),
+      };
+      const result = await tourService.submitComment(input);
+      res.setHeader('Cache-Control', 'private, no-store');
+      res.status(HttpCode.CREATED).json({ data: result });
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on submitTourComment');
       next(err);
     }
   },
