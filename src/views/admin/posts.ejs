@@ -26,7 +26,7 @@
   <div class="panel__header">
     <div>
       <h3>Post editor</h3>
-      <p>The body field accepts the structured JSON document used by the public blog.</p>
+      <p>Write the article as ordered blocks; the public blog renders them in place.</p>
     </div>
     <button class="button button--small" type="button" data-disclosure-close>Close</button>
   </div>
@@ -64,7 +64,7 @@
       </label>
       <%- include('../includes/image-upload', {
         existingInputName: 'imageUrl',
-        fieldClass: '',
+        fieldClass: 'field--full image-upload-field--compact',
         inputDataAttribute: 'data-blog-image-file',
         inputId: 'blog-featured-image',
         inputName: 'image',
@@ -73,18 +73,35 @@
         multiple: false,
       }) %>
       <input type="hidden" name="imageUrl" />
-      <label class="field">
-        <span>Author image URL or path</span>
-        <input type="text" name="authorImageUrl" maxlength="2048" />
-      </label>
       <label class="field field--full">
-        <span>Excerpt</span>
+        <span>Short summary</span>
         <textarea name="excerpt" maxlength="1000" required></textarea>
+        <small>Shown on the blog card before a reader opens the post.</small>
       </label>
-      <label class="field field--full">
-        <span>Body JSON</span>
-        <textarea name="body" placeholder='{"type":"doc","content":[]}' required></textarea>
-      </label>
+
+      <div class="field field--full content-builder">
+        <div class="content-builder__heading">
+          <div>
+            <span class="field-label">Article content</span>
+            <small>Readers see these blocks in the order listed below.</small>
+          </div>
+          <div class="button-row">
+            <button class="button button--small" type="button" data-block-add="paragraph">
+              Add paragraph
+            </button>
+            <button class="button button--small" type="button" data-block-add="heading">
+              Add heading
+            </button>
+            <button class="button button--small" type="button" data-block-add="quote">
+              Add quote
+            </button>
+            <button class="button button--small" type="button" data-block-add="list">
+              Add list
+            </button>
+          </div>
+        </div>
+        <div class="content-builder__list" data-block-list></div>
+      </div>
     </div>
     <p class="form-feedback" data-form-feedback aria-live="polite"></p>
     <div class="form-actions">
@@ -133,13 +150,6 @@
     <div class="empty-state__mark" aria-hidden="true">P</div>
     <h3>No posts loaded</h3>
     <p>No blog posts match the current filters.</p>
-  </div>
-  <div class="pagination">
-    <span data-page-summary>Page 1 of 1</span>
-    <div class="pagination__actions">
-      <button class="button button--small" type="button" data-page-prev disabled>Previous</button>
-      <button class="button button--small" type="button" data-page-next disabled>Next</button>
-    </div>
   </div>
 </section>
 

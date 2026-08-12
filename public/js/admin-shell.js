@@ -583,7 +583,9 @@
       ]),
     );
 
-  const listUrl = (path, form, page = 1, limit = 20) => {
+  // Admin lists render in one shot, so ask for the largest page the API
+  // allows (adminValidator caps it at 100) instead of paging.
+  const listUrl = (path, form, page = 1, limit = 100) => {
     const query = new window.URLSearchParams({ page: String(page), limit: String(limit) });
     if (form instanceof HTMLFormElement) {
       for (const [key, value] of new FormData(form).entries()) {
@@ -644,6 +646,44 @@
     return button;
   };
 
+  /* One implementation of the destructive row action for every list page:
+     the confirm dialog, the DELETE request, the notice and the reload all
+     live here so the pages only describe what is being removed. */
+  const deleteButton = ({ endpoint, label = 'Delete', notice, text, title, onDone }) => {
+    const button = actionButton(label, async () => {
+      const confirmed = await confirmAction({
+        title,
+        text,
+        confirmText: 'Delete',
+        danger: true,
+      });
+      if (!confirmed) return;
+      button.disabled = true;
+      try {
+        await request(endpoint, { method: 'DELETE' });
+        notify(notice ?? 'Record deleted.', 'success');
+        await onDone?.();
+      } catch (error) {
+        reportError(error);
+        button.disabled = false;
+      }
+    });
+    button.classList.add('button--danger');
+    return button;
+  };
+
+  // Actions cell: keeps the row buttons evenly spaced whether there is one or
+  // several, so adding Delete cannot upset a table's alignment.
+  const actionsCell = (...nodes) => {
+    const element = document.createElement('td');
+    element.className = 'cell-actions';
+    const group = document.createElement('div');
+    group.className = 'cell-actions__group';
+    group.append(...nodes);
+    element.append(group);
+    return element;
+  };
+
   const badge = (status) => {
     const element = document.createElement('span');
     element.className = 'badge';
@@ -651,36 +691,25 @@
     return element;
   };
 
-  // Editor panels sit above the list, so a Select from a scrolled-down row
-  // would otherwise reveal them off-screen.
+  /* Editor panels sit above the list, so opening one from a row further down
+     has to carry the reader up to it. `start`, not `nearest`: the panel
+     heading is the useful landing point, not whichever edge happens to be
+     closest. Pages that toggle the panel through setupDisclosure call
+     revealPanel on its own, so the trigger keeps owning aria-expanded. */
+  const revealPanel = (panel) => {
+    if (!(panel instanceof HTMLElement) || panel.hidden) return;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const setPanelOpen = (panel, isOpen) => {
     if (!(panel instanceof HTMLElement)) return;
     panel.hidden = !isOpen;
-    if (isOpen) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (isOpen) revealPanel(panel);
   };
 
   const renderRows = (tbody, empty, data, render) => {
     tbody.replaceChildren(...data.map(render));
     if (empty instanceof HTMLElement) empty.hidden = data.length > 0;
-  };
-
-  const setPagination = (meta, loadPage) => {
-    const summary = document.querySelector('[data-page-summary]');
-    const previous = document.querySelector('[data-page-prev]');
-    const next = document.querySelector('[data-page-next]');
-    const page = meta?.page ?? 1;
-    const totalPages = Math.max(meta?.totalPages ?? 0, 1);
-    if (summary instanceof HTMLElement) {
-      summary.textContent = `Page ${page} of ${totalPages} · ${meta?.total ?? 0} records`;
-    }
-    if (previous instanceof HTMLButtonElement) {
-      previous.disabled = page <= 1;
-      previous.onclick = () => loadPage(page - 1);
-    }
-    if (next instanceof HTMLButtonElement) {
-      next.disabled = page >= totalPages;
-      next.onclick = () => loadPage(page + 1);
-    }
   };
 
   const formatDate = (value, dateOnly = false) => {
@@ -1347,11 +1376,13 @@
 
   window.CavoraAdmin = Object.freeze({
     actionButton,
+    actionsCell,
     badge,
     cell,
     cellClamp,
     cellStack,
     clearValidation,
+    deleteButton,
     confirm: confirmAction,
     feedback,
     formatDate,
@@ -1362,12 +1393,12 @@
     notify,
     renderRows,
     reportError,
+    revealPanel,
     request,
     setAccount,
     setFieldError,
     setImageUploadPreview,
     setBusy,
-    setPagination,
     setPanelOpen,
     shortId,
     setupValidation,
@@ -1378,7 +1409,11 @@
       const setOpen = (isOpen) => {
         panel.hidden = !isOpen;
         trigger.setAttribute('aria-expanded', String(isOpen));
-        if (isOpen) panel.querySelector('input, select, textarea')?.focus();
+        // preventScroll so focusing the first field cannot override the
+        // caller's scroll to the top of the panel.
+        if (isOpen) {
+          panel.querySelector('input, select, textarea')?.focus({ preventScroll: true });
+        }
       };
       trigger.addEventListener('click', () => setOpen(panel.hidden));
       panel.querySelectorAll('[data-disclosure-close]').forEach((button) => {

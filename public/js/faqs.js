@@ -42,14 +42,11 @@
       setField(name, faq[name]);
     }
     setEditorMode(true);
-    if (
-      editor instanceof HTMLElement &&
-      editor.hidden &&
-      editorToggle instanceof HTMLButtonElement
-    ) {
-      editorToggle.click();
+    if (editor instanceof HTMLElement) {
+      if (editor.hidden && editorToggle instanceof HTMLButtonElement) editorToggle.click();
+      admin.revealPanel(editor);
     }
-    form.elements.namedItem('question')?.focus();
+    form.elements.namedItem('question')?.focus({ preventScroll: true });
   };
 
   const renderFaq = (faq) => {
@@ -62,8 +59,16 @@
     question.append(title, answer);
     const status = admin.cell();
     status.append(admin.badge(faq.status));
-    const actions = admin.cell();
-    actions.append(admin.actionButton('Edit', () => editFaq(faq)));
+    const actions = admin.actionsCell(
+      admin.actionButton('Edit', () => editFaq(faq)),
+      admin.deleteButton({
+        endpoint: `/cavora/admin/faqs/${faq.id}`,
+        notice: 'FAQ deleted.',
+        onDone: load,
+        text: 'It disappears from the public help centre straight away.',
+        title: 'Delete this FAQ?',
+      }),
+    );
     row.append(
       question,
       admin.cell(faq.sectionTitle),
@@ -75,11 +80,10 @@
     return row;
   };
 
-  const load = async (page = 1) => {
+  const load = async () => {
     try {
-      const payload = await admin.request(admin.listUrl('/cavora/admin/faqs', filters, page));
+      const payload = await admin.request(admin.listUrl('/cavora/admin/faqs', filters));
       admin.renderRows(rows, empty, payload.data ?? [], renderFaq);
-      admin.setPagination(payload.meta, load);
     } catch (error) {
       admin.reportError(error);
     }
@@ -88,7 +92,7 @@
   filters.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!admin.validateForm(filters)) return;
-    void load(1);
+    void load();
   });
 
   form.addEventListener('reset', () => {
@@ -121,7 +125,7 @@
       });
       admin.notify(editId ? 'FAQ updated.' : 'FAQ created.', 'success');
       form.reset();
-      await load(1);
+      await load();
     } catch (error) {
       admin.reportError(error, form);
     } finally {

@@ -39,7 +39,6 @@
   --row-h: 44px;
   --control-h: 40px;
   --panel-pad: 22px;
-  --table-max: clamp(260px, 46vh, 620px);
   --avatar: 66px;
   --nav-pad-y: 9px;
   font-family:
@@ -1058,13 +1057,11 @@ a {
   overflow: hidden;
 }
 
-/* Bounded so the row list never pushes the toolbar above it or the editor
-   panel below it off-screen; long lists scroll inside the card instead. */
+/* Every record is fetched in one request, so the list simply runs to its
+   full height; only very wide tables scroll, and only sideways. */
 .table-scroll {
   min-height: 0;
-  max-height: var(--table-max);
-  overflow: auto;
-  overscroll-behavior: contain;
+  overflow-x: auto;
 }
 
 .data-table {
@@ -1118,6 +1115,19 @@ a {
   color: var(--text-muted);
   font-size: 0.68rem;
   font-variant-numeric: tabular-nums;
+}
+
+/* Actions cell (see admin.actionsCell): the row buttons keep a fixed gap and
+   the cell never grows taller than a normal row. */
+.data-table td.cell-actions {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.cell-actions__group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* Free-text cell (see admin.cellClamp): wraps, then clamps to two lines. */
@@ -1241,28 +1251,6 @@ a {
 .badge--danger {
   color: var(--danger);
   background: var(--danger-soft);
-}
-
-.pagination {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 9px 14px;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border);
-  font-size: 0.75rem;
-}
-
-.pagination__actions {
-  display: flex;
-  gap: 8px;
-}
-
-.pagination button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
 }
 
 .summary-grid {

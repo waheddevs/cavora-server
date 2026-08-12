@@ -18,7 +18,6 @@
   admin.setupFilterReset('[data-contact-filters]');
   admin.setupValidation(filters);
   admin.setupValidation(form);
-  let currentPage = 1;
 
   const setDetail = (selector, value) => {
     document.querySelector(selector)?.replaceChildren(value || '—');
@@ -47,7 +46,7 @@
     form.elements.status.value = message.status;
     admin.feedback(form);
     setEditorOpen(true);
-    form.elements.status.focus();
+    form.elements.status.focus({ preventScroll: true });
   };
 
   const renderMessage = (message) => {
@@ -60,8 +59,16 @@
     );
     const status = admin.cell();
     status.append(admin.badge(message.status));
-    const actions = admin.cell();
-    actions.append(admin.actionButton('Select', () => selectMessage(message)));
+    const actions = admin.actionsCell(
+      admin.actionButton('Select', () => selectMessage(message)),
+      admin.deleteButton({
+        endpoint: `/cavora/admin/contact-messages/${message.id}`,
+        notice: 'Message deleted.',
+        onDone: load,
+        text: 'The enquiry is removed permanently.',
+        title: `Delete the enquiry from ${message.fullName}?`,
+      }),
+    );
     row.append(status, actions);
     return row;
   };
@@ -77,15 +84,11 @@
     document.querySelector('[data-contact-resolved]')?.replaceChildren(String(counts.RESOLVED));
   };
 
-  const load = async (page = 1) => {
-    currentPage = page;
+  const load = async () => {
     try {
-      const payload = await admin.request(
-        admin.listUrl('/cavora/admin/contact-messages', filters, page),
-      );
+      const payload = await admin.request(admin.listUrl('/cavora/admin/contact-messages', filters));
       const data = payload.data ?? [];
       admin.renderRows(rows, empty, data, renderMessage);
-      admin.setPagination(payload.meta, load);
       updateSummary(data);
     } catch (error) {
       admin.reportError(error);
@@ -95,7 +98,7 @@
   filters.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!admin.validateForm(filters)) return;
-    void load(1);
+    void load();
   });
 
   document.querySelector('[data-contact-clear]')?.addEventListener('click', clearSelection);
@@ -117,7 +120,7 @@
       });
       admin.feedback(form, 'Contact status updated.', 'success');
       admin.notify('Contact status updated.', 'success');
-      await load(currentPage);
+      await load();
     } catch (error) {
       admin.reportError(error, form);
     } finally {

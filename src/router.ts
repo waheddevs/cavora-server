@@ -320,6 +320,12 @@ router.patch(
   validate({ params: adminTourIdParamsSchema, body: adminTourUpdateBodySchema }),
   adminController.updateTour,
 );
+router.delete(
+  '/admin/tours/:id',
+  requireCsrf,
+  validate({ params: adminTourIdParamsSchema }),
+  adminController.deleteTour,
+);
 router.post(
   '/admin/tours/:id/images',
   requireCsrf,
@@ -359,6 +365,12 @@ router.patch(
   validate({ params: adminObjectIdParamsSchema, body: adminDepartureUpdateBodySchema }),
   adminController.updateDeparture,
 );
+router.delete(
+  '/admin/departures/:id',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema }),
+  adminController.deleteDeparture,
+);
 
 /* ADMINISTRATION: HOMEPAGE */
 router.get('/admin/homepage/selections', adminController.getHomepageSelections);
@@ -383,6 +395,12 @@ router.patch(
   validate({ params: adminObjectIdParamsSchema, body: adminFaqUpdateBodySchema }),
   adminController.updateFaq,
 );
+router.delete(
+  '/admin/faqs/:id',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema }),
+  adminController.deleteFaq,
+);
 
 /* ADMINISTRATION: BLOG */
 router.get(
@@ -404,6 +422,12 @@ router.patch(
   validate({ params: adminObjectIdParamsSchema, body: adminBlogPostUpdateBodySchema }),
   adminController.updateBlogPost,
 );
+router.delete(
+  '/admin/posts/:id',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema }),
+  adminController.deleteBlogPost,
+);
 router.get(
   '/admin/comments',
   validate({ query: adminCommentListQuerySchema }),
@@ -414,6 +438,12 @@ router.patch(
   requireCsrf,
   validate({ params: adminObjectIdParamsSchema, body: adminCommentStatusBodySchema }),
   adminController.moderateComment,
+);
+router.delete(
+  '/admin/comments/:id',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema }),
+  adminController.deleteComment,
 );
 
 /* ADMINISTRATION: CONTACT MESSAGES */
@@ -428,6 +458,12 @@ router.patch(
   validate({ params: adminObjectIdParamsSchema, body: adminContactStatusBodySchema }),
   adminController.updateContactStatus,
 );
+router.delete(
+  '/admin/contact-messages/:id',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema }),
+  adminController.deleteContactMessage,
+);
 
 /* ADMINISTRATION: BOOKINGS */
 router.get(
@@ -440,6 +476,12 @@ router.patch(
   requireCsrf,
   validate({ params: adminObjectIdParamsSchema, body: adminBookingStatusBodySchema }),
   adminController.updateBookingStatus,
+);
+router.delete(
+  '/admin/bookings/:id',
+  requireCsrf,
+  validate({ params: adminObjectIdParamsSchema }),
+  adminController.deleteBooking,
 );
 
 /* ADMINISTRATION: PAYMENTS & REFUNDS */

@@ -18,7 +18,6 @@
   admin.setupFilterReset('[data-comment-filters]');
   admin.setupValidation(filters);
   admin.setupValidation(form);
-  let currentPage = 1;
 
   const setDetail = (selector, value) => {
     document.querySelector(selector)?.replaceChildren(value || '—');
@@ -50,7 +49,7 @@
     form.elements.status.value = comment.status;
     admin.feedback(form);
     setEditorOpen(true);
-    form.elements.status.focus();
+    form.elements.status.focus({ preventScroll: true });
   };
 
   const renderComment = (comment) => {
@@ -63,18 +62,24 @@
     );
     const status = admin.cell();
     status.append(admin.badge(comment.status));
-    const actions = admin.cell();
-    actions.append(admin.actionButton('Select', () => selectComment(comment)));
+    const actions = admin.actionsCell(
+      admin.actionButton('Select', () => selectComment(comment)),
+      admin.deleteButton({
+        endpoint: `/cavora/admin/comments/${comment.id}`,
+        notice: 'Comment deleted.',
+        onDone: load,
+        text: 'This cannot be undone.',
+        title: `Delete the comment by ${comment.name}?`,
+      }),
+    );
     row.append(status, actions);
     return row;
   };
 
-  const load = async (page = 1) => {
-    currentPage = page;
+  const load = async () => {
     try {
-      const payload = await admin.request(admin.listUrl('/cavora/admin/comments', filters, page));
+      const payload = await admin.request(admin.listUrl('/cavora/admin/comments', filters));
       admin.renderRows(rows, empty, payload.data ?? [], renderComment);
-      admin.setPagination(payload.meta, load);
     } catch (error) {
       admin.reportError(error);
     }
@@ -83,7 +88,7 @@
   filters.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!admin.validateForm(filters)) return;
-    void load(1);
+    void load();
   });
 
   document.querySelector('[data-comment-clear]')?.addEventListener('click', clearSelection);
@@ -106,7 +111,7 @@
       });
       admin.feedback(form, 'Comment status updated.', 'success');
       admin.notify('Comment status updated.', 'success');
-      await load(currentPage);
+      await load();
     } catch (error) {
       admin.reportError(error, form);
     } finally {

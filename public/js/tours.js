@@ -347,12 +347,9 @@
   };
 
   const openEditor = () => {
-    if (
-      editor instanceof HTMLElement &&
-      editor.hidden &&
-      editorToggle instanceof HTMLButtonElement
-    ) {
-      editorToggle.click();
+    if (editor instanceof HTMLElement) {
+      if (editor.hidden && editorToggle instanceof HTMLButtonElement) editorToggle.click();
+      admin.revealPanel(editor);
     }
   };
 
@@ -391,7 +388,7 @@
       setTourImageCapacity(existingTourImages.length);
       renderTourImagePreviews();
       openEditor();
-      form.querySelector('[name="title"]')?.focus();
+      form.querySelector('[name="title"]')?.focus({ preventScroll: true });
     } catch (error) {
       admin.reportError(error, form);
     }
@@ -409,17 +406,24 @@
     );
     const status = admin.cell();
     status.append(admin.badge(tour.status));
-    const actions = admin.cell();
-    actions.append(admin.actionButton('Edit', () => void editTour(tour.id)));
+    const actions = admin.actionsCell(
+      admin.actionButton('Edit', () => void editTour(tour.id)),
+      admin.deleteButton({
+        endpoint: `/cavora/admin/tours/${tour.id}`,
+        notice: 'Tour deleted.',
+        onDone: load,
+        text: 'Its departures, bookings, payments, images and wishlist entries are removed with it.',
+        title: `Delete "${tour.title}"?`,
+      }),
+    );
     row.append(status, actions);
     return row;
   };
 
-  const load = async (page = 1) => {
+  const load = async () => {
     try {
-      const payload = await admin.request(admin.listUrl('/cavora/admin/tours', filters, page));
+      const payload = await admin.request(admin.listUrl('/cavora/admin/tours', filters));
       admin.renderRows(rows, empty, payload.data ?? [], renderTour);
-      admin.setPagination(payload.meta, load);
     } catch (error) {
       admin.reportError(error);
     }
@@ -428,7 +432,7 @@
   filters.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!admin.validateForm(filters)) return;
-    void load(1);
+    void load();
   });
 
   form.addEventListener('reset', () => {
@@ -490,7 +494,7 @@
         'success',
       );
       form.reset();
-      await load(1);
+      await load();
     } catch (error) {
       admin.reportError(error, form);
     } finally {

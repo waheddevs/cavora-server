@@ -173,6 +173,97 @@ const adminController = {
     }
   },
 
+  async deleteTour(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminDeleteTour');
+      const { id } = req.validated.params as { id: number };
+      await adminService.deleteTour(auth(req), id, context(req));
+      noStore(res);
+      res.status(HttpCode.NO_CONTENT).send();
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminDeleteTour');
+      next(err);
+    }
+  },
+
+  async deleteDeparture(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminDeleteDeparture');
+      const { id } = req.validated.params as { id: string };
+      await adminService.deleteDeparture(auth(req), id, context(req));
+      noStore(res);
+      res.status(HttpCode.NO_CONTENT).send();
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminDeleteDeparture');
+      next(err);
+    }
+  },
+
+  async deleteBooking(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminDeleteBooking');
+      const { id } = req.validated.params as { id: string };
+      await adminService.deleteBooking(auth(req), id, context(req));
+      noStore(res);
+      res.status(HttpCode.NO_CONTENT).send();
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminDeleteBooking');
+      next(err);
+    }
+  },
+
+  async deleteBlogPost(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminDeleteBlogPost');
+      const { id } = req.validated.params as { id: string };
+      await adminService.deleteBlogPost(auth(req), id, context(req));
+      noStore(res);
+      res.status(HttpCode.NO_CONTENT).send();
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminDeleteBlogPost');
+      next(err);
+    }
+  },
+
+  async deleteComment(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminDeleteComment');
+      const { id } = req.validated.params as { id: string };
+      await adminService.deleteComment(auth(req), id, context(req));
+      noStore(res);
+      res.status(HttpCode.NO_CONTENT).send();
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminDeleteComment');
+      next(err);
+    }
+  },
+
+  async deleteFaq(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminDeleteFaq');
+      const { id } = req.validated.params as { id: string };
+      await adminService.deleteFaq(auth(req), id, context(req));
+      noStore(res);
+      res.status(HttpCode.NO_CONTENT).send();
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminDeleteFaq');
+      next(err);
+    }
+  },
+
+  async deleteContactMessage(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      req.log.info('adminDeleteContactMessage');
+      const { id } = req.validated.params as { id: string };
+      await adminService.deleteContactMessage(auth(req), id, context(req));
+      noStore(res);
+      res.status(HttpCode.NO_CONTENT).send();
+    } catch (err) {
+      req.log.error({ err }, 'ERROR on adminDeleteContactMessage');
+      next(err);
+    }
+  },
+
   async createDeparture(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       req.log.info('adminCreateDeparture');

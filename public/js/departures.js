@@ -40,12 +40,9 @@
     setField('currency', departure.currency);
     const tourId = form.elements.namedItem('tourId');
     if (tourId instanceof HTMLInputElement) tourId.disabled = true;
-    if (
-      editor instanceof HTMLElement &&
-      editor.hidden &&
-      editorToggle instanceof HTMLButtonElement
-    ) {
-      editorToggle.click();
+    if (editor instanceof HTMLElement) {
+      if (editor.hidden && editorToggle instanceof HTMLButtonElement) editorToggle.click();
+      admin.revealPanel(editor);
     }
   };
 
@@ -62,18 +59,25 @@
     );
     const status = admin.cell();
     status.append(admin.badge(departure.status));
-    const actions = admin.cell();
-    actions.append(admin.actionButton('Edit', () => editDeparture(departure)));
+    const actions = admin.actionsCell(
+      admin.actionButton('Edit', () => editDeparture(departure)),
+      admin.deleteButton({
+        endpoint: `/cavora/admin/departures/${departure.id}`,
+        notice: 'Departure deleted.',
+        onDone: load,
+        text: 'Every booking on this departure, and its payments, are removed too.',
+        title: 'Delete this departure?',
+      }),
+    );
     row.append(status, actions);
     return row;
   };
 
-  const load = async (page = 1) => {
+  const load = async () => {
     try {
-      const payload = await admin.request(admin.listUrl('/cavora/admin/departures', filters, page));
+      const payload = await admin.request(admin.listUrl('/cavora/admin/departures', filters));
       departures = payload.data ?? [];
       admin.renderRows(rows, empty, departures, renderDeparture);
-      admin.setPagination(payload.meta, load);
     } catch (error) {
       admin.reportError(error);
     }
@@ -82,7 +86,7 @@
   filters.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!admin.validateForm(filters)) return;
-    void load(1);
+    void load();
   });
 
   form.addEventListener('reset', () => {
@@ -124,7 +128,7 @@
       }
       admin.notify(editId ? 'Departure updated.' : 'Departure created.', 'success');
       form.reset();
-      await load(1);
+      await load();
     } catch (error) {
       admin.reportError(error, form);
     } finally {

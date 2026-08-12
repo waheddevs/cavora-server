@@ -18,7 +18,6 @@
   admin.setupFilterReset('[data-payment-filters]');
   admin.setupValidation(filters);
   admin.setupValidation(form);
-  let currentPage = 1;
   let selectedPayment;
 
   const setDetail = (selector, value) => {
@@ -59,7 +58,7 @@
 
     admin.feedback(form);
     setEditorOpen(true);
-    form.elements.amountCents.focus();
+    form.elements.amountCents.focus({ preventScroll: true });
   };
 
   const renderPayment = (payment) => {
@@ -107,13 +106,11 @@
       );
   };
 
-  const load = async (page = 1) => {
-    currentPage = page;
+  const load = async () => {
     try {
-      const payload = await admin.request(admin.listUrl('/cavora/admin/payments', filters, page));
+      const payload = await admin.request(admin.listUrl('/cavora/admin/payments', filters));
       const data = payload.data ?? [];
       admin.renderRows(rows, empty, data, renderPayment);
-      admin.setPagination(payload.meta, load);
       updateSummary(data);
     } catch (error) {
       admin.reportError(error);
@@ -123,7 +120,7 @@
   filters.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!admin.validateForm(filters)) return;
-    void load(1);
+    void load();
   });
 
   document.querySelector('[data-payment-clear]')?.addEventListener('click', clearSelection);
@@ -167,7 +164,7 @@
       });
       admin.feedback(form, 'Refund request accepted.', 'success');
       admin.notify('Refund request accepted.', 'success');
-      await load(currentPage);
+      await load();
     } catch (error) {
       admin.reportError(error, form);
     } finally {

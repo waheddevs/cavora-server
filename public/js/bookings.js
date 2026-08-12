@@ -18,7 +18,6 @@
   admin.setupFilterReset('[data-booking-filters]');
   admin.setupValidation(filters);
   admin.setupValidation(form);
-  let currentPage = 1;
   let selectedBooking;
 
   const setDetail = (selector, value) => {
@@ -55,7 +54,7 @@
     if (selectedBadge instanceof HTMLElement) selectedBadge.textContent = booking.reference;
     admin.feedback(form);
     setEditorOpen(true);
-    form.elements.status.focus();
+    form.elements.status.focus({ preventScroll: true });
   };
 
   const renderBooking = (booking) => {
@@ -78,8 +77,16 @@
     );
     const status = admin.cell();
     status.append(admin.badge(booking.status));
-    const actions = admin.cell();
-    actions.append(admin.actionButton('Select', () => selectBooking(booking)));
+    const actions = admin.actionsCell(
+      admin.actionButton('Select', () => selectBooking(booking)),
+      admin.deleteButton({
+        endpoint: `/cavora/admin/bookings/${booking.id}`,
+        notice: 'Booking deleted.',
+        onDone: load,
+        text: 'The payment record goes with it and the seats return to the departure.',
+        title: `Delete booking ${booking.reference}?`,
+      }),
+    );
     row.append(status, actions);
     return row;
   };
@@ -98,13 +105,11 @@
       ?.replaceChildren(String(data.filter((item) => item.status === 'PENDING_PAYMENT').length));
   };
 
-  const load = async (page = 1) => {
-    currentPage = page;
+  const load = async () => {
     try {
-      const payload = await admin.request(admin.listUrl('/cavora/admin/bookings', filters, page));
+      const payload = await admin.request(admin.listUrl('/cavora/admin/bookings', filters));
       const data = payload.data ?? [];
       admin.renderRows(rows, empty, data, renderBooking);
-      admin.setPagination(payload.meta, load);
       updateSummary(data);
     } catch (error) {
       admin.reportError(error);
@@ -114,7 +119,7 @@
   filters.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!admin.validateForm(filters)) return;
-    void load(1);
+    void load();
   });
 
   document.querySelector('[data-booking-clear]')?.addEventListener('click', clearSelection);
@@ -149,7 +154,7 @@
       });
       admin.feedback(form, 'Booking status updated.', 'success');
       admin.notify('Booking status updated.', 'success');
-      await load(currentPage);
+      await load();
     } catch (error) {
       admin.reportError(error, form);
     } finally {

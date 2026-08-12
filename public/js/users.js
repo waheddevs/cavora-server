@@ -18,7 +18,6 @@
   admin.setupFilterReset('[data-user-filters]');
   admin.setupValidation(filters);
   admin.setupValidation(form);
-  let currentPage = 1;
 
   const setDetail = (selector, value) => {
     document.querySelector(selector)?.replaceChildren(value || '—');
@@ -47,7 +46,7 @@
     if (selectedBadge instanceof HTMLElement) selectedBadge.textContent = member.username;
     admin.feedback(form);
     setEditorOpen(true);
-    form.elements.status.focus();
+    form.elements.status.focus({ preventScroll: true });
   };
 
   const renderMember = (member) => {
@@ -80,12 +79,10 @@
     document.querySelector('[data-user-deleted]')?.replaceChildren(String(totals.deleted ?? 0));
   };
 
-  const load = async (page = 1) => {
-    currentPage = page;
+  const load = async () => {
     try {
-      const payload = await admin.request(admin.listUrl('/cavora/admin/users', filters, page));
+      const payload = await admin.request(admin.listUrl('/cavora/admin/users', filters));
       admin.renderRows(rows, empty, payload.data ?? [], renderMember);
-      admin.setPagination(payload.meta, load);
       updateSummary(payload.stats);
     } catch (error) {
       admin.reportError(error);
@@ -95,7 +92,7 @@
   filters.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!admin.validateForm(filters)) return;
-    void load(1);
+    void load();
   });
 
   document.querySelector('[data-user-clear]')?.addEventListener('click', clearSelection);
@@ -118,7 +115,7 @@
       });
       admin.feedback(form, 'Member access updated.', 'success');
       admin.notify('Member access updated.', 'success');
-      await load(currentPage);
+      await load();
       clearSelection();
     } catch (error) {
       admin.reportError(error, form);

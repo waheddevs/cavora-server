@@ -96,9 +96,18 @@ import Session from '../schema/Session.model';
 import TourModel from '../schema/Tour.model';
 import TourDepartureModel from '../schema/TourDeparture.model';
 import TourImageModel from '../schema/TourImage.model';
+import TourViewModel from '../schema/TourView.model';
+import WishlistModel from '../schema/Wishlist.model';
 import PaymentService from './Payment.service';
 
 const MAX_TOUR_IMAGES = 4;
+// Statuses that already released their seats back to the departure, so a
+// delete must not credit the same seats twice.
+const FREED_SEAT_STATUSES = new Set<BookingStatus>([
+  BookingStatus.CANCELLED,
+  BookingStatus.EXPIRED,
+  BookingStatus.REFUNDED,
+]);
 
 function notFound(code: ErrorCode, message: string): AppError {
   return new AppError(HttpCode.NOT_FOUND, code, message);
@@ -310,7 +319,7 @@ class AdminService {
     }
     const [tours, total] = await Promise.all([
       TourModel.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
+        .sort({ _id: 1 })
         .skip((inquiry.page - 1) * inquiry.limit)
         .limit(inquiry.limit)
         .lean<Tour[]>()
@@ -831,7 +840,7 @@ class AdminService {
     }
     const [posts, total] = await Promise.all([
       BlogPostModel.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
+        .sort({ createdAt: 1, _id: 1 })
         .skip((inquiry.page - 1) * inquiry.limit)
         .limit(inquiry.limit)
         .lean<BlogPost[]>()
@@ -972,7 +981,7 @@ class AdminService {
     }
     const [comments, total] = await Promise.all([
       BlogComment.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
+        .sort({ createdAt: 1, _id: 1 })
         .skip((inquiry.page - 1) * inquiry.limit)
         .limit(inquiry.limit)
         .lean<BlogCommentEntity[]>()
@@ -998,7 +1007,7 @@ class AdminService {
     }
     const [messages, total] = await Promise.all([
       ContactMessageModel.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
+        .sort({ createdAt: 1, _id: 1 })
         .skip((inquiry.page - 1) * inquiry.limit)
         .limit(inquiry.limit)
         .lean<ContactMessage[]>()
@@ -1068,7 +1077,7 @@ class AdminService {
     }
     const [bookings, total] = await Promise.all([
       BookingModel.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
+        .sort({ createdAt: 1, _id: 1 })
         .skip((inquiry.page - 1) * inquiry.limit)
         .limit(inquiry.limit)
         .lean<Booking[]>()
@@ -1155,7 +1164,7 @@ class AdminService {
     }
     const [payments, total] = await Promise.all([
       PaymentModel.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
+        .sort({ createdAt: 1, _id: 1 })
         .skip((inquiry.page - 1) * inquiry.limit)
         .limit(inquiry.limit)
         .lean<Payment[]>()
@@ -1196,7 +1205,7 @@ class AdminService {
     }
     const [members, total, statusCounts] = await Promise.all([
       MemberModel.find(filter)
-        .sort({ createdAt: -1, _id: -1 })
+        .sort({ createdAt: 1, _id: 1 })
         .skip((inquiry.page - 1) * inquiry.limit)
         .limit(inquiry.limit)
         .lean<Member[]>()
@@ -1291,6 +1300,179 @@ class AdminService {
       'code' in err &&
       (err as { code?: unknown }).code === 11_000
     );
+  }
+
+  /* ADMINISTRATION: DELETION
+     Deletion is a full cascade by product decision: removing a record also
+     removes everything that hangs off it, payments included. Each cascade runs
+     in one transaction so a record can never survive with orphaned children,
+     and uploaded files are unlinked only once the transaction has committed. */
+
+  public async deleteTour(
+    auth: AuthContext,
+    tourId: number,
+    context: RequestContext,
+  ): Promise<void> {
+    this.assertAdmin(auth);
+    const removedUrls = await mongoose.connection.transaction(async (session) => {
+      const tour = await TourModel.findOneAndDelete({ _id: tourId }, { session })
+        .lean<Tour>()
+        .exec();
+      if (!tour) throw notFound(ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
+
+      const [bookings, images] = await Promise.all([
+        BookingModel.find({ tourId }, { _id: 1 }).session(session).lean().exec(),
+        TourImageModel.find({ tourId }, { url: 1 }).session(session).lean().exec(),
+      ]);
+      const bookingIds = bookings.map((booking) => booking._id);
+
+      await Promise.all([
+        PaymentModel.deleteMany({ bookingId: { $in: bookingIds } }, { session }),
+        BookingModel.deleteMany({ tourId }, { session }),
+        TourDepartureModel.deleteMany({ tourId }, { session }),
+        TourImageModel.deleteMany({ tourId }, { session }),
+        TourViewModel.deleteMany({ tourId }, { session }),
+        WishlistModel.deleteMany({ tourId }, { session }),
+        BlogComment.deleteMany({ tourId }, { session }),
+      ]);
+      await this.writeAudit(auth, 'admin.tour_deleted', 'tour', String(tourId), context, session);
+      return images.map((image) => image.url);
+    });
+    await Promise.all(removedUrls.map((url) => removeUpload(url)));
+  }
+
+  public async deleteDeparture(
+    auth: AuthContext,
+    departureId: string,
+    context: RequestContext,
+  ): Promise<void> {
+    this.assertAdmin(auth);
+    await mongoose.connection.transaction(async (session) => {
+      const departure = await TourDepartureModel.findOneAndDelete({ _id: departureId }, { session })
+        .lean<TourDeparture>()
+        .exec();
+      if (!departure) throw notFound(ErrorCode.DEPARTURE_NOT_FOUND, 'Departure not found.');
+
+      const bookings = await BookingModel.find({ departureId }, { _id: 1 })
+        .session(session)
+        .lean()
+        .exec();
+      await Promise.all([
+        PaymentModel.deleteMany(
+          { bookingId: { $in: bookings.map((booking) => booking._id) } },
+          { session },
+        ),
+        BookingModel.deleteMany({ departureId }, { session }),
+      ]);
+      await this.writeAudit(
+        auth,
+        'admin.departure_deleted',
+        'departure',
+        departureId,
+        context,
+        session,
+      );
+    });
+  }
+
+  public async deleteBooking(
+    auth: AuthContext,
+    bookingId: string,
+    context: RequestContext,
+  ): Promise<void> {
+    this.assertAdmin(auth);
+    await mongoose.connection.transaction(async (session) => {
+      const booking = await BookingModel.findOneAndDelete({ _id: bookingId }, { session })
+        .lean<Booking>()
+        .exec();
+      if (!booking) throw notFound(ErrorCode.BOOKING_NOT_FOUND, 'Booking not found.');
+
+      await PaymentModel.deleteMany({ bookingId }, { session });
+      // The seats this booking held must go back, or the departure stays full
+      // for a reservation that no longer exists.
+      if (!FREED_SEAT_STATUSES.has(booking.status)) {
+        await TourDepartureModel.updateOne(
+          { _id: booking.departureId, reservedSeats: { $gte: booking.travelers } },
+          { $inc: { reservedSeats: -booking.travelers } },
+          { session },
+        );
+      }
+      await this.writeAudit(auth, 'admin.booking_deleted', 'booking', bookingId, context, session);
+    });
+  }
+
+  public async deleteBlogPost(
+    auth: AuthContext,
+    postId: string,
+    context: RequestContext,
+  ): Promise<void> {
+    this.assertAdmin(auth);
+    const removedUrl = await mongoose.connection.transaction(async (session) => {
+      const post = await BlogPostModel.findOneAndDelete({ _id: postId }, { session })
+        .lean<BlogPost>()
+        .exec();
+      if (!post) throw notFound(ErrorCode.BLOG_POST_NOT_FOUND, 'Blog post not found.');
+
+      await BlogComment.deleteMany({ postId }, { session });
+      await this.writeAudit(auth, 'admin.post_deleted', 'blog_post', postId, context, session);
+      return post.imageUrl;
+    });
+    await removeUpload(removedUrl);
+  }
+
+  public async deleteComment(
+    auth: AuthContext,
+    commentId: string,
+    context: RequestContext,
+  ): Promise<void> {
+    this.assertAdmin(auth);
+    await mongoose.connection.transaction(async (session) => {
+      const comment = await BlogComment.findOneAndDelete({ _id: commentId }, { session })
+        .lean()
+        .exec();
+      if (!comment) throw notFound(ErrorCode.BLOG_COMMENT_NOT_FOUND, 'Comment not found.');
+      await this.writeAudit(
+        auth,
+        'admin.comment_deleted',
+        'blog_comment',
+        commentId,
+        context,
+        session,
+      );
+    });
+  }
+
+  public async deleteFaq(auth: AuthContext, faqId: string, context: RequestContext): Promise<void> {
+    this.assertAdmin(auth);
+    await mongoose.connection.transaction(async (session) => {
+      const faq = await FaqModel.findOneAndDelete({ _id: faqId }, { session }).lean().exec();
+      if (!faq) throw notFound(ErrorCode.FAQ_NOT_FOUND, 'FAQ not found.');
+      await this.writeAudit(auth, 'admin.faq_deleted', 'faq', faqId, context, session);
+    });
+  }
+
+  public async deleteContactMessage(
+    auth: AuthContext,
+    messageId: string,
+    context: RequestContext,
+  ): Promise<void> {
+    this.assertAdmin(auth);
+    await mongoose.connection.transaction(async (session) => {
+      const message = await ContactMessageModel.findOneAndDelete({ _id: messageId }, { session })
+        .lean()
+        .exec();
+      if (!message) {
+        throw notFound(ErrorCode.CONTACT_MESSAGE_NOT_FOUND, 'Contact message not found.');
+      }
+      await this.writeAudit(
+        auth,
+        'admin.contact_message_deleted',
+        'contact_message',
+        messageId,
+        context,
+        session,
+      );
+    });
   }
 
   private throwContentConflict(err: unknown, message: string): never {
