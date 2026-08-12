@@ -1,7 +1,5 @@
 (() => {
   const shell = document.querySelector('[data-admin-shell]');
-  const notice = document.querySelector('[data-admin-notice]');
-  const noticeMessage = document.querySelector('[data-admin-notice-message]');
   const selectEnhancements = new WeakMap();
   const ACCOUNT_CACHE_KEY = 'cavora.admin.account.v1';
   const ACCOUNT_CACHE_MAX_AGE_MS = 5 * 60 * 1_000;
@@ -147,8 +145,16 @@
 
         const menuRect = menu.getBoundingClientRect();
         const controlRect = control.getBoundingClientRect();
-        const spaceBelow = window.innerHeight - controlRect.bottom - 12;
-        const spaceAbove = controlRect.top - 12;
+        // .admin-main is a scroll container, so it clips the menu; measure the
+        // available space against it rather than the viewport.
+        const clipper = control.closest('.admin-main');
+        const clipRect = clipper?.getBoundingClientRect();
+        const boundsTop = clipRect ? Math.max(clipRect.top, 0) : 0;
+        const boundsBottom = clipRect
+          ? Math.min(clipRect.bottom, window.innerHeight)
+          : window.innerHeight;
+        const spaceBelow = boundsBottom - controlRect.bottom - 12;
+        const spaceAbove = controlRect.top - boundsTop - 12;
         control.classList.toggle(
           'opens-upward',
           menuRect.height > spaceBelow && spaceAbove > spaceBelow,
@@ -257,38 +263,41 @@
     }
   };
 
-  const NOTICE_TRANSITION_MS = 220;
-  const NOTICE_DURATION_MS = Object.freeze({
-    error: 6_000,
-    info: 3_500,
-    success: 3_000,
+  const BRAND_GOLD = '#ffb300';
+  const DANGER_RED = '#e5484d';
+  const NOTIFY_ICONS = Object.freeze({
+    error: 'error',
+    info: 'info',
+    success: 'success',
+    warning: 'warning',
   });
-  let noticeTimer;
-  let noticeTransitionTimer;
+  const NOTIFY_DURATION_MS = Object.freeze({ error: 4_200, info: 2_600, success: 2_600 });
 
-  const hideNotice = () => {
-    window.clearTimeout(noticeTimer);
-    window.clearTimeout(noticeTransitionTimer);
-    if (!(notice instanceof HTMLElement) || notice.hidden) return;
-    notice.classList.remove('is-visible');
-    noticeTransitionTimer = window.setTimeout(() => {
-      notice.hidden = true;
-    }, NOTICE_TRANSITION_MS);
-  };
-
+  // Centred, auto-dismissing dialog — the same treatment the storefront uses
+  // for its notifications, so the two surfaces behave alike.
   const notify = (message, type = 'info') => {
-    if (!(notice instanceof HTMLElement) || !(noticeMessage instanceof HTMLElement)) return;
-    window.clearTimeout(noticeTimer);
-    window.clearTimeout(noticeTransitionTimer);
-    noticeMessage.textContent = message;
-    notice.dataset.noticeType = type;
-    notice.hidden = false;
-    window.requestAnimationFrame(() => notice.classList.add('is-visible'));
-    const duration = NOTICE_DURATION_MS[type] ?? NOTICE_DURATION_MS.info;
-    noticeTimer = window.setTimeout(hideNotice, duration);
+    if (typeof window.Swal === 'undefined') return;
+    const icon = NOTIFY_ICONS[type] ?? 'info';
+    void window.Swal.fire({
+      icon,
+      iconColor: icon === 'error' ? DANGER_RED : BRAND_GOLD,
+      title: message,
+      position: 'center',
+      timer: NOTIFY_DURATION_MS[type] ?? NOTIFY_DURATION_MS.info,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      showClass: { popup: 'cavora-swal-show' },
+      hideClass: { popup: 'cavora-swal-hide' },
+      customClass: {
+        container: 'cavora-toast-container',
+        popup: 'cavora-toast-popup',
+        icon: 'cavora-toast-icon',
+        title: 'cavora-toast-title',
+        htmlContainer: 'cavora-toast-message',
+        timerProgressBar: 'cavora-toast-progress',
+      },
+    });
   };
-
-  document.querySelector('[data-admin-notice-close]')?.addEventListener('click', hideNotice);
 
   const getCookie = (name) => {
     const prefix = `${encodeURIComponent(name)}=`;
@@ -342,6 +351,8 @@
   };
 
   const feedbackTimers = new WeakMap();
+  // Inline text under a form, not a dialog — it keeps its own, longer timings.
+  const FEEDBACK_DURATION_MS = Object.freeze({ info: 3_500, success: 3_000 });
 
   const feedback = (form, message = '', type = 'info') => {
     const element = form?.querySelector('[data-form-feedback]');
@@ -357,7 +368,7 @@
       window.setTimeout(() => {
         element.textContent = '';
         element.classList.remove('is-visible');
-      }, NOTICE_DURATION_MS[type] ?? NOTICE_DURATION_MS.info),
+      }, FEEDBACK_DURATION_MS[type] ?? FEEDBACK_DURATION_MS.info),
     );
   };
 
@@ -588,6 +599,42 @@
     return element;
   };
 
+  // Two-line table cell: a primary value with muted supporting detail beneath.
+  // Keeps wide records readable without adding another column.
+  const cellStack = (primary, secondary = '', secondaryTitle = '') => {
+    const element = document.createElement('td');
+    element.className = 'cell-stack';
+    const lead = document.createElement('strong');
+    lead.textContent = String(primary ?? '');
+    element.append(lead);
+    if (secondary) {
+      const detail = document.createElement('small');
+      detail.textContent = String(secondary);
+      if (secondaryTitle) detail.title = String(secondaryTitle);
+      element.append(detail);
+    }
+    return element;
+  };
+
+  // Free-text cell: wraps and clamps to two lines so one long message cannot
+  // stretch the table sideways. The full text belongs in the detail panel.
+  const cellClamp = (value = '') => {
+    const element = document.createElement('td');
+    element.className = 'cell-clamp';
+    const inner = document.createElement('span');
+    inner.textContent = String(value ?? '');
+    element.title = String(value ?? '');
+    element.append(inner);
+    return element;
+  };
+
+  // Object ids are unreadable at full length but still worth showing so an
+  // admin can copy or search one; abbreviate and keep the full value in title.
+  const shortId = (value) => {
+    const text = String(value ?? '');
+    return text.length > 12 ? `${text.slice(0, 6)}…${text.slice(-4)}` : text;
+  };
+
   const actionButton = (label, action, variant = '') => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -602,6 +649,14 @@
     element.className = 'badge';
     element.textContent = String(status ?? '').replaceAll('_', ' ');
     return element;
+  };
+
+  // Editor panels sit above the list, so a Select from a scrolled-down row
+  // would otherwise reveal them off-screen.
+  const setPanelOpen = (panel, isOpen) => {
+    if (!(panel instanceof HTMLElement)) return;
+    panel.hidden = !isOpen;
+    if (isOpen) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
 
   const renderRows = (tbody, empty, data, render) => {
@@ -725,6 +780,7 @@
 
     // Sidebar identity
     document.querySelector('[data-identity-name]')?.replaceChildren(name);
+    document.querySelector('[data-identity-email]')?.replaceChildren(member?.email ?? '');
     paintAvatar(
       '[data-identity-initial]',
       '[data-identity-avatar]',
@@ -789,16 +845,25 @@
       title,
       text,
       icon,
+      iconColor: danger ? DANGER_RED : BRAND_GOLD,
+      position: 'center',
       showCancelButton: true,
       confirmButtonText: confirmText,
       cancelButtonText: cancelText,
       reverseButtons: true,
       focusCancel: true,
       buttonsStyling: false,
+      showClass: { popup: 'cavora-swal-show' },
+      hideClass: { popup: 'cavora-swal-hide' },
       customClass: {
-        popup: danger ? 'swal-danger' : '',
-        confirmButton: `button ${danger ? 'button--danger' : 'button--primary'}`,
-        cancelButton: 'button',
+        container: 'cavora-swal-container',
+        popup: `cavora-swal-popup${danger ? ' swal-danger' : ''}`,
+        icon: 'cavora-swal-icon',
+        title: 'cavora-swal-title',
+        htmlContainer: 'cavora-swal-message',
+        actions: 'cavora-swal-actions',
+        confirmButton: 'cavora-swal-confirm',
+        cancelButton: 'cavora-swal-cancel',
       },
     });
 
@@ -1017,6 +1082,14 @@
   let navigationSequence = 0;
   let renderedPageUrl = window.location.href;
 
+  // The admin shell scrolls .admin-main, not the document, so a plain
+  // window.scrollTo would be a no-op after navigating between pages.
+  const resetScroll = () => {
+    const main = document.querySelector('.admin-main');
+    if (main instanceof HTMLElement) main.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
   const adminPageUrl = (value) => {
     const url = new window.URL(value, window.location.href);
     return url.origin === window.location.origin && url.pathname.startsWith('/admin') ? url : null;
@@ -1188,9 +1261,9 @@
       main.removeAttribute('aria-busy');
       window.requestAnimationFrame(() => {
         main.classList.remove('is-page-entering');
-        window.scrollTo({ top: 0, behavior: 'auto' });
+        resetScroll();
       });
-      window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 250);
+      window.setTimeout(resetScroll, 250);
     } catch {
       if (navigationId !== navigationSequence) return;
       window.location.assign(url.href);
@@ -1202,8 +1275,8 @@
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
     window.history.replaceState({ cavoraAdmin: true }, '', window.location.href);
     restorePageState(renderedPageUrl);
-    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'auto' }));
-    window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 250);
+    window.requestAnimationFrame(resetScroll);
+    window.setTimeout(resetScroll, 250);
     const findLink = (target) => {
       const link =
         target instanceof window.Element
@@ -1276,6 +1349,8 @@
     actionButton,
     badge,
     cell,
+    cellClamp,
+    cellStack,
     clearValidation,
     confirm: confirmAction,
     feedback,
@@ -1293,6 +1368,8 @@
     setImageUploadPreview,
     setBusy,
     setPagination,
+    setPanelOpen,
+    shortId,
     setupValidation,
     setupDisclosure(triggerSelector, panelSelector) {
       const trigger = document.querySelector(triggerSelector);

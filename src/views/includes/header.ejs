@@ -12,18 +12,6 @@
   </head>
   <body class="admin-page">
     <div
-      class="admin-notice"
-      data-admin-notice
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      hidden
-    >
-      <span data-admin-notice-message></span>
-      <button type="button" data-admin-notice-close>Dismiss</button>
-    </div>
-
-    <div
       class="admin-shell"
       data-admin-shell
       data-csrf-cookie-name="<%= csrfCookieName %>"
@@ -35,12 +23,11 @@
               <img data-identity-avatar alt="" hidden />
               <span data-identity-initial>A</span>
             </span>
-            <strong data-identity-name>Administrator</strong>
+            <span class="admin-identity__text">
+              <strong data-identity-name>Administrator</strong>
+              <small data-identity-email></small>
+            </span>
           </a>
-          <button class="admin-sidebar__logout" type="button" data-admin-logout>
-            <span>Log out</span>
-            <span aria-hidden="true">&rarr;</span>
-          </button>
         </div>
 
         <nav class="admin-nav">
@@ -68,6 +55,13 @@
             </a>
           <% } %>
         </nav>
+
+        <div class="admin-sidebar__footer">
+          <button class="admin-sidebar__logout" type="button" data-admin-logout>
+            <span>Log out</span>
+            <span aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
       </aside>
 
       <div class="admin-workspace">

@@ -1,5 +1,5 @@
 #faq-editor textarea[name='answer'] {
-  min-height: 150px;
+  min-height: clamp(100px, 19vh, 150px);
 }
 
 [data-faq-rows] td:first-child {

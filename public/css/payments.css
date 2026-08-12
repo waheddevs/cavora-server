@@ -1,20 +1,4 @@
-.refund-panel {
-  align-self: start;
-  position: sticky;
-  top: 18px;
-}
-
-.refund-panel .badge {
-  flex: 0 0 auto;
-}
-
-.data-table th:nth-child(3),
-.data-table td:nth-child(3) {
-  min-width: 210px;
-}
-
-@media (max-width: 1040px) {
-  .refund-panel {
-    position: static;
-  }
+.data-table th:first-child,
+.data-table td:first-child {
+  min-width: 170px;
 }

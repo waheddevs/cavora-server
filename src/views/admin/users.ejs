@@ -36,6 +36,79 @@
   </article>
 </div>
 
+<section
+  class="panel user-panel"
+  id="user-editor"
+  data-user-editor
+  aria-labelledby="user-status-heading"
+  hidden
+>
+  <div class="panel__header">
+    <div>
+      <h3 id="user-status-heading">Update access</h3>
+      <p>Blocking or deleting an account immediately revokes its active sessions.</p>
+    </div>
+    <span class="badge" data-user-selected-badge></span>
+  </div>
+
+  <dl class="user-detail">
+    <div>
+      <dt>Name</dt>
+      <dd data-user-detail-name>—</dd>
+    </div>
+    <div>
+      <dt>Email</dt>
+      <dd data-user-detail-email>—</dd>
+    </div>
+    <div>
+      <dt>Username</dt>
+      <dd data-user-detail-username>—</dd>
+    </div>
+    <div>
+      <dt>Phone</dt>
+      <dd data-user-detail-phone>—</dd>
+    </div>
+    <div>
+      <dt>Location</dt>
+      <dd data-user-detail-location>—</dd>
+    </div>
+    <div>
+      <dt>Joined</dt>
+      <dd data-user-detail-joined>—</dd>
+    </div>
+  </dl>
+
+  <form data-user-status-form novalidate>
+    <div class="form-grid">
+      <label class="field">
+        <span>Member ID</span>
+        <input
+          type="text"
+          name="id"
+          minlength="24"
+          maxlength="24"
+          pattern="[a-fA-F0-9]{24}"
+          readonly
+          required
+        />
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select name="status" required>
+          <option value="ACTIVE">Active</option>
+          <option value="BLOCKED">Blocked</option>
+          <option value="DELETED">Deleted</option>
+        </select>
+      </label>
+    </div>
+    <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+    <div class="form-actions">
+      <button class="button" type="button" data-user-clear>Cancel</button>
+      <button class="button button--primary" type="submit">Update access</button>
+    </div>
+  </form>
+</section>
+
 <form class="toolbar" data-user-filters>
   <label class="field field--wide">
     <span>Search users</span>
@@ -91,79 +164,6 @@
       <button class="button button--small" type="button" data-page-prev disabled>Previous</button>
       <button class="button button--small" type="button" data-page-next disabled>Next</button>
     </div>
-  </div>
-</section>
-
-<section class="panel user-panel" aria-labelledby="user-status-heading">
-  <div class="panel__header">
-    <div>
-      <h3 id="user-status-heading">Update access</h3>
-      <p>Blocking or deleting an account immediately revokes its active sessions.</p>
-    </div>
-    <span class="badge" data-user-selected-badge hidden></span>
-  </div>
-
-  <p class="user-hint" data-user-hint>
-    Select a member from the table above to manage their access.
-  </p>
-
-  <div data-user-editor hidden>
-    <dl class="user-detail">
-      <div>
-        <dt>Name</dt>
-        <dd data-user-detail-name>—</dd>
-      </div>
-      <div>
-        <dt>Email</dt>
-        <dd data-user-detail-email>—</dd>
-      </div>
-      <div>
-        <dt>Username</dt>
-        <dd data-user-detail-username>—</dd>
-      </div>
-      <div>
-        <dt>Phone</dt>
-        <dd data-user-detail-phone>—</dd>
-      </div>
-      <div>
-        <dt>Location</dt>
-        <dd data-user-detail-location>—</dd>
-      </div>
-      <div>
-        <dt>Joined</dt>
-        <dd data-user-detail-joined>—</dd>
-      </div>
-    </dl>
-
-    <form data-user-status-form novalidate>
-      <div class="form-grid">
-        <label class="field">
-          <span>Member ID</span>
-          <input
-            type="text"
-            name="id"
-            minlength="24"
-            maxlength="24"
-            pattern="[a-fA-F0-9]{24}"
-            readonly
-            required
-          />
-        </label>
-        <label class="field">
-          <span>Status</span>
-          <select name="status" required>
-            <option value="ACTIVE">Active</option>
-            <option value="BLOCKED">Blocked</option>
-            <option value="DELETED">Deleted</option>
-          </select>
-        </label>
-      </div>
-      <p class="form-feedback" data-form-feedback aria-live="polite"></p>
-      <div class="form-actions">
-        <button class="button" type="button" data-user-clear>Cancel</button>
-        <button class="button button--primary" type="submit">Update access</button>
-      </div>
-    </form>
   </div>
 </section>
 

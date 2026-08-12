@@ -5,7 +5,6 @@
   const rows = document.querySelector('[data-user-rows]');
   const empty = document.querySelector('[data-user-empty]');
   const editor = document.querySelector('[data-user-editor]');
-  const hint = document.querySelector('[data-user-hint]');
   const selectedBadge = document.querySelector('[data-user-selected-badge]');
   if (
     !admin ||
@@ -26,9 +25,7 @@
   };
 
   const setEditorOpen = (isOpen) => {
-    if (editor instanceof HTMLElement) editor.hidden = !isOpen;
-    if (hint instanceof HTMLElement) hint.hidden = isOpen;
-    if (selectedBadge instanceof HTMLElement) selectedBadge.hidden = !isOpen;
+    admin.setPanelOpen(editor, isOpen);
   };
 
   const clearSelection = () => {
@@ -107,7 +104,12 @@
     event.preventDefault();
     if (!admin.validateForm(form)) return;
     const raw = admin.values(form);
-    if (!window.confirm(`Set this member to ${raw.status}?`)) return;
+    const confirmed = await admin.confirm({
+      title: `Set this member to ${raw.status}?`,
+      text: 'Blocking or deleting an account revokes its active sessions at once.',
+      danger: raw.status !== 'ACTIVE',
+    });
+    if (!confirmed) return;
     admin.setBusy(form, true);
     try {
       await admin.request(`/cavora/admin/users/${raw.id}/status`, {

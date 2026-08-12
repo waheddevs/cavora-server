@@ -4,6 +4,8 @@
   const form = document.querySelector('[data-contact-status-form]');
   const rows = document.querySelector('[data-contact-rows]');
   const empty = document.querySelector('[data-contact-empty]');
+  const editor = document.querySelector('[data-contact-editor]');
+  const selectedBadge = document.querySelector('[data-contact-selected-badge]');
   if (
     !admin ||
     !(filters instanceof HTMLFormElement) ||
@@ -18,9 +20,33 @@
   admin.setupValidation(form);
   let currentPage = 1;
 
+  const setDetail = (selector, value) => {
+    document.querySelector(selector)?.replaceChildren(value || '—');
+  };
+
+  const setEditorOpen = (isOpen) => {
+    admin.setPanelOpen(editor, isOpen);
+  };
+
+  const clearSelection = () => {
+    form.reset();
+    admin.clearValidation(form);
+    admin.feedback(form);
+    setEditorOpen(false);
+  };
+
   const selectMessage = (message) => {
+    setDetail('[data-contact-detail-from]', `${message.fullName} · ${message.email}`);
+    setDetail('[data-contact-detail-subject]', message.subject);
+    setDetail('[data-contact-detail-received]', admin.formatDate(message.createdAt));
+    setDetail('[data-contact-detail-status]', String(message.status ?? '').replaceAll('_', ' '));
+    setDetail('[data-contact-detail-message]', message.message);
+    if (selectedBadge instanceof HTMLElement) selectedBadge.textContent = message.fullName;
+
     form.elements.id.value = message.id;
     form.elements.status.value = message.status;
+    admin.feedback(form);
+    setEditorOpen(true);
     form.elements.status.focus();
   };
 
@@ -29,7 +55,7 @@
     row.append(
       admin.cell(`${message.fullName} · ${message.email}`),
       admin.cell(message.subject),
-      admin.cell(message.message),
+      admin.cellClamp(message.message),
       admin.cell(admin.formatDate(message.createdAt)),
     );
     const status = admin.cell();
@@ -72,11 +98,17 @@
     void load(1);
   });
 
+  document.querySelector('[data-contact-clear]')?.addEventListener('click', clearSelection);
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!admin.validateForm(form)) return;
     const raw = admin.values(form);
-    if (!window.confirm(`Set this message to ${raw.status}?`)) return;
+    const confirmed = await admin.confirm({
+      title: `Set this message to ${raw.status}?`,
+      text: 'This records where the enquiry stands for the rest of the team.',
+    });
+    if (!confirmed) return;
     admin.setBusy(form, true);
     try {
       await admin.request(`/cavora/admin/contact-messages/${raw.id}/status`, {

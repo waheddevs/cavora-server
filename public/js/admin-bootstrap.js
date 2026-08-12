@@ -26,6 +26,7 @@
     };
 
     document.querySelector('[data-identity-name]')?.replaceChildren(name);
+    document.querySelector('[data-identity-email]')?.replaceChildren(member.email ?? '');
     paintAvatar('[data-identity-initial]', '[data-identity-avatar]');
     document.documentElement.classList.add('is-account-ready');
   } catch {

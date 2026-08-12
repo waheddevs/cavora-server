@@ -1,6 +1,24 @@
 .dashboard-page {
   display: grid;
-  gap: 14px;
+  gap: var(--gap);
+
+  /* Dashboard-only additions to the shell density scale in admin-shell.css. */
+  --metric-h: 88px;
+  --metric-icon: 42px;
+}
+
+@media (min-width: 641px) and (max-height: 900px) {
+  .dashboard-page {
+    --metric-h: 72px;
+    --metric-icon: 36px;
+  }
+}
+
+@media (min-width: 641px) and (max-height: 760px) {
+  .dashboard-page {
+    --metric-h: 62px;
+    --metric-icon: 32px;
+  }
 }
 
 .dashboard-heading {
@@ -51,18 +69,18 @@
 .dashboard-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: var(--gap);
 }
 
 .metric-card {
   position: relative;
   display: grid;
   min-width: 0;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
+  grid-template-columns: var(--metric-icon) minmax(0, 1fr) auto;
   align-items: center;
   gap: 11px;
-  min-height: 92px;
-  padding: 14px;
+  min-height: var(--metric-h);
+  padding: var(--gap);
   overflow: hidden;
   color: var(--text);
   background: var(--surface);
@@ -96,8 +114,8 @@
 
 .metric-card__icon {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: var(--metric-icon);
+  height: var(--metric-icon);
   color: var(--accent-ink);
   background: var(--accent-soft);
   border-radius: 12px;
@@ -160,8 +178,8 @@
 .dashboard-content {
   display: grid;
   min-height: 0;
-  grid-template-columns: minmax(0, 1.45fr) minmax(330px, 0.8fr);
-  gap: 14px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.8fr);
+  gap: var(--gap);
 }
 
 .dashboard-panel {
@@ -178,7 +196,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 15px 17px 12px;
+  padding: var(--gap) 17px calc(var(--gap) * 0.8);
 }
 
 .dashboard-panel__header h2 {
@@ -213,30 +231,37 @@
   grid-template-rows: auto minmax(0, 1fr);
 }
 
+/* Scrolls inside the panel rather than being clipped, so rows past the fold
+   stay reachable on short viewports. */
 .dashboard-table-wrap {
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
+  overscroll-behavior: contain;
   border-top: 1px solid var(--border);
 }
 
 .dashboard-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.8rem;
   line-height: 1.35;
 }
 
 .dashboard-table th,
 .dashboard-table td {
-  height: 48px;
-  padding: 9px 15px;
+  height: var(--row-h);
+  padding: 6px 15px;
   text-align: left;
   white-space: nowrap;
   border-bottom: 1px solid var(--border);
 }
 
 .dashboard-table th {
-  height: 36px;
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  height: 32px;
   color: var(--text-muted);
   background: var(--surface-muted);
   font-size: 0.7rem;
@@ -266,12 +291,13 @@
 .dashboard-sidebar {
   display: grid;
   min-height: 0;
-  grid-template-rows: minmax(220px, 1fr) auto auto;
-  gap: 12px;
+  grid-template-rows: minmax(150px, 1fr) auto auto;
+  gap: var(--gap);
 }
 
 .dashboard-departures {
   display: grid;
+  min-height: 0;
   grid-template-rows: auto minmax(0, 1fr);
 }
 
@@ -280,6 +306,8 @@
   align-content: start;
   min-height: 0;
   padding: 0 14px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .departure-item {
@@ -350,13 +378,13 @@
 .dashboard-mini-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: var(--gap);
 }
 
 .dashboard-mini-card {
   display: grid;
   gap: 1px;
-  padding: 12px 14px;
+  padding: calc(var(--gap) * 0.8) 14px;
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
@@ -395,11 +423,10 @@
 .dashboard-focus {
   position: relative;
   display: flex;
-  min-height: 82px;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding: 15px 17px;
+  padding: var(--gap) 17px;
   overflow: hidden;
   color: #ffffff;
   background:
@@ -448,11 +475,15 @@
   text-align: center;
 }
 
-@media (min-width: 1101px) and (min-height: 721px) {
+/* Fits the whole dashboard into the workspace at any viewport height: the
+   panels scroll internally, so no height floor is needed here. Previously
+   this was gated on min-height 721px, which never matched a 15.6" laptop
+   (1280x720 CSS px at 150% scaling). */
+@media (min-width: 1101px) {
+  /* Keeps the shell's 1440px measure and --pad-x so the dashboard's content
+     edges line up with every other admin page. */
   .admin-main:has(.dashboard-page) {
-    height: 100vh;
-    max-width: none;
-    padding: clamp(24px, 4vw, 48px) clamp(22px, 3vw, 38px) 18px;
+    height: 100%;
     overflow: hidden;
   }
 
@@ -466,13 +497,23 @@
   }
 }
 
-@media (max-width: 1100px), (max-height: 720px) {
+/* Column count follows WIDTH only. Collapsing columns on a short-but-wide
+   screen would roughly double the page height, which is the opposite of what
+   a 15.6" laptop needs — height is handled by the density scale instead. */
+@media (max-width: 1100px) {
   .dashboard-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .dashboard-content {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Short viewport: keep the two-column layout, drop optional chrome. */
+@media (min-width: 1101px) and (max-height: 820px) {
+  .dashboard-heading p:not(.section-label) {
+    display: none;
   }
 }
 

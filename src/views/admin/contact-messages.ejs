@@ -31,101 +31,130 @@
   </article>
 </div>
 
-<div class="split-layout">
-  <div>
-    <form class="toolbar" data-contact-filters>
-      <label class="field field--wide">
-        <span>Search messages</span>
+<section
+  class="panel"
+  id="contact-editor"
+  data-contact-editor
+  aria-labelledby="message-status-heading"
+  hidden
+>
+  <div class="panel__header">
+    <div>
+      <h3 id="message-status-heading">Update message</h3>
+      <p>Read the enquiry, then apply the operational status.</p>
+    </div>
+    <span class="badge" data-contact-selected-badge></span>
+  </div>
+
+  <dl class="record-detail">
+    <div>
+      <dt>From</dt>
+      <dd data-contact-detail-from>—</dd>
+    </div>
+    <div>
+      <dt>Subject</dt>
+      <dd data-contact-detail-subject>—</dd>
+    </div>
+    <div>
+      <dt>Received</dt>
+      <dd data-contact-detail-received>—</dd>
+    </div>
+    <div>
+      <dt>Current status</dt>
+      <dd data-contact-detail-status>—</dd>
+    </div>
+    <div class="record-detail__body">
+      <dt>Message</dt>
+      <dd data-contact-detail-message>—</dd>
+    </div>
+  </dl>
+
+  <form data-contact-status-form novalidate>
+    <div class="form-grid">
+      <label class="field">
+        <span>Message ID</span>
         <input
-          type="search"
-          name="query"
-          maxlength="200"
-          placeholder="Name, email, or subject"
+          type="text"
+          name="id"
+          minlength="24"
+          maxlength="24"
+          pattern="[a-fA-F0-9]{24}"
+          readonly
+          required
         />
       </label>
       <label class="field">
         <span>Status</span>
-        <select name="status">
-          <option value="">All statuses</option>
+        <select name="status" required>
           <option value="NEW">New</option>
           <option value="IN_PROGRESS">In progress</option>
           <option value="RESOLVED">Resolved</option>
           <option value="CLOSED">Closed</option>
         </select>
       </label>
-      <button class="button" type="submit">Apply</button>
-      <button class="button" type="button" data-filter-reset>Reset</button>
-    </form>
-
-    <section class="table-card" aria-label="Contact message records">
-      <div class="table-scroll">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th scope="col">Sender</th>
-              <th scope="col">Subject</th>
-              <th scope="col">Message</th>
-              <th scope="col">Received</th>
-              <th scope="col">Status</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody data-contact-rows></tbody>
-        </table>
-      </div>
-      <div class="empty-state" data-contact-empty>
-        <div class="empty-state__mark" aria-hidden="true">M</div>
-        <h3>No messages loaded</h3>
-        <p>No contact messages match the current filters.</p>
-      </div>
-      <div class="pagination">
-        <span data-page-summary>Page 1 of 1</span>
-        <div class="pagination__actions">
-          <button class="button button--small" type="button" data-page-prev disabled>
-            Previous
-          </button>
-          <button class="button button--small" type="button" data-page-next disabled>Next</button>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <aside class="panel message-panel" aria-labelledby="message-status-heading">
-    <div class="panel__header">
-      <div>
-        <h3 id="message-status-heading">Update message</h3>
-        <p>Apply the operational status after reviewing the enquiry.</p>
-      </div>
     </div>
-    <form data-contact-status-form novalidate>
-      <div class="form-grid">
-        <label class="field field--full">
-          <span>Message ID</span>
-          <input
-            type="text"
-            name="id"
-            minlength="24"
-            maxlength="24"
-            pattern="[a-fA-F0-9]{24}"
-            required
-          />
-        </label>
-        <label class="field field--full">
-          <span>Status</span>
-          <select name="status" required>
-            <option value="NEW">New</option>
-            <option value="IN_PROGRESS">In progress</option>
-            <option value="RESOLVED">Resolved</option>
-            <option value="CLOSED">Closed</option>
-          </select>
-        </label>
-      </div>
-      <p class="form-feedback" data-form-feedback aria-live="polite"></p>
-      <div class="form-actions">
-        <button class="button button--primary" type="submit">Update message</button>
-      </div>
-    </form>
-  </aside>
-</div>
+    <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+    <div class="form-actions">
+      <button class="button" type="button" data-contact-clear>Cancel</button>
+      <button class="button button--primary" type="submit">Update message</button>
+    </div>
+  </form>
+</section>
+
+<form class="toolbar" data-contact-filters>
+  <label class="field field--wide">
+    <span>Search messages</span>
+    <input
+      type="search"
+      name="query"
+      maxlength="200"
+      placeholder="Name, email, or subject"
+    />
+  </label>
+  <label class="field">
+    <span>Status</span>
+    <select name="status">
+      <option value="">All statuses</option>
+      <option value="NEW">New</option>
+      <option value="IN_PROGRESS">In progress</option>
+      <option value="RESOLVED">Resolved</option>
+      <option value="CLOSED">Closed</option>
+    </select>
+  </label>
+  <button class="button" type="submit">Apply</button>
+  <button class="button" type="button" data-filter-reset>Reset</button>
+</form>
+
+<section class="table-card" aria-label="Contact message records">
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th scope="col">Sender</th>
+          <th scope="col">Subject</th>
+          <th scope="col">Message</th>
+          <th scope="col">Received</th>
+          <th scope="col">Status</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody data-contact-rows></tbody>
+    </table>
+  </div>
+  <div class="empty-state" data-contact-empty>
+    <div class="empty-state__mark" aria-hidden="true">M</div>
+    <h3>No messages loaded</h3>
+    <p>No contact messages match the current filters.</p>
+  </div>
+  <div class="pagination">
+    <span data-page-summary>Page 1 of 1</span>
+    <div class="pagination__actions">
+      <button class="button button--small" type="button" data-page-prev disabled>
+        Previous
+      </button>
+      <button class="button button--small" type="button" data-page-next disabled>Next</button>
+    </div>
+  </div>
+</section>
 
 <%- include('../includes/footer', { layoutMode, scriptPath }) %>

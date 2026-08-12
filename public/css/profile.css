@@ -1,152 +1,32 @@
-.profile-page {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
+/* The profile page uses the shell's full measure and --pad-x, so its content
+   edges line up with tours, users and every other admin section. */
 .profile-heading {
   align-items: flex-start;
 }
 
-.account-panel {
+/* Identity rail on the left, editable forms on the right. The rail comes
+   first in the markup too, so reading and tab order match what is seen. */
+.profile-layout {
+  display: grid;
+  align-items: start;
+  grid-template-columns: minmax(280px, 0.7fr) minmax(0, 1.6fr);
+  gap: var(--gap);
+}
+
+.profile-column {
+  display: grid;
+  align-content: start;
+  gap: var(--gap);
+}
+
+/* The grid gap owns the vertical rhythm here. */
+.profile-layout .panel {
+  margin-bottom: 0;
   overflow: hidden;
-  padding: 0;
-}
-
-/* Compact account identity header */
-.profile-summary {
-  padding: 26px 32px;
-  border-bottom: 1px solid var(--border);
-}
-
-.avatar-card {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 18px;
-  margin: 0;
-}
-
-.avatar-card__media {
-  position: relative;
-  line-height: 0;
-}
-
-.avatar-card__frame {
-  display: grid;
-  place-items: center;
-  width: 76px;
-  height: 76px;
-  overflow: hidden;
-  color: var(--accent-ink);
-  background: var(--accent-soft);
-  border-radius: 50%;
-  font-size: 1.7rem;
-  font-weight: 750;
-  line-height: 1;
-}
-
-.avatar-card__frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.avatar-card__identity {
-  min-width: 0;
-}
-
-.avatar-card__name {
-  margin: 0 0 4px;
-  font-size: 1.08rem;
-  font-weight: 750;
-  letter-spacing: -0.01em;
-}
-
-.avatar-card__role {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.82rem;
-}
-
-.avatar-card__actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.avatar-card__remove {
-  margin: 0;
-  padding: 0;
-  color: var(--danger);
-  background: none;
-  border: 0;
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.avatar-card__remove:hover,
-.avatar-card__remove:focus-visible {
-  color: var(--danger);
-  outline: none;
-}
-
-.avatar-card .form-feedback {
-  grid-column: 2 / -1;
-  min-height: 0;
-  margin: 0;
-}
-
-/* Account facts */
-.account-facts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px 28px;
-  margin: 0;
-  padding: 20px 32px;
-  background: var(--surface-muted);
-  border-bottom: 1px solid var(--border);
-}
-
-.account-facts > div {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
-.account-facts dt {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.account-facts dd {
-  margin: 0;
-  overflow-wrap: anywhere;
-  font-size: 0.84rem;
-  font-weight: 650;
-}
-
-/* Forms */
-.account-content,
-.password-panel {
-  padding: 28px 32px 0;
-}
-
-.password-panel {
-  overflow: hidden;
-}
-
-.password-content {
-  margin: 0 -32px;
-  padding: 0 32px;
 }
 
 .account-section-heading {
-  margin-bottom: 22px;
+  margin-bottom: var(--gap-lg);
 }
 
 .account-section-heading h2 {
@@ -163,55 +43,206 @@
 
 .account-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 24px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--gap) 20px;
 }
 
 .account-grid .field {
   min-width: 0;
 }
 
-.account-grid--stacked {
-  margin-top: 18px;
-}
-
 .account-grid--single .field {
   grid-column: 1 / 2;
 }
 
+.account-grid--stacked {
+  margin-top: var(--gap);
+}
+
+/* Full-bleed action bar pinned to the panel's bottom edge. The negative
+   margin cancels .panel's padding, so it tracks the density scale. */
 .account-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin: 26px -32px 0;
-  padding: 18px 32px;
+  margin: var(--gap-lg) calc(var(--panel-pad) * -1) calc(var(--panel-pad) * -1);
+  padding: var(--gap) var(--panel-pad);
   background: var(--surface-muted);
   border-top: 1px solid var(--border);
 }
 
-@media (max-width: 760px) {
-  .account-grid,
-  .account-facts {
+/* Identity card (right rail) */
+.avatar-card {
+  display: grid;
+  justify-items: center;
+  gap: 11px;
+  margin: 0;
+  text-align: center;
+}
+
+.avatar-card__media {
+  position: relative;
+  line-height: 0;
+}
+
+.avatar-card__frame {
+  display: grid;
+  width: clamp(72px, 9vh, 92px);
+  height: clamp(72px, 9vh, 92px);
+  overflow: hidden;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border: 2px solid #f0d896;
+  border-radius: 50%;
+  place-items: center;
+  font-size: 1.7rem;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.avatar-card__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-card__identity {
+  min-width: 0;
+}
+
+.avatar-card__name {
+  margin: 0 0 3px;
+  font-size: 1.02rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.avatar-card__role {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.avatar-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.avatar-card__remove {
+  margin: 0;
+  padding: 0;
+  color: var(--danger);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.avatar-card__remove:hover,
+.avatar-card__remove:focus-visible {
+  color: var(--danger-dark);
+  outline: none;
+}
+
+.avatar-card .form-feedback {
+  min-height: 0;
+  margin: 0;
+}
+
+.avatar-card .form-feedback:empty {
+  display: none;
+}
+
+/* Account facts (right rail): label left, value right, one row each. */
+.account-facts {
+  margin: 0;
+}
+
+.account-facts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.account-facts > div:first-child {
+  padding-top: 0;
+}
+
+.account-facts > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.account-facts dt {
+  margin: 0;
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.account-facts dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Stacked: the rail keeps its lead position from the markup order. */
+@media (max-width: 1040px) {
+  .profile-layout {
     grid-template-columns: 1fr;
   }
 
-  .account-grid--single .field {
-    grid-column: auto;
+  .avatar-card {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    justify-items: start;
+    gap: 8px 18px;
+    text-align: left;
+  }
+
+  .avatar-card__identity {
+    align-self: center;
+  }
+
+  .avatar-card__actions {
+    align-self: center;
+  }
+
+  .avatar-card .form-feedback {
+    grid-column: 2 / -1;
+  }
+
+  .account-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0 28px;
+  }
+
+  .account-facts > div:first-child {
+    padding-top: 9px;
+  }
+
+  .account-facts > div:last-child {
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--border);
   }
 }
 
 @media (max-width: 620px) {
-  .profile-summary,
-  .account-facts,
-  .account-content,
-  .password-panel {
-    padding-right: 20px;
-    padding-left: 20px;
-  }
-
   .avatar-card {
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 14px;
   }
 
   .avatar-card__actions,
@@ -220,38 +251,7 @@
   }
 
   .avatar-card__actions {
-    padding-left: 90px;
-  }
-
-  .account-facts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .password-content,
-  .account-actions {
-    margin-right: -20px;
-    margin-left: -20px;
-  }
-
-  .password-content,
-  .account-actions {
-    padding-right: 20px;
-    padding-left: 20px;
-  }
-}
-
-@media (max-width: 420px) {
-  .avatar-card__frame {
-    width: 64px;
-    height: 64px;
-  }
-
-  .avatar-card__actions {
-    padding-left: 78px;
-  }
-
-  .account-facts {
-    grid-template-columns: 1fr;
+    justify-content: flex-start;
   }
 
   .account-actions .button {

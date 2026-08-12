@@ -1,9 +1,9 @@
 #post-editor textarea[name='excerpt'] {
-  min-height: 90px;
+  min-height: clamp(64px, 11vh, 90px);
 }
 
 #post-editor textarea[name='body'] {
-  min-height: 190px;
+  min-height: clamp(120px, 24vh, 190px);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.76rem;
 }

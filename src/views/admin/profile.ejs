@@ -14,143 +14,160 @@
     </div>
   </section>
 
-  <section class="panel account-panel" aria-labelledby="personal-details-heading">
-    <div class="profile-summary">
-      <form class="avatar-card" data-avatar-form novalidate>
-        <div class="avatar-card__media">
-          <span class="avatar-card__frame">
-            <img data-profile-avatar alt="" hidden />
-            <span data-profile-initials aria-hidden="true">A</span>
-          </span>
-          <input
-            class="visually-hidden"
-            type="file"
-            name="image"
-            accept="image/jpeg,image/png,image/webp,image/avif"
-            data-avatar-input
-          />
-        </div>
-
-        <div class="avatar-card__identity">
-          <h2 class="avatar-card__name" data-profile-fullname>&mdash;</h2>
-          <p class="avatar-card__role" data-profile-rolelabel>&mdash;</p>
-        </div>
-
-        <div class="avatar-card__actions">
-          <button class="button" type="button" data-avatar-edit>Change photo</button>
-          <button class="avatar-card__remove" type="button" data-avatar-remove hidden>
-            Remove
-          </button>
-        </div>
-        <p class="form-feedback" data-form-feedback aria-live="polite"></p>
-      </form>
-    </div>
-
-    <dl class="account-facts">
-      <div>
-        <dt>Role</dt>
-        <dd data-profile-role>&mdash;</dd>
-      </div>
-      <div>
-        <dt>Status</dt>
-        <dd data-profile-status>&mdash;</dd>
-      </div>
-      <div>
-        <dt>Email verified</dt>
-        <dd data-profile-verified>&mdash;</dd>
-      </div>
-      <div>
-        <dt>Admin since</dt>
-        <dd data-profile-since>&mdash;</dd>
-      </div>
-      <div>
-        <dt>Active sessions</dt>
-        <dd data-profile-sessions>&mdash;</dd>
-      </div>
-      <div>
-        <dt>Last sign-in</dt>
-        <dd data-profile-lastsignin>&mdash;</dd>
-      </div>
-    </dl>
-
-    <div class="account-content">
-      <div class="account-section-heading">
-        <h2 id="personal-details-heading">Personal details</h2>
-        <p>Keep your contact information accurate and up to date.</p>
-      </div>
-      <form data-profile-form novalidate>
-        <div class="account-grid">
-          <label class="field">
-            <span>First name</span>
-            <input type="text" name="firstName" maxlength="80" required />
-          </label>
-          <label class="field">
-            <span>Last name</span>
-            <input type="text" name="lastName" maxlength="80" required />
-          </label>
-          <label class="field">
-            <span>Username</span>
+  <div class="profile-layout">
+    <aside class="profile-column profile-column--aside">
+      <section class="panel identity-panel" aria-labelledby="identity-heading">
+        <h2 class="visually-hidden" id="identity-heading">Your account identity</h2>
+        <form class="avatar-card" data-avatar-form novalidate>
+          <div class="avatar-card__media">
+            <span class="avatar-card__frame">
+              <img data-profile-avatar alt="" hidden />
+              <span data-profile-initials aria-hidden="true">A</span>
+            </span>
             <input
-              type="text"
-              name="username"
-              minlength="3"
-              maxlength="40"
-              pattern="[A-Za-z0-9_]+"
-              required
+              class="visually-hidden"
+              type="file"
+              name="image"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              data-avatar-input
             />
-          </label>
-          <label class="field">
-            <span>Email</span>
-            <input type="email" name="email" maxlength="254" required />
-          </label>
-          <label class="field">
-            <span>Phone</span>
-            <input type="text" name="phone" maxlength="30" />
-          </label>
-          <label class="field">
-            <span>Location</span>
-            <input type="text" name="location" maxlength="160" />
-          </label>
-        </div>
-        <p class="form-feedback" data-form-feedback aria-live="polite"></p>
-        <div class="account-actions">
-          <button class="button" type="button" data-profile-reset>Cancel</button>
-          <button class="button button--primary" type="submit">Save changes</button>
-        </div>
-      </form>
-    </div>
-  </section>
+          </div>
 
-  <section class="panel password-panel" aria-labelledby="password-heading">
-    <div class="account-section-heading">
-      <h2 id="password-heading">Password</h2>
-      <p>Use a strong password that you do not reuse on other services.</p>
+          <div class="avatar-card__identity">
+            <h3 class="avatar-card__name" data-profile-fullname>&mdash;</h3>
+            <p class="avatar-card__role" data-profile-rolelabel>&mdash;</p>
+          </div>
+
+          <div class="avatar-card__actions">
+            <button class="button button--small" type="button" data-avatar-edit>
+              Change photo
+            </button>
+            <button class="avatar-card__remove" type="button" data-avatar-remove hidden>
+              Remove
+            </button>
+          </div>
+          <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="panel facts-panel" aria-labelledby="account-facts-heading">
+        <div class="account-section-heading">
+          <h2 id="account-facts-heading">Account</h2>
+          <p>Read-only details recorded by Cavora.</p>
+        </div>
+        <dl class="account-facts">
+          <div>
+            <dt>Role</dt>
+            <dd data-profile-role>&mdash;</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd data-profile-status>&mdash;</dd>
+          </div>
+          <div>
+            <dt>Email verified</dt>
+            <dd data-profile-verified>&mdash;</dd>
+          </div>
+          <div>
+            <dt>Admin since</dt>
+            <dd data-profile-since>&mdash;</dd>
+          </div>
+          <div>
+            <dt>Active sessions</dt>
+            <dd data-profile-sessions>&mdash;</dd>
+          </div>
+          <div>
+            <dt>Last sign-in</dt>
+            <dd data-profile-lastsignin>&mdash;</dd>
+          </div>
+        </dl>
+      </section>
+    </aside>
+
+    <div class="profile-column">
+      <section class="panel account-panel" aria-labelledby="personal-details-heading">
+        <div class="account-section-heading">
+          <h2 id="personal-details-heading">Personal details</h2>
+          <p>Keep your contact information accurate and up to date.</p>
+        </div>
+        <form data-profile-form novalidate>
+          <div class="account-grid">
+            <label class="field">
+              <span>First name</span>
+              <input type="text" name="firstName" maxlength="80" required />
+            </label>
+            <label class="field">
+              <span>Last name</span>
+              <input type="text" name="lastName" maxlength="80" required />
+            </label>
+            <label class="field">
+              <span>Username</span>
+              <input
+                type="text"
+                name="username"
+                minlength="3"
+                maxlength="40"
+                pattern="[A-Za-z0-9_]+"
+                required
+              />
+            </label>
+            <label class="field">
+              <span>Email</span>
+              <input type="email" name="email" maxlength="254" required />
+            </label>
+            <label class="field">
+              <span>Phone</span>
+              <input type="text" name="phone" maxlength="30" />
+            </label>
+            <label class="field">
+              <span>Location</span>
+              <input type="text" name="location" maxlength="160" />
+            </label>
+          </div>
+          <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+          <div class="account-actions">
+            <button class="button" type="button" data-profile-reset>Cancel</button>
+            <button class="button button--primary" type="submit">Save changes</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel password-panel" aria-labelledby="password-heading">
+        <div class="account-section-heading">
+          <h2 id="password-heading">Password</h2>
+          <p>Use a strong password that you do not reuse on other services.</p>
+        </div>
+        <form data-password-form novalidate>
+          <div class="account-grid account-grid--single">
+            <label class="field">
+              <span>Current password</span>
+              <input type="password" name="currentPassword" maxlength="128" required />
+            </label>
+          </div>
+          <div class="account-grid account-grid--stacked">
+            <label class="field">
+              <span>New password</span>
+              <input type="password" name="newPassword" minlength="8" maxlength="128" required />
+            </label>
+            <label class="field">
+              <span>Confirm new password</span>
+              <input
+                type="password"
+                name="confirmPassword"
+                minlength="8"
+                maxlength="128"
+                required
+              />
+            </label>
+          </div>
+          <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+          <div class="account-actions">
+            <button class="button button--primary" type="submit">Change password</button>
+          </div>
+        </form>
+      </section>
     </div>
-    <div class="password-content">
-      <form data-password-form novalidate>
-        <div class="account-grid account-grid--single">
-          <label class="field">
-            <span>Current password</span>
-            <input type="password" name="currentPassword" maxlength="128" required />
-          </label>
-        </div>
-        <div class="account-grid account-grid--stacked">
-          <label class="field">
-            <span>New password</span>
-            <input type="password" name="newPassword" minlength="8" maxlength="128" required />
-          </label>
-          <label class="field">
-            <span>Confirm new password</span>
-            <input type="password" name="confirmPassword" minlength="8" maxlength="128" required />
-          </label>
-        </div>
-        <p class="form-feedback" data-form-feedback aria-live="polite"></p>
-        <div class="account-actions">
-          <button class="button button--primary" type="submit">Change password</button>
-        </div>
-      </form>
-    </div>
-  </section>
+  </div>
 </div>
 
 <%- include('../includes/footer', { layoutMode, scriptPath }) %>

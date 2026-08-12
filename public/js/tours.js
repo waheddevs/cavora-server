@@ -106,7 +106,14 @@
       removeButton.textContent = 'Remove';
       removeButton.addEventListener('click', async () => {
         const editId = form.dataset.editId;
-        if (!editId || !window.confirm('Remove this saved tour image?')) return;
+        if (!editId) return;
+        const confirmed = await admin.confirm({
+          title: 'Remove this saved tour image?',
+          text: 'The image is deleted from the tour straight away.',
+          confirmText: 'Remove',
+          danger: true,
+        });
+        if (!confirmed) return;
         removeButton.disabled = true;
         try {
           await admin.request(`/cavora/admin/tours/${editId}/images/${image.position}`, {

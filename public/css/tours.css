@@ -1,5 +1,5 @@
 .tour-editor textarea[name='overview'] {
-  min-height: 150px;
+  min-height: clamp(100px, 19vh, 150px);
 }
 
 .tour-image-upload-field {
@@ -11,7 +11,7 @@
 }
 
 .image-upload-field--compact .image-upload__dropzone {
-  min-height: 120px;
+  min-height: clamp(86px, 15vh, 120px);
   grid-template-areas:
     'icon prompt'
     'icon help';
@@ -174,7 +174,7 @@
 }
 
 .itinerary-day__description textarea {
-  min-height: 90px;
+  min-height: clamp(64px, 11vh, 90px);
 }
 
 @media (max-width: 1100px) {

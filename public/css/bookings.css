@@ -1,16 +1,5 @@
-.booking-panel {
-  align-self: start;
-  position: sticky;
-  top: 18px;
-}
-
+/* Reference plus the muted member line need room to sit on two lines. */
 .data-table th:first-child,
 .data-table td:first-child {
-  min-width: 150px;
-}
-
-@media (max-width: 1040px) {
-  .booking-panel {
-    position: static;
-  }
+  min-width: 190px;
 }

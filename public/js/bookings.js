@@ -4,6 +4,8 @@
   const form = document.querySelector('[data-booking-status-form]');
   const rows = document.querySelector('[data-booking-rows]');
   const empty = document.querySelector('[data-booking-empty]');
+  const editor = document.querySelector('[data-booking-editor]');
+  const selectedBadge = document.querySelector('[data-booking-selected-badge]');
   if (
     !admin ||
     !(filters instanceof HTMLFormElement) ||
@@ -19,20 +21,58 @@
   let currentPage = 1;
   let selectedBooking;
 
+  const setDetail = (selector, value) => {
+    document.querySelector(selector)?.replaceChildren(value || '—');
+  };
+
+  const setEditorOpen = (isOpen) => {
+    admin.setPanelOpen(editor, isOpen);
+  };
+
+  const clearSelection = () => {
+    selectedBooking = undefined;
+    form.reset();
+    admin.clearValidation(form);
+    admin.feedback(form);
+    setEditorOpen(false);
+  };
+
   const selectBooking = (booking) => {
     selectedBooking = booking;
     form.elements.id.value = booking.id;
     form.elements.status.value = booking.status === 'CONFIRMED' ? 'COMPLETED' : 'CANCELLED';
+    setDetail('[data-booking-detail-reference]', booking.reference);
+    setDetail('[data-booking-detail-member]', booking.memberId);
+    setDetail('[data-booking-detail-tour]', `Tour #${booking.tourId}`);
+    setDetail('[data-booking-detail-departure]', booking.departureId);
+    setDetail('[data-booking-detail-travelers]', String(booking.travelers ?? '—'));
+    setDetail(
+      '[data-booking-detail-total]',
+      admin.formatMoney(booking.totalCents, booking.currency),
+    );
+    setDetail('[data-booking-detail-status]', String(booking.status ?? '').replaceAll('_', ' '));
+    setDetail('[data-booking-detail-created]', admin.formatDate(booking.createdAt));
+    if (selectedBadge instanceof HTMLElement) selectedBadge.textContent = booking.reference;
+    admin.feedback(form);
+    setEditorOpen(true);
     form.elements.status.focus();
   };
 
   const renderBooking = (booking) => {
     const row = document.createElement('tr');
+    // The member and departure object ids are folded into the two lead cells
+    // as muted detail lines; at full length they forced horizontal scroll.
     row.append(
-      admin.cell(booking.reference),
-      admin.cell(booking.memberId),
-      admin.cell(booking.tourId),
-      admin.cell(booking.departureId),
+      admin.cellStack(
+        booking.reference,
+        `Member ${admin.shortId(booking.memberId)}`,
+        booking.memberId,
+      ),
+      admin.cellStack(
+        `Tour #${booking.tourId}`,
+        `Departure ${admin.shortId(booking.departureId)}`,
+        booking.departureId,
+      ),
       admin.cell(booking.travelers),
       admin.cell(admin.formatMoney(booking.totalCents, booking.currency)),
     );
@@ -77,6 +117,8 @@
     void load(1);
   });
 
+  document.querySelector('[data-booking-clear]')?.addEventListener('click', clearSelection);
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const raw = admin.values(form);
@@ -93,7 +135,12 @@
       }
     }
     if (!admin.validateForm(form, errors)) return;
-    if (!window.confirm(`Set this booking to ${raw.status}?`)) return;
+    const confirmed = await admin.confirm({
+      title: `Set this booking to ${raw.status}?`,
+      text: 'The customer sees the new state immediately.',
+      danger: raw.status === 'CANCELLED',
+    });
+    if (!confirmed) return;
     admin.setBusy(form, true);
     try {
       await admin.request(`/cavora/admin/bookings/${raw.id}/status`, {
