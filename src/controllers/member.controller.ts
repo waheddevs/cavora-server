@@ -44,7 +44,7 @@ const memberController = {
         req.validated.body as RegisterInput,
         requestContext(req),
       );
-      setAuthenticationCookies(res, result.tokens);
+      setAuthenticationCookies(req, res, result.tokens);
       preventPrivateCaching(res);
       res.status(HttpCode.CREATED).json({ data: result.member });
     } catch (err) {
@@ -60,7 +60,7 @@ const memberController = {
         req.validated.body as RegisterInput,
         requestContext(req),
       );
-      setAuthenticationCookies(res, result.tokens);
+      setAuthenticationCookies(req, res, result.tokens);
       preventPrivateCaching(res);
       res.status(HttpCode.CREATED).json({ data: result.member });
     } catch (err) {
@@ -76,7 +76,7 @@ const memberController = {
         req.validated.body as LoginInput,
         requestContext(req),
       );
-      setAuthenticationCookies(res, result.tokens);
+      setAuthenticationCookies(req, res, result.tokens);
       preventPrivateCaching(res);
       res.status(HttpCode.OK).json({ data: result.member });
     } catch (err) {
@@ -89,7 +89,7 @@ const memberController = {
     try {
       req.log.info('logout');
       await memberService.logout(authenticated(req), requestContext(req));
-      clearAuthenticationCookies(res);
+      clearAuthenticationCookies(req, res);
       preventPrivateCaching(res);
       res.status(HttpCode.NO_CONTENT).send();
     } catch (err) {
@@ -120,7 +120,7 @@ const memberController = {
         req.validated.body as ResetPasswordInput,
         requestContext(req),
       );
-      clearAuthenticationCookies(res);
+      clearAuthenticationCookies(req, res);
       preventPrivateCaching(res);
       res.status(HttpCode.OK).json(result);
     } catch (err) {

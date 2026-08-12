@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { HttpCode } from '../common/errors/error-codes';
-import { env } from '../config/env';
+import { cookieNamesFor } from '../common/security/surface';
 
 interface AdminPageOptions {
   activePage: string;
@@ -16,7 +16,8 @@ function renderAdminPage(res: Response, options: AdminPageOptions): void {
   res.set('Cache-Control', 'private, no-store');
   res.status(HttpCode.OK).render(`${viewFolder}/${options.viewName}`, {
     activePage: options.activePage,
-    csrfCookieName: env.CSRF_COOKIE_NAME,
+    // Admin pages read the admin surface's CSRF cookie, never the storefront's.
+    csrfCookieName: cookieNamesFor('admin').csrf,
     layoutMode: options.layoutMode ?? 'admin',
     pageTitle: options.pageTitle,
     scriptPath: `/assets/js/${options.scriptName}.js`,

@@ -1,6 +1,7 @@
-import type { CookieOptions, Response } from 'express';
+import type { CookieOptions, Request, Response } from 'express';
 import { env } from '../../config/env';
 import type { SessionTokens } from '../../libs/types/member';
+import { requestCookieNames } from './surface';
 
 function baseCookieOptions(): CookieOptions {
   return {
@@ -10,42 +11,33 @@ function baseCookieOptions(): CookieOptions {
   };
 }
 
-export function setAuthenticationCookies(res: Response, tokens: SessionTokens): void {
+/* Cookies are written for the surface the request came from, so an admin
+   signing in never disturbs the storefront session in the same browser. */
+export function setAuthenticationCookies(req: Request, res: Response, tokens: SessionTokens): void {
   const maxAge = Math.max(0, tokens.expiresAt.getTime() - Date.now());
+  const names = requestCookieNames(req);
 
-  res.clearCookie(env.SESSION_COOKIE_NAME, {
-    ...baseCookieOptions(),
-    httpOnly: true,
-    path: '/cavora',
-  });
-  res.clearCookie(env.CSRF_COOKIE_NAME, {
-    ...baseCookieOptions(),
-    httpOnly: false,
-    path: '/cavora',
-  });
-  res.cookie(env.SESSION_COOKIE_NAME, tokens.sessionToken, {
+  // Older builds scoped these to /cavora; clear that path too so a stale
+  // cookie cannot shadow the one written below.
+  res.clearCookie(names.session, { ...baseCookieOptions(), httpOnly: true, path: '/cavora' });
+  res.clearCookie(names.csrf, { ...baseCookieOptions(), httpOnly: false, path: '/cavora' });
+  res.cookie(names.session, tokens.sessionToken, {
     ...baseCookieOptions(),
     httpOnly: true,
     maxAge,
   });
-  res.cookie(env.CSRF_COOKIE_NAME, tokens.csrfToken, {
+  res.cookie(names.csrf, tokens.csrfToken, {
     ...baseCookieOptions(),
     httpOnly: false,
     maxAge,
   });
 }
 
-export function clearAuthenticationCookies(res: Response): void {
-  res.clearCookie(env.SESSION_COOKIE_NAME, { ...baseCookieOptions(), httpOnly: true });
-  res.clearCookie(env.CSRF_COOKIE_NAME, { ...baseCookieOptions(), httpOnly: false });
-  res.clearCookie(env.SESSION_COOKIE_NAME, {
-    ...baseCookieOptions(),
-    httpOnly: true,
-    path: '/cavora',
-  });
-  res.clearCookie(env.CSRF_COOKIE_NAME, {
-    ...baseCookieOptions(),
-    httpOnly: false,
-    path: '/cavora',
-  });
+export function clearAuthenticationCookies(req: Request, res: Response): void {
+  const names = requestCookieNames(req);
+
+  res.clearCookie(names.session, { ...baseCookieOptions(), httpOnly: true });
+  res.clearCookie(names.csrf, { ...baseCookieOptions(), httpOnly: false });
+  res.clearCookie(names.session, { ...baseCookieOptions(), httpOnly: true, path: '/cavora' });
+  res.clearCookie(names.csrf, { ...baseCookieOptions(), httpOnly: false, path: '/cavora' });
 }

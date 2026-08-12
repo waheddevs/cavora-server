@@ -22,6 +22,11 @@ const envSchema = z
     TRUST_PROXY: z.coerce.number().int().min(0).max(10).default(0),
     SESSION_COOKIE_NAME: z.string().min(1).default('cavora_session'),
     CSRF_COOKIE_NAME: z.string().min(1).default('cavora_csrf'),
+    // The admin panel and the storefront are served from one origin, so a
+    // single cookie pair would make them one session: signing out of either
+    // ended both. These give the admin surface its own pair.
+    ADMIN_SESSION_COOKIE_NAME: z.string().min(1).default('cavora_admin_session'),
+    ADMIN_CSRF_COOKIE_NAME: z.string().min(1).default('cavora_admin_csrf'),
     SESSION_TTL_HOURS: z.coerce
       .number()
       .int()
@@ -43,11 +48,18 @@ const envSchema = z
       .default(developmentStripeWebhookSecret),
   })
   .superRefine((value, context) => {
-    if (value.SESSION_COOKIE_NAME === value.CSRF_COOKIE_NAME) {
+    const cookieNames = [
+      value.SESSION_COOKIE_NAME,
+      value.CSRF_COOKIE_NAME,
+      value.ADMIN_SESSION_COOKIE_NAME,
+      value.ADMIN_CSRF_COOKIE_NAME,
+    ];
+    if (new Set(cookieNames).size !== cookieNames.length) {
       context.addIssue({
         code: 'custom',
         path: ['CSRF_COOKIE_NAME'],
-        message: 'Session and CSRF cookies must use different names.',
+        message:
+          'Session and CSRF cookie names must all differ, for the member and admin surfaces alike.',
       });
     }
     if (value.SESSION_TOKEN_PEPPER === value.CSRF_SECRET) {

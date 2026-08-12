@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="<%= stylesheetPath %>" />
   </head>
   <body class="auth-page">
-    <div class="auth-shell">
+    <div class="auth-shell" data-csrf-cookie-name="<%= csrfCookieName %>">
       <header class="auth-header">
         <a class="admin-brand admin-brand--dark" href="/admin/login" aria-label="Cavora admin">
           <span class="admin-brand__mark" aria-hidden="true">C</span>

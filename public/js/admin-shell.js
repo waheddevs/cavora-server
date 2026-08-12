@@ -1,5 +1,8 @@
 (() => {
   const shell = document.querySelector('[data-admin-shell]');
+  // Signed-out auth pages have no admin shell, so the cookie name is looked up
+  // by attribute rather than assumed to live on it.
+  const csrfCookieSource = document.querySelector('[data-csrf-cookie-name]');
   const selectEnhancements = new WeakMap();
   const ACCOUNT_CACHE_KEY = 'cavora.admin.account.v1';
   const ACCOUNT_CACHE_MAX_AGE_MS = 5 * 60 * 1_000;
@@ -313,9 +316,13 @@
     const method = String(fetchOptions.method ?? 'GET').toUpperCase();
     const headers = new Headers(fetchOptions.headers);
 
+    /* Names this call as coming from the admin panel. /users/me and /auth/* are
+       the same endpoints the storefront calls, so the server cannot tell the
+       two surfaces apart by path; this is what selects the admin cookie pair. */
+    headers.set('x-cavora-surface', 'admin');
+
     if (csrf && !['GET', 'HEAD', 'OPTIONS'].includes(method)) {
-      const csrfCookieName =
-        shell instanceof HTMLElement ? shell.dataset.csrfCookieName : undefined;
+      const csrfCookieName = csrfCookieSource?.dataset.csrfCookieName;
       const csrfToken = csrfCookieName ? getCookie(csrfCookieName) : undefined;
       if (!csrfToken) throw new Error('Your security token is unavailable. Sign in again.');
       headers.set('x-csrf-token', csrfToken);

@@ -1,12 +1,12 @@
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../errors/app-error';
 import { ErrorCode, HttpCode } from '../errors/error-codes';
-import { env } from '../../config/env';
+import { requestCookieNames } from '../security/surface';
 import { matchesTokenHash } from '../security/tokens';
 
 export function requireCsrf(req: Request, _res: Response, next: NextFunction): void {
   try {
-    const cookieValue: unknown = req.cookies[env.CSRF_COOKIE_NAME];
+    const cookieValue: unknown = req.cookies[requestCookieNames(req).csrf];
     const cookieToken = typeof cookieValue === 'string' ? cookieValue : undefined;
     const headerToken = req.get('x-csrf-token');
     const valid =
