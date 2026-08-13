@@ -86,9 +86,8 @@ class PaymentService {
   public async createOrReusePaymentIntent(
     auth: AuthContext,
     input: PaymentIntentInput,
-    context: RequestContext,
   ): Promise<PaymentIntentResult> {
-    const booking = await this.bookingService.getBooking(auth, input.bookingId.toString(), context);
+    const booking = await this.bookingService.getBooking(auth, input.bookingId.toString());
     this.assertBookingCanBePaid(booking);
 
     const idempotentPayment = await PaymentModel.findOne({
@@ -105,7 +104,7 @@ class PaymentService {
         );
       }
       const result = await this.retrievePaymentIntent(idempotentPayment);
-      await this.recheckBookingCanBePaid(auth, input, context);
+      await this.recheckBookingCanBePaid(auth, input);
       return result;
     }
 
@@ -114,7 +113,7 @@ class PaymentService {
       .exec();
     if (existingPayment) {
       const result = await this.retrievePaymentIntent(existingPayment);
-      await this.recheckBookingCanBePaid(auth, input, context);
+      await this.recheckBookingCanBePaid(auth, input);
       return result;
     }
 
@@ -167,7 +166,7 @@ class PaymentService {
         .exec();
       if (!payment) throw new Error('Payment upsert returned no document.');
       const result = this.toPaymentIntentResult(payment, intent);
-      await this.recheckBookingCanBePaid(auth, input, context);
+      await this.recheckBookingCanBePaid(auth, input);
       return result;
     } catch (err) {
       if (isDuplicateKeyError(err)) {
@@ -176,7 +175,7 @@ class PaymentService {
           .exec();
         if (replay) {
           const result = await this.retrievePaymentIntent(replay);
-          await this.recheckBookingCanBePaid(auth, input, context);
+          await this.recheckBookingCanBePaid(auth, input);
           return result;
         }
         throw new AppError(
@@ -369,14 +368,11 @@ class PaymentService {
   }
 
   private assertBookingCanBePaid(booking: BookingView): void {
-    if (
-      booking.status !== BookingStatus.PENDING_PAYMENT ||
-      new Date(booking.holdExpiresAt) <= this.now()
-    ) {
+    if (booking.status !== BookingStatus.PENDING_PAYMENT) {
       throw new AppError(
         HttpCode.CONFLICT,
         ErrorCode.INVALID_BOOKING_STATE,
-        'Only an unexpired pending booking can be paid.',
+        'Only a pending booking can be paid.',
       );
     }
   }
@@ -384,9 +380,8 @@ class PaymentService {
   private async recheckBookingCanBePaid(
     auth: AuthContext,
     input: PaymentIntentInput,
-    context: RequestContext,
   ): Promise<void> {
-    const booking = await this.bookingService.getBooking(auth, input.bookingId.toString(), context);
+    const booking = await this.bookingService.getBooking(auth, input.bookingId.toString());
     this.assertBookingCanBePaid(booking);
   }
 

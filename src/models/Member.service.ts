@@ -67,10 +67,9 @@ type MemberViewSource = Pick<
 
 interface BookingFacetResult {
   data: Array<
-    Omit<MemberBookingView, 'createdAt' | 'departureDate' | 'holdExpiresAt'> & {
+    Omit<MemberBookingView, 'createdAt' | 'departureDate'> & {
       createdAt: Date;
       departureDate?: Date;
-      holdExpiresAt: Date;
     }
   >;
   metadata: Array<{ total: number }>;
@@ -622,7 +621,6 @@ class MemberService {
                 travelers: 1,
                 totalCents: 1,
                 currency: 1,
-                holdExpiresAt: 1,
                 createdAt: 1,
                 tour: {
                   $cond: [
@@ -662,7 +660,6 @@ class MemberService {
         ...booking,
         createdAt: booking.createdAt.toISOString(),
         ...(departureDate ? { departureDate: departureDate.toISOString() } : {}),
-        holdExpiresAt: booking.holdExpiresAt.toISOString(),
       })),
       meta: {
         page: inquiry.page,

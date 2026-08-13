@@ -33,11 +33,7 @@ const paymentController = {
         bookingId: new Types.ObjectId(bookingId),
         idempotencyKey,
       };
-      const result = await paymentService.createOrReusePaymentIntent(
-        auth(req),
-        input,
-        context(req),
-      );
+      const result = await paymentService.createOrReusePaymentIntent(auth(req), input);
       res.setHeader('Cache-Control', 'private, no-store');
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {

@@ -1275,7 +1275,7 @@ const sectionSixPaths = {
   '/booking-holds': {
     post: {
       operationId: 'createBookingHold',
-      summary: 'Reserve departure capacity and create a short-lived booking hold',
+      summary: 'Reserve departure capacity and create a booking',
       tags: ['Bookings'],
       security: [{ sessionCookie: [] }],
       parameters: [{ $ref: '#/components/parameters/CsrfToken' }],
@@ -1371,7 +1371,6 @@ const sectionSixSchemas = {
       'serviceFeeCents',
       'totalCents',
       'currency',
-      'holdExpiresAt',
       'createdAt',
     ],
     properties: {
@@ -1386,7 +1385,6 @@ const sectionSixSchemas = {
       serviceFeeCents: { type: 'integer' },
       totalCents: { type: 'integer' },
       currency: { type: 'string' },
-      holdExpiresAt: { type: 'string', format: 'date-time' },
       confirmedAt: { type: 'string', format: 'date-time' },
       cancelledAt: { type: 'string', format: 'date-time' },
       createdAt: { type: 'string', format: 'date-time' },
@@ -1942,7 +1940,6 @@ const sectionFiveSchemas = {
       'travelers',
       'totalCents',
       'currency',
-      'holdExpiresAt',
       'createdAt',
       'tour',
     ],
@@ -1955,7 +1952,6 @@ const sectionFiveSchemas = {
       travelers: { type: 'integer', minimum: 1 },
       totalCents: { type: 'integer', minimum: 0 },
       currency: { type: 'string', pattern: '^[A-Z]{3}$' },
-      holdExpiresAt: { type: 'string', format: 'date-time' },
       createdAt: { type: 'string', format: 'date-time' },
       tour: {
         oneOf: [{ $ref: '#/components/schemas/TourSummary' }, { type: 'null' }],

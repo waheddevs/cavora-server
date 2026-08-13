@@ -14,7 +14,8 @@
     "format": "prettier --check .",
     "format:write": "prettier --write .",
     "seed": "tsx src/seed.ts",
-    "seed:faqs": "tsx scripts/seed-faqs.ts"
+    "seed:faqs": "tsx scripts/seed-faqs.ts",
+    "migrate:bookings": "tsx scripts/restore-expired-bookings.ts"
   },
   "keywords": [
     "travel",

@@ -46,7 +46,7 @@ const bookingController = {
     try {
       req.log.info('getBooking');
       const { id } = req.validated.params as { id: string };
-      const result = await bookingService.getBooking(auth(req), id, context(req));
+      const result = await bookingService.getBooking(auth(req), id);
       res.setHeader('Cache-Control', 'private, no-store');
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {

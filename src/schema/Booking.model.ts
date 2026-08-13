@@ -65,10 +65,6 @@ const bookingSchema = new Schema<Booking>(
       minlength: 3,
       maxlength: 3,
     },
-    holdExpiresAt: {
-      type: Date,
-      required: true,
-    },
     confirmedAt: Date,
     cancelledAt: Date,
     memberArchivedAt: Date,
@@ -80,7 +76,6 @@ bookingSchema.index({ reference: 1 }, { unique: true });
 bookingSchema.index({ memberId: 1, status: 1, createdAt: -1 });
 bookingSchema.index({ memberId: 1, memberArchivedAt: 1, status: 1, createdAt: -1 });
 bookingSchema.index({ departureId: 1, status: 1 });
-bookingSchema.index({ status: 1, holdExpiresAt: 1 });
 bookingSchema.index({ status: 1, createdAt: -1 });
 
 export default mongoose.model<Booking>('Booking', bookingSchema);

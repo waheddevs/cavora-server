@@ -15,7 +15,6 @@ export interface Booking {
   serviceFeeCents: number;
   totalCents: number;
   currency: string;
-  holdExpiresAt: Date;
   confirmedAt?: Date;
   cancelledAt?: Date;
   memberArchivedAt?: Date;
@@ -41,7 +40,6 @@ export interface BookingView {
   serviceFeeCents: number;
   totalCents: number;
   currency: string;
-  holdExpiresAt: string;
   confirmedAt?: string;
   cancelledAt?: string;
   createdAt: string;
@@ -80,7 +78,6 @@ export interface MemberBookingView {
   travelers: number;
   totalCents: number;
   currency: string;
-  holdExpiresAt: string;
   createdAt: string;
 }
 

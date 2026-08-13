@@ -105,7 +105,6 @@ const MAX_TOUR_IMAGES = 4;
 // delete must not credit the same seats twice.
 const FREED_SEAT_STATUSES = new Set<BookingStatus>([
   BookingStatus.CANCELLED,
-  BookingStatus.EXPIRED,
   BookingStatus.REFUNDED,
 ]);
 
@@ -266,7 +265,6 @@ function toBookingView(booking: Booking): AdminBookingView {
     serviceFeeCents: booking.serviceFeeCents,
     totalCents: booking.totalCents,
     currency: booking.currency,
-    holdExpiresAt: booking.holdExpiresAt.toISOString(),
     ...(booking.confirmedAt ? { confirmedAt: booking.confirmedAt.toISOString() } : {}),
     ...(booking.cancelledAt ? { cancelledAt: booking.cancelledAt.toISOString() } : {}),
     createdAt: booking.createdAt.toISOString(),

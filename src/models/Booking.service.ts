@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import mongoose, { Types, type ClientSession } from 'mongoose';
+import mongoose, { type ClientSession } from 'mongoose';
 import { AppError } from '../common/errors/app-error';
 import { ErrorCode, HttpCode } from '../common/errors/error-codes';
 import { AuditActorType } from '../libs/enums/audit.enum';
@@ -11,8 +11,6 @@ import AuditLog from '../schema/AuditLog.model';
 import BookingModel from '../schema/Booking.model';
 import Tour from '../schema/Tour.model';
 import TourDeparture from '../schema/TourDeparture.model';
-
-const holdLifetimeMs = 15 * 60 * 1_000;
 
 function toBookingView(booking: Booking): BookingView {
   return {
@@ -27,7 +25,6 @@ function toBookingView(booking: Booking): BookingView {
     serviceFeeCents: booking.serviceFeeCents,
     totalCents: booking.totalCents,
     currency: booking.currency,
-    holdExpiresAt: booking.holdExpiresAt.toISOString(),
     ...(booking.confirmedAt ? { confirmedAt: booking.confirmedAt.toISOString() } : {}),
     ...(booking.cancelledAt ? { cancelledAt: booking.cancelledAt.toISOString() } : {}),
     createdAt: booking.createdAt.toISOString(),
@@ -81,7 +78,6 @@ class BookingService {
 
       const subtotalCents = departure.priceCents * input.travelers;
       const serviceFeeCents = Math.round(subtotalCents * 0.02);
-      const holdExpiresAt = new Date(now.getTime() + holdLifetimeMs);
       const [booking] = await BookingModel.create(
         [
           {
@@ -97,7 +93,6 @@ class BookingService {
             serviceFeeCents,
             totalCents: subtotalCents + serviceFeeCents,
             currency: departure.currency,
-            holdExpiresAt,
           },
         ],
         { session },
@@ -108,61 +103,7 @@ class BookingService {
     });
   }
 
-  public async releaseExpiredHolds(limit = 100): Promise<number> {
-    const candidates = await BookingModel.find({
-      status: BookingStatus.PENDING_PAYMENT,
-      holdExpiresAt: { $lte: this.now() },
-    })
-      .select({ _id: 1 })
-      .limit(limit)
-      .lean<Array<{ _id: Types.ObjectId }>>()
-      .exec();
-    let released = 0;
-
-    for (const candidate of candidates) {
-      const didRelease = await mongoose.connection.transaction(async (session) => {
-        const booking = await BookingModel.findOneAndUpdate(
-          {
-            _id: candidate._id,
-            status: BookingStatus.PENDING_PAYMENT,
-            holdExpiresAt: { $lte: this.now() },
-          },
-          { $set: { status: BookingStatus.EXPIRED } },
-          { new: false, session },
-        )
-          .lean<Booking>()
-          .exec();
-        if (!booking) return false;
-
-        await TourDeparture.updateOne(
-          { _id: booking.departureId, reservedSeats: { $gte: booking.travelers } },
-          { $inc: { reservedSeats: -booking.travelers } },
-          { session },
-        ).exec();
-        await AuditLog.create(
-          [
-            {
-              actorType: AuditActorType.SYSTEM,
-              action: 'booking.hold_expired',
-              entityType: 'booking',
-              entityId: booking._id.toString(),
-            },
-          ],
-          { session },
-        );
-        return true;
-      });
-      if (didRelease) released += 1;
-    }
-    return released;
-  }
-
-  public async getBooking(
-    auth: AuthContext,
-    bookingId: string,
-    context: RequestContext,
-  ): Promise<BookingView> {
-    await this.releaseExpiredHold(new Types.ObjectId(bookingId), auth, context);
+  public async getBooking(auth: AuthContext, bookingId: string): Promise<BookingView> {
     const booking = await BookingModel.findOne({
       _id: bookingId,
       memberId: auth.memberId,
@@ -187,16 +128,6 @@ class BookingService {
         .lean<Booking>()
         .exec();
       if (!booking) throw bookingNotFound();
-
-      if (booking.status === BookingStatus.PENDING_PAYMENT && booking.holdExpiresAt <= this.now()) {
-        await this.expireBooking(booking, auth, context, session);
-        const expired = await BookingModel.findById(booking._id)
-          .session(session)
-          .lean<Booking>()
-          .exec();
-        if (!expired) throw bookingNotFound();
-        return toBookingView(expired);
-      }
 
       if (booking.status === BookingStatus.PENDING_PAYMENT) {
         const cancelledAt = this.now();
@@ -250,50 +181,6 @@ class BookingService {
       );
       return toBookingView(booking);
     });
-  }
-
-  private async releaseExpiredHold(
-    bookingId: Types.ObjectId,
-    auth: AuthContext,
-    context: RequestContext,
-  ): Promise<void> {
-    await mongoose.connection.transaction(async (session) => {
-      const booking = await BookingModel.findOne({
-        _id: bookingId,
-        memberId: auth.memberId,
-        status: BookingStatus.PENDING_PAYMENT,
-        holdExpiresAt: { $lte: this.now() },
-      })
-        .session(session)
-        .lean<Booking>()
-        .exec();
-      if (booking) {
-        await this.expireBooking(booking, auth, context, session);
-      }
-    });
-  }
-
-  private async expireBooking(
-    booking: Booking,
-    auth: AuthContext,
-    context: RequestContext | undefined,
-    session: ClientSession,
-  ): Promise<void> {
-    const result = await BookingModel.updateOne(
-      { _id: booking._id, status: BookingStatus.PENDING_PAYMENT },
-      { $set: { status: BookingStatus.EXPIRED } },
-      { session },
-    ).exec();
-    if (result.modifiedCount === 0) return;
-
-    await TourDeparture.updateOne(
-      { _id: booking.departureId, reservedSeats: { $gte: booking.travelers } },
-      { $inc: { reservedSeats: -booking.travelers } },
-      { session },
-    ).exec();
-    if (context) {
-      await this.writeAudit(auth, 'booking.hold_expired', booking._id.toString(), context, session);
-    }
   }
 
   private async writeAudit(
