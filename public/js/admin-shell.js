@@ -276,12 +276,21 @@
   });
   const NOTIFY_DURATION_MS = Object.freeze({ error: 4_200, info: 2_600, success: 2_600 });
 
+  /* SweetAlert stamps `height: auto !important` on <body> for every backdrop
+     dialog. body.admin-page is 100dvh with overflow hidden and .admin-shell
+     takes its height from it, so letting that through collapses the shell to
+     its content height — the sidebar stops short and a white band shows under
+     it on any page whose content is shorter than the viewport. Every dialog
+     this shell opens keeps the body sized by the shell instead. */
+  const KEEP_SHELL_HEIGHT = Object.freeze({ heightAuto: false });
+
   // Centred, auto-dismissing dialog — the same treatment the storefront uses
   // for its notifications, so the two surfaces behave alike.
   const notify = (message, type = 'info') => {
     if (typeof window.Swal === 'undefined') return;
     const icon = NOTIFY_ICONS[type] ?? 'info';
     void window.Swal.fire({
+      ...KEEP_SHELL_HEIGHT,
       icon,
       iconColor: icon === 'error' ? DANGER_RED : BRAND_GOLD,
       title: message,
@@ -878,6 +887,7 @@
     }
 
     const result = await window.Swal.fire({
+      ...KEEP_SHELL_HEIGHT,
       title,
       text,
       icon,
