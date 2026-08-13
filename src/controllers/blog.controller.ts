@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { Types } from 'mongoose';
+import { EDITABLE_CONTENT_CACHE } from '../common/middleware/cache-control';
 import { HttpCode } from '../common/errors/error-codes';
 import type { BlogCommentInput, BlogCommentInquiry, BlogPostInquiry } from '../libs/types/blog';
 import BlogService from '../models/Blog.service';
@@ -11,7 +12,7 @@ const blogController = {
     try {
       req.log.info('getPosts');
       const result = await blogService.getPosts(req.validated.query as BlogPostInquiry);
-      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+      res.setHeader('Cache-Control', EDITABLE_CONTENT_CACHE);
       res.status(HttpCode.OK).json(result);
     } catch (err) {
       req.log.error({ err }, 'ERROR on getPosts');
@@ -24,7 +25,7 @@ const blogController = {
       req.log.info('getPost');
       const { slug } = req.validated.params as { slug: string };
       const result = await blogService.getPost(slug);
-      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+      res.setHeader('Cache-Control', EDITABLE_CONTENT_CACHE);
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on getPost');

@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
+import { EDITABLE_CONTENT_CACHE } from '../common/middleware/cache-control';
 import { HttpCode } from '../common/errors/error-codes';
 import HomeService from '../models/Home.service';
 
@@ -9,7 +10,7 @@ const homeController = {
     try {
       req.log.info('getHome');
       const result = await homeService.getHome();
-      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+      res.setHeader('Cache-Control', EDITABLE_CONTENT_CACHE);
       res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
       req.log.error({ err }, 'ERROR on getHome');
