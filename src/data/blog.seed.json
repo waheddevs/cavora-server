@@ -54,9 +54,9 @@
         }
       ],
       "category": "Beach",
-      "imageUrl": "/img/blog-img/post-1.jpg",
+      "imageUrl": "/uploads/blog/seed/post-1.webp",
       "authorName": "James Carter",
-      "authorImageUrl": "/img/blog-img/author-1.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-1.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-08-25T15:00:00.000Z",
       "commentCount": 85
@@ -115,9 +115,9 @@
         }
       ],
       "category": "Cultural",
-      "imageUrl": "/img/blog-img/post-2.jpg",
+      "imageUrl": "/uploads/blog/seed/post-2.webp",
       "authorName": "Sophie Laurent",
-      "authorImageUrl": "/img/blog-img/author-2.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-2.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-08-13T15:00:00.000Z",
       "commentCount": 94
@@ -176,9 +176,9 @@
         }
       ],
       "category": "City",
-      "imageUrl": "/img/blog-img/post-3.jpg",
+      "imageUrl": "/uploads/blog/seed/post-3.webp",
       "authorName": "Marco Bianchi",
-      "authorImageUrl": "/img/blog-img/author-3.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-3.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-08-01T15:00:00.000Z",
       "commentCount": 42
@@ -237,9 +237,9 @@
         }
       ],
       "category": "City",
-      "imageUrl": "/img/blog-img/post-4.jpg",
+      "imageUrl": "/uploads/blog/seed/post-4.webp",
       "authorName": "Aisha Nakamura",
-      "authorImageUrl": "/img/blog-img/author-4.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-4.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-07-17T15:00:00.000Z",
       "commentCount": 31
@@ -298,9 +298,9 @@
         }
       ],
       "category": "Adventure",
-      "imageUrl": "/img/blog-img/post-5.jpg",
+      "imageUrl": "/uploads/blog/seed/post-5.webp",
       "authorName": "Liam Walker",
-      "authorImageUrl": "/img/blog-img/author-5.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-5.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-07-04T15:00:00.000Z",
       "commentCount": 74
@@ -359,9 +359,9 @@
         }
       ],
       "category": "Beach",
-      "imageUrl": "/img/blog-img/post-6.jpg",
+      "imageUrl": "/uploads/blog/seed/post-6.webp",
       "authorName": "Elena Rossi",
-      "authorImageUrl": "/img/blog-img/author-6.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-6.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-06-27T15:00:00.000Z",
       "commentCount": 55
@@ -420,9 +420,9 @@
         }
       ],
       "category": "Cultural",
-      "imageUrl": "/img/blog-img/post-7.jpg",
+      "imageUrl": "/uploads/blog/seed/post-7.webp",
       "authorName": "Kenji Tanaka",
-      "authorImageUrl": "/img/blog-img/author-7.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-7.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-06-07T15:00:00.000Z",
       "commentCount": 93
@@ -481,9 +481,9 @@
         }
       ],
       "category": "Nature",
-      "imageUrl": "/img/blog-img/post-8.jpg",
+      "imageUrl": "/uploads/blog/seed/post-8.webp",
       "authorName": "Nadia Hassan",
-      "authorImageUrl": "/img/blog-img/author-8.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-8.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-05-21T15:00:00.000Z",
       "commentCount": 48
@@ -542,9 +542,9 @@
         }
       ],
       "category": "Adventure",
-      "imageUrl": "/img/blog-img/post-9.jpg",
+      "imageUrl": "/uploads/blog/seed/post-9.webp",
       "authorName": "Freya Andersen",
-      "authorImageUrl": "/img/blog-img/author-9.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-9.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-05-09T15:00:00.000Z",
       "commentCount": 67
@@ -603,9 +603,9 @@
         }
       ],
       "category": "Adventure",
-      "imageUrl": "/img/blog-img/post-10.jpg",
+      "imageUrl": "/uploads/blog/seed/post-10.webp",
       "authorName": "David Okoro",
-      "authorImageUrl": "/img/blog-img/author-10.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-10.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-04-27T15:00:00.000Z",
       "commentCount": 82
@@ -664,9 +664,9 @@
         }
       ],
       "category": "Adventure",
-      "imageUrl": "/img/blog-img/post-11.jpg",
+      "imageUrl": "/uploads/blog/seed/post-11.webp",
       "authorName": "Sofia Marino",
-      "authorImageUrl": "/img/blog-img/author-11.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-11.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-04-14T15:00:00.000Z",
       "commentCount": 35
@@ -725,9 +725,9 @@
         }
       ],
       "category": "Cultural",
-      "imageUrl": "/img/blog-img/post-12.jpg",
+      "imageUrl": "/uploads/blog/seed/post-12.webp",
       "authorName": "Oliver Bennett",
-      "authorImageUrl": "/img/blog-img/author-12.jpg",
+      "authorImageUrl": "/uploads/blog/seed/author-12.webp",
       "status": "PUBLISHED",
       "publishedAt": "2023-03-31T15:00:00.000Z",
       "commentCount": 20

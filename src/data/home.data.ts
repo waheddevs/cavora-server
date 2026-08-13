@@ -57,7 +57,7 @@ export const galleryImages: GalleryImageSource[] = [
     tall: false,
   },
   {
-    imageUrl: '/img/tour-single/japan-kyoto-1.jpg',
+    imageUrl: '/img/home-page-img/gallery-hq-kyoto.webp',
     altText: 'Historic Kyoto temple surrounded by nature',
     title: 'Timeless Kyoto',
     location: 'Kyoto, Japan',
@@ -75,7 +75,7 @@ export const galleryImages: GalleryImageSource[] = [
     tall: false,
   },
   {
-    imageUrl: '/img/tour-single/maldives-ari-1.jpg',
+    imageUrl: '/img/home-page-img/gallery-hq-maldives.webp',
     altText: 'Overwater villas in the turquoise Indian Ocean',
     title: 'Indian Ocean Dreams',
     location: 'Ari Atoll, Maldives',

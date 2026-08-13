@@ -1737,505 +1737,505 @@
   "tourImages": [
     {
       "tourId": 1,
-      "url": "/img/tour-single/bali-ubud-1.jpg",
+      "url": "/uploads/tours/seed/bali-ubud-1.webp",
       "altText": "Ubud Cultural & Rice Terrace Retreat image 1",
       "position": 0
     },
     {
       "tourId": 1,
-      "url": "/img/tour-single/bali-ubud-2.jpg",
+      "url": "/uploads/tours/seed/bali-ubud-2.webp",
       "altText": "Ubud Cultural & Rice Terrace Retreat image 2",
       "position": 1
     },
     {
       "tourId": 1,
-      "url": "/img/tour-single/bali-ubud-3.jpg",
+      "url": "/uploads/tours/seed/bali-ubud-3.webp",
       "altText": "Ubud Cultural & Rice Terrace Retreat image 3",
       "position": 2
     },
     {
       "tourId": 2,
-      "url": "/img/tour-single/bali-uluwatu-1.jpg",
+      "url": "/uploads/tours/seed/bali-uluwatu-1.webp",
       "altText": "Uluwatu Cliffs & Temple Sunset image 1",
       "position": 0
     },
     {
       "tourId": 2,
-      "url": "/img/tour-single/bali-uluwatu-2.jpg",
+      "url": "/uploads/tours/seed/bali-uluwatu-2.webp",
       "altText": "Uluwatu Cliffs & Temple Sunset image 2",
       "position": 1
     },
     {
       "tourId": 2,
-      "url": "/img/tour-single/bali-uluwatu-3.jpg",
+      "url": "/uploads/tours/seed/bali-uluwatu-3.webp",
       "altText": "Uluwatu Cliffs & Temple Sunset image 3",
       "position": 2
     },
     {
       "tourId": 3,
-      "url": "/img/tour-single/bali-nusapenida-1.jpg",
+      "url": "/uploads/tours/seed/bali-nusapenida-1.webp",
       "altText": "Nusa Penida Island Escape image 1",
       "position": 0
     },
     {
       "tourId": 3,
-      "url": "/img/tour-single/bali-nusapenida-2.jpg",
+      "url": "/uploads/tours/seed/bali-nusapenida-2.webp",
       "altText": "Nusa Penida Island Escape image 2",
       "position": 1
     },
     {
       "tourId": 3,
-      "url": "/img/tour-single/bali-nusapenida-3.jpg",
+      "url": "/uploads/tours/seed/bali-nusapenida-3.webp",
       "altText": "Nusa Penida Island Escape image 3",
       "position": 2
     },
     {
       "tourId": 4,
-      "url": "/img/tour-single/bali-batur-1.jpg",
+      "url": "/uploads/tours/seed/bali-batur-1.webp",
       "altText": "Mount Batur Sunrise Trek image 1",
       "position": 0
     },
     {
       "tourId": 4,
-      "url": "/img/tour-single/bali-batur-2.jpg",
+      "url": "/uploads/tours/seed/bali-batur-2.webp",
       "altText": "Mount Batur Sunrise Trek image 2",
       "position": 1
     },
     {
       "tourId": 4,
-      "url": "/img/tour-single/bali-batur-3.jpg",
+      "url": "/uploads/tours/seed/bali-batur-3.webp",
       "altText": "Mount Batur Sunrise Trek image 3",
       "position": 2
     },
     {
       "tourId": 5,
-      "url": "/img/tour-single/france-paris-1.jpg",
+      "url": "/uploads/tours/seed/france-paris-1.webp",
       "altText": "Paris: City of Light & Landmarks image 1",
       "position": 0
     },
     {
       "tourId": 5,
-      "url": "/img/tour-single/france-paris-2.jpg",
+      "url": "/uploads/tours/seed/france-paris-2.webp",
       "altText": "Paris: City of Light & Landmarks image 2",
       "position": 1
     },
     {
       "tourId": 5,
-      "url": "/img/tour-single/france-paris-3.jpg",
+      "url": "/uploads/tours/seed/france-paris-3.webp",
       "altText": "Paris: City of Light & Landmarks image 3",
       "position": 2
     },
     {
       "tourId": 6,
-      "url": "/img/tour-single/france-riviera-1.jpg",
+      "url": "/uploads/tours/seed/france-riviera-1.webp",
       "altText": "French Riviera & Nice Coastline image 1",
       "position": 0
     },
     {
       "tourId": 6,
-      "url": "/img/tour-single/france-riviera-2.jpg",
+      "url": "/uploads/tours/seed/france-riviera-2.webp",
       "altText": "French Riviera & Nice Coastline image 2",
       "position": 1
     },
     {
       "tourId": 6,
-      "url": "/img/tour-single/france-riviera-3.jpg",
+      "url": "/uploads/tours/seed/france-riviera-3.webp",
       "altText": "French Riviera & Nice Coastline image 3",
       "position": 2
     },
     {
       "tourId": 7,
-      "url": "/img/tour-single/france-provence-1.jpg",
+      "url": "/uploads/tours/seed/france-provence-1.webp",
       "altText": "Provence Lavender Fields Escape image 1",
       "position": 0
     },
     {
       "tourId": 7,
-      "url": "/img/tour-single/france-provence-2.jpg",
+      "url": "/uploads/tours/seed/france-provence-2.webp",
       "altText": "Provence Lavender Fields Escape image 2",
       "position": 1
     },
     {
       "tourId": 7,
-      "url": "/img/tour-single/france-provence-3.jpg",
+      "url": "/uploads/tours/seed/france-provence-3.webp",
       "altText": "Provence Lavender Fields Escape image 3",
       "position": 2
     },
     {
       "tourId": 8,
-      "url": "/img/tour-single/france-montsaintmichel-1.jpg",
+      "url": "/uploads/tours/seed/france-montsaintmichel-1.webp",
       "altText": "Mont Saint-Michel Island Abbey image 1",
       "position": 0
     },
     {
       "tourId": 8,
-      "url": "/img/tour-single/france-montsaintmichel-2.jpg",
+      "url": "/uploads/tours/seed/france-montsaintmichel-2.webp",
       "altText": "Mont Saint-Michel Island Abbey image 2",
       "position": 1
     },
     {
       "tourId": 8,
-      "url": "/img/tour-single/france-montsaintmichel-3.jpg",
+      "url": "/uploads/tours/seed/france-montsaintmichel-3.webp",
       "altText": "Mont Saint-Michel Island Abbey image 3",
       "position": 2
     },
     {
       "tourId": 9,
-      "url": "/img/tour-single/iceland-goldencircle-1.jpg",
+      "url": "/uploads/tours/seed/iceland-goldencircle-1.webp",
       "altText": "Iceland Golden Circle Explorer image 1",
       "position": 0
     },
     {
       "tourId": 9,
-      "url": "/img/tour-single/iceland-goldencircle-2.jpg",
+      "url": "/uploads/tours/seed/iceland-goldencircle-2.webp",
       "altText": "Iceland Golden Circle Explorer image 2",
       "position": 1
     },
     {
       "tourId": 9,
-      "url": "/img/tour-single/iceland-goldencircle-3.jpg",
+      "url": "/uploads/tours/seed/iceland-goldencircle-3.webp",
       "altText": "Iceland Golden Circle Explorer image 3",
       "position": 2
     },
     {
       "tourId": 10,
-      "url": "/img/tour-single/iceland-bluelagoon-1.jpg",
+      "url": "/uploads/tours/seed/iceland-bluelagoon-1.webp",
       "altText": "Blue Lagoon Geothermal Retreat image 1",
       "position": 0
     },
     {
       "tourId": 10,
-      "url": "/img/tour-single/iceland-bluelagoon-2.jpg",
+      "url": "/uploads/tours/seed/iceland-bluelagoon-2.webp",
       "altText": "Blue Lagoon Geothermal Retreat image 2",
       "position": 1
     },
     {
       "tourId": 10,
-      "url": "/img/tour-single/iceland-bluelagoon-3.jpg",
+      "url": "/uploads/tours/seed/iceland-bluelagoon-3.webp",
       "altText": "Blue Lagoon Geothermal Retreat image 3",
       "position": 2
     },
     {
       "tourId": 11,
-      "url": "/img/tour-single/iceland-jokulsarlon-1.jpg",
+      "url": "/uploads/tours/seed/iceland-jokulsarlon-1.webp",
       "altText": "Jökulsárlón Glacier Lagoon Tour image 1",
       "position": 0
     },
     {
       "tourId": 11,
-      "url": "/img/tour-single/iceland-jokulsarlon-2.jpg",
+      "url": "/uploads/tours/seed/iceland-jokulsarlon-2.webp",
       "altText": "Jökulsárlón Glacier Lagoon Tour image 2",
       "position": 1
     },
     {
       "tourId": 11,
-      "url": "/img/tour-single/iceland-jokulsarlon-3.jpg",
+      "url": "/uploads/tours/seed/iceland-jokulsarlon-3.webp",
       "altText": "Jökulsárlón Glacier Lagoon Tour image 3",
       "position": 2
     },
     {
       "tourId": 12,
-      "url": "/img/tour-single/iceland-vik-1.jpg",
+      "url": "/uploads/tours/seed/iceland-vik-1.webp",
       "altText": "Vík Black Sand Beach & Cliffs image 1",
       "position": 0
     },
     {
       "tourId": 12,
-      "url": "/img/tour-single/iceland-vik-2.jpg",
+      "url": "/uploads/tours/seed/iceland-vik-2.webp",
       "altText": "Vík Black Sand Beach & Cliffs image 2",
       "position": 1
     },
     {
       "tourId": 12,
-      "url": "/img/tour-single/iceland-vik-3.jpg",
+      "url": "/uploads/tours/seed/iceland-vik-3.webp",
       "altText": "Vík Black Sand Beach & Cliffs image 3",
       "position": 2
     },
     {
       "tourId": 13,
-      "url": "/img/tour-single/italy-rome-1.jpg",
+      "url": "/uploads/tours/seed/italy-rome-1.webp",
       "altText": "Rome: Ancient Wonders & La Dolce Vita image 1",
       "position": 0
     },
     {
       "tourId": 13,
-      "url": "/img/tour-single/italy-rome-2.jpg",
+      "url": "/uploads/tours/seed/italy-rome-2.webp",
       "altText": "Rome: Ancient Wonders & La Dolce Vita image 2",
       "position": 1
     },
     {
       "tourId": 13,
-      "url": "/img/tour-single/italy-rome-3.jpg",
+      "url": "/uploads/tours/seed/italy-rome-3.webp",
       "altText": "Rome: Ancient Wonders & La Dolce Vita image 3",
       "position": 2
     },
     {
       "tourId": 14,
-      "url": "/img/tour-single/italy-venice-1.jpg",
+      "url": "/uploads/tours/seed/italy-venice-1.webp",
       "altText": "Venice Canals & Gondola Escape image 1",
       "position": 0
     },
     {
       "tourId": 14,
-      "url": "/img/tour-single/italy-venice-2.jpg",
+      "url": "/uploads/tours/seed/italy-venice-2.webp",
       "altText": "Venice Canals & Gondola Escape image 2",
       "position": 1
     },
     {
       "tourId": 14,
-      "url": "/img/tour-single/italy-venice-3.jpg",
+      "url": "/uploads/tours/seed/italy-venice-3.webp",
       "altText": "Venice Canals & Gondola Escape image 3",
       "position": 2
     },
     {
       "tourId": 15,
-      "url": "/img/tour-single/italy-amalfi-1.jpg",
+      "url": "/uploads/tours/seed/italy-amalfi-1.webp",
       "altText": "Amalfi Coast Coastal Drive image 1",
       "position": 0
     },
     {
       "tourId": 15,
-      "url": "/img/tour-single/italy-amalfi-2.jpg",
+      "url": "/uploads/tours/seed/italy-amalfi-2.webp",
       "altText": "Amalfi Coast Coastal Drive image 2",
       "position": 1
     },
     {
       "tourId": 15,
-      "url": "/img/tour-single/italy-amalfi-3.jpg",
+      "url": "/uploads/tours/seed/italy-amalfi-3.webp",
       "altText": "Amalfi Coast Coastal Drive image 3",
       "position": 2
     },
     {
       "tourId": 16,
-      "url": "/img/tour-single/italy-cinqueterre-1.jpg",
+      "url": "/uploads/tours/seed/italy-cinqueterre-1.webp",
       "altText": "Cinque Terre Cliffside Villages image 1",
       "position": 0
     },
     {
       "tourId": 16,
-      "url": "/img/tour-single/italy-cinqueterre-2.jpg",
+      "url": "/uploads/tours/seed/italy-cinqueterre-2.webp",
       "altText": "Cinque Terre Cliffside Villages image 2",
       "position": 1
     },
     {
       "tourId": 16,
-      "url": "/img/tour-single/italy-cinqueterre-3.jpg",
+      "url": "/uploads/tours/seed/italy-cinqueterre-3.webp",
       "altText": "Cinque Terre Cliffside Villages image 3",
       "position": 2
     },
     {
       "tourId": 17,
-      "url": "/img/tour-single/japan-tokyo-1.jpg",
+      "url": "/uploads/tours/seed/japan-tokyo-1.webp",
       "altText": "Tokyo: Neon Nights & Ancient Temples image 1",
       "position": 0
     },
     {
       "tourId": 17,
-      "url": "/img/tour-single/japan-tokyo-2.jpg",
+      "url": "/uploads/tours/seed/japan-tokyo-2.webp",
       "altText": "Tokyo: Neon Nights & Ancient Temples image 2",
       "position": 1
     },
     {
       "tourId": 17,
-      "url": "/img/tour-single/japan-tokyo-3.jpg",
+      "url": "/uploads/tours/seed/japan-tokyo-3.webp",
       "altText": "Tokyo: Neon Nights & Ancient Temples image 3",
       "position": 2
     },
     {
       "tourId": 18,
-      "url": "/img/tour-single/japan-kyoto-1.jpg",
+      "url": "/uploads/tours/seed/japan-kyoto-1.webp",
       "altText": "Kyoto Temples & Bamboo Groves image 1",
       "position": 0
     },
     {
       "tourId": 18,
-      "url": "/img/tour-single/japan-kyoto-2.jpg",
+      "url": "/uploads/tours/seed/japan-kyoto-2.webp",
       "altText": "Kyoto Temples & Bamboo Groves image 2",
       "position": 1
     },
     {
       "tourId": 18,
-      "url": "/img/tour-single/japan-kyoto-3.jpg",
+      "url": "/uploads/tours/seed/japan-kyoto-3.webp",
       "altText": "Kyoto Temples & Bamboo Groves image 3",
       "position": 2
     },
     {
       "tourId": 19,
-      "url": "/img/tour-single/japan-fuji-1.jpg",
+      "url": "/uploads/tours/seed/japan-fuji-1.webp",
       "altText": "Mount Fuji & Hakone Retreat image 1",
       "position": 0
     },
     {
       "tourId": 19,
-      "url": "/img/tour-single/japan-fuji-2.jpg",
+      "url": "/uploads/tours/seed/japan-fuji-2.webp",
       "altText": "Mount Fuji & Hakone Retreat image 2",
       "position": 1
     },
     {
       "tourId": 19,
-      "url": "/img/tour-single/japan-fuji-3.jpg",
+      "url": "/uploads/tours/seed/japan-fuji-3.webp",
       "altText": "Mount Fuji & Hakone Retreat image 3",
       "position": 2
     },
     {
       "tourId": 20,
-      "url": "/img/tour-single/japan-osaka-1.jpg",
+      "url": "/uploads/tours/seed/japan-osaka-1.webp",
       "altText": "Osaka Street Food & Castle Tour image 1",
       "position": 0
     },
     {
       "tourId": 20,
-      "url": "/img/tour-single/japan-osaka-2.jpg",
+      "url": "/uploads/tours/seed/japan-osaka-2.webp",
       "altText": "Osaka Street Food & Castle Tour image 2",
       "position": 1
     },
     {
       "tourId": 20,
-      "url": "/img/tour-single/japan-osaka-3.jpg",
+      "url": "/uploads/tours/seed/japan-osaka-3.webp",
       "altText": "Osaka Street Food & Castle Tour image 3",
       "position": 2
     },
     {
       "tourId": 21,
-      "url": "/img/tour-single/maldives-male-1.jpg",
+      "url": "/uploads/tours/seed/maldives-male-1.webp",
       "altText": "Malé Island City & Ocean Gateway image 1",
       "position": 0
     },
     {
       "tourId": 21,
-      "url": "/img/tour-single/maldives-male-2.jpg",
+      "url": "/uploads/tours/seed/maldives-male-2.webp",
       "altText": "Malé Island City & Ocean Gateway image 2",
       "position": 1
     },
     {
       "tourId": 21,
-      "url": "/img/tour-single/maldives-male-3.jpg",
+      "url": "/uploads/tours/seed/maldives-male-3.webp",
       "altText": "Malé Island City & Ocean Gateway image 3",
       "position": 2
     },
     {
       "tourId": 22,
-      "url": "/img/tour-single/maldives-maafushi-1.jpg",
+      "url": "/uploads/tours/seed/maldives-maafushi-1.webp",
       "altText": "Maafushi Local Island Escape image 1",
       "position": 0
     },
     {
       "tourId": 22,
-      "url": "/img/tour-single/maldives-maafushi-2.jpg",
+      "url": "/uploads/tours/seed/maldives-maafushi-2.webp",
       "altText": "Maafushi Local Island Escape image 2",
       "position": 1
     },
     {
       "tourId": 22,
-      "url": "/img/tour-single/maldives-maafushi-3.jpg",
+      "url": "/uploads/tours/seed/maldives-maafushi-3.webp",
       "altText": "Maafushi Local Island Escape image 3",
       "position": 2
     },
     {
       "tourId": 23,
-      "url": "/img/tour-single/maldives-baa-1.jpg",
+      "url": "/uploads/tours/seed/maldives-baa-1.webp",
       "altText": "Baa Atoll UNESCO Biosphere Dive image 1",
       "position": 0
     },
     {
       "tourId": 23,
-      "url": "/img/tour-single/maldives-baa-2.jpg",
+      "url": "/uploads/tours/seed/maldives-baa-2.webp",
       "altText": "Baa Atoll UNESCO Biosphere Dive image 2",
       "position": 1
     },
     {
       "tourId": 23,
-      "url": "/img/tour-single/maldives-baa-3.jpg",
+      "url": "/uploads/tours/seed/maldives-baa-3.webp",
       "altText": "Baa Atoll UNESCO Biosphere Dive image 3",
       "position": 2
     },
     {
       "tourId": 24,
-      "url": "/img/tour-single/maldives-ari-1.jpg",
+      "url": "/uploads/tours/seed/maldives-ari-1.webp",
       "altText": "Ari Atoll Overwater Luxury image 1",
       "position": 0
     },
     {
       "tourId": 24,
-      "url": "/img/tour-single/maldives-ari-2.jpg",
+      "url": "/uploads/tours/seed/maldives-ari-2.webp",
       "altText": "Ari Atoll Overwater Luxury image 2",
       "position": 1
     },
     {
       "tourId": 24,
-      "url": "/img/tour-single/maldives-ari-3.jpg",
+      "url": "/uploads/tours/seed/maldives-ari-3.webp",
       "altText": "Ari Atoll Overwater Luxury image 3",
       "position": 2
     },
     {
       "tourId": 25,
-      "url": "/img/tour-single/switzerland-zermatt-1.jpg",
+      "url": "/uploads/tours/seed/switzerland-zermatt-1.webp",
       "altText": "Zermatt & the Matterhorn Peak image 1",
       "position": 0
     },
     {
       "tourId": 25,
-      "url": "/img/tour-single/switzerland-zermatt-2.jpg",
+      "url": "/uploads/tours/seed/switzerland-zermatt-2.webp",
       "altText": "Zermatt & the Matterhorn Peak image 2",
       "position": 1
     },
     {
       "tourId": 25,
-      "url": "/img/tour-single/switzerland-zermatt-3.jpg",
+      "url": "/uploads/tours/seed/switzerland-zermatt-3.webp",
       "altText": "Zermatt & the Matterhorn Peak image 3",
       "position": 2
     },
     {
       "tourId": 26,
-      "url": "/img/tour-single/switzerland-interlaken-1.jpg",
+      "url": "/uploads/tours/seed/switzerland-interlaken-1.webp",
       "altText": "Interlaken Adventure & Lakes image 1",
       "position": 0
     },
     {
       "tourId": 26,
-      "url": "/img/tour-single/switzerland-interlaken-2.jpg",
+      "url": "/uploads/tours/seed/switzerland-interlaken-2.webp",
       "altText": "Interlaken Adventure & Lakes image 2",
       "position": 1
     },
     {
       "tourId": 26,
-      "url": "/img/tour-single/switzerland-interlaken-3.jpg",
+      "url": "/uploads/tours/seed/switzerland-interlaken-3.webp",
       "altText": "Interlaken Adventure & Lakes image 3",
       "position": 2
     },
     {
       "tourId": 27,
-      "url": "/img/tour-single/switzerland-lucerne-1.jpg",
+      "url": "/uploads/tours/seed/switzerland-lucerne-1.webp",
       "altText": "Lucerne Lake & Old Town image 1",
       "position": 0
     },
     {
       "tourId": 27,
-      "url": "/img/tour-single/switzerland-lucerne-2.jpg",
+      "url": "/uploads/tours/seed/switzerland-lucerne-2.webp",
       "altText": "Lucerne Lake & Old Town image 2",
       "position": 1
     },
     {
       "tourId": 27,
-      "url": "/img/tour-single/switzerland-lucerne-3.jpg",
+      "url": "/uploads/tours/seed/switzerland-lucerne-3.webp",
       "altText": "Lucerne Lake & Old Town image 3",
       "position": 2
     },
     {
       "tourId": 28,
-      "url": "/img/tour-single/switzerland-jungfraujoch-1.jpg",
+      "url": "/uploads/tours/seed/switzerland-jungfraujoch-1.webp",
       "altText": "Jungfraujoch: Top of Europe image 1",
       "position": 0
     },
     {
       "tourId": 28,
-      "url": "/img/tour-single/switzerland-jungfraujoch-2.jpg",
+      "url": "/uploads/tours/seed/switzerland-jungfraujoch-2.webp",
       "altText": "Jungfraujoch: Top of Europe image 2",
       "position": 1
     },
     {
       "tourId": 28,
-      "url": "/img/tour-single/switzerland-jungfraujoch-3.jpg",
+      "url": "/uploads/tours/seed/switzerland-jungfraujoch-3.webp",
       "altText": "Jungfraujoch: Top of Europe image 3",
       "position": 2
     }

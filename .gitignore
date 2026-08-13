@@ -10,6 +10,11 @@ src/uploads/**
 !src/uploads/user/.gitkeep
 !src/uploads/tours/.gitkeep
 !src/uploads/blog/.gitkeep
+# Seed artwork ships with the repository; runtime uploads next to it do not.
+!src/uploads/tours/seed/
+!src/uploads/tours/seed/**
+!src/uploads/blog/seed/
+!src/uploads/blog/seed/**
 .env
 *.log
 .DS_Store
