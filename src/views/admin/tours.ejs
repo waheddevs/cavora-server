@@ -28,7 +28,9 @@
       <h3>Tour editor</h3>
       <p>Prices use integer minor units. Tour IDs must remain compatible with the public frontend.</p>
     </div>
-    <button class="button button--small" type="button" data-disclosure-close>Close</button>
+    <button class="button button--small button--danger" type="button" data-disclosure-close>
+      Close
+    </button>
   </div>
 
   <form data-tour-form novalidate>
@@ -125,7 +127,11 @@
             <button class="button button--small" type="button" data-tour-images-change>
               Add images
             </button>
-            <button class="button button--small" type="button" data-tour-images-remove>
+            <button
+              class="button button--small button--danger"
+              type="button"
+              data-tour-images-remove
+            >
               Remove all
             </button>
           </div>
