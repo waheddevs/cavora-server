@@ -634,7 +634,26 @@
     return element;
   };
 
-  // Free-text cell: wraps and clamps to two lines so one long message cannot
+  // Single-line cell for a value with no natural length limit — a post title,
+  // an author and email. A plain cell() never wraps and never stops growing, so
+  // the longest row decided how wide the whole table had to be; this one cuts
+  // off with an ellipsis and keeps the full value in the tooltip.
+  // `title` defaults to the shown value; pass it when the cell displays an
+  // abbreviation and the tooltip should carry the long form.
+  const cellTruncate = (value = '', title = value) => {
+    const element = document.createElement('td');
+    element.className = 'cell-truncate';
+    // The cap lives on an inner block, not the cell: a table column sizes to
+    // its content, and an auto-layout table is free to ignore max-width on the
+    // td itself and stretch anyway.
+    const inner = document.createElement('span');
+    inner.textContent = String(value ?? '');
+    element.title = String(title ?? '');
+    element.append(inner);
+    return element;
+  };
+
+  // Free-text cell: wraps and clamps to a single line so one long message cannot
   // stretch the table sideways. The full text belongs in the detail panel.
   const cellClamp = (value = '') => {
     const element = document.createElement('td');
@@ -1391,6 +1410,7 @@
     cell,
     cellClamp,
     cellStack,
+    cellTruncate,
     clearValidation,
     deleteButton,
     confirm: confirmAction,

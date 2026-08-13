@@ -1214,9 +1214,25 @@ a {
   gap: 6px;
 }
 
-/* Free-text cell (see admin.cellClamp): wraps, then clamps to two lines. */
+/* Unbounded single-line value (see admin.cellTruncate): a title, a name and
+   email. A plain cell has no ceiling, so the longest row set the table's width
+   and pushed the card into horizontal scroll. Capped and cut with an ellipsis;
+   the tooltip carries the full value.
+
+   Raise this number carefully. Hiding the overflow does not shrink the box's
+   intrinsic width, so for any value long enough to be cut the cap is also the
+   column's guaranteed minimum — two such columns reserve twice this much
+   before the rest of the row gets a say. */
+.data-table td.cell-truncate > span {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Free-text cell (see admin.cellClamp): wraps, then clamps to one line. */
 .data-table td.cell-clamp {
-  min-width: 240px;
+  min-width: 200px;
   max-width: 420px;
   line-height: 1.4;
   white-space: normal;
@@ -1226,7 +1242,7 @@ a {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
 }
 
 /* Read-only summary of the row selected into the editor panel below a table.

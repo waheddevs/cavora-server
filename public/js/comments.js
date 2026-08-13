@@ -37,6 +37,12 @@
   const targetLabel = (comment) =>
     comment.postId ? `Post ${comment.postId}` : `Tour ${comment.tourId}`;
 
+  // A row only needs enough of the id to tell one target from another, and a
+  // full ObjectId is wide enough to push the table into horizontal scroll. The
+  // detail panel and the tooltip still carry it in full.
+  const shortTargetLabel = (comment) =>
+    comment.postId ? `Post ${admin.shortId(comment.postId)}` : `Tour ${comment.tourId}`;
+
   const selectComment = (comment) => {
     setDetail('[data-comment-detail-author]', `${comment.name} · ${comment.email}`);
     setDetail('[data-comment-detail-target]', targetLabel(comment));
@@ -55,8 +61,8 @@
   const renderComment = (comment) => {
     const row = document.createElement('tr');
     row.append(
-      admin.cell(`${comment.name} · ${comment.email}`),
-      admin.cell(targetLabel(comment)),
+      admin.cellTruncate(`${comment.name} · ${comment.email}`),
+      admin.cellTruncate(shortTargetLabel(comment), targetLabel(comment)),
       admin.cellClamp(comment.body),
       admin.cell(admin.formatDate(comment.createdAt)),
     );

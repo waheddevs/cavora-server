@@ -222,7 +222,7 @@
   const renderPost = (post) => {
     const row = document.createElement('tr');
     row.append(
-      admin.cell(post.title),
+      admin.cellTruncate(post.title),
       admin.cell(post.category),
       admin.cell(post.authorName),
       admin.cell(admin.formatDate(post.publishedAt, true)),

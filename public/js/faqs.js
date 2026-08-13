@@ -51,7 +51,9 @@
 
   const renderFaq = (faq) => {
     const row = document.createElement('tr');
-    const question = admin.cellStack(faq.question, faq.answer);
+    // Question only: the answer is long enough to set the row height on its
+    // own, and selecting the row opens it in full in the editor below.
+    const question = admin.cellStack(faq.question);
     const status = admin.cell();
     status.append(admin.badge(faq.status));
     const actions = admin.actionsCell(

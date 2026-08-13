@@ -52,7 +52,7 @@
   const renderMessage = (message) => {
     const row = document.createElement('tr');
     row.append(
-      admin.cell(`${message.fullName} · ${message.email}`),
+      admin.cellTruncate(`${message.fullName} · ${message.email}`),
       admin.cell(message.subject),
       admin.cellClamp(message.message),
       admin.cell(admin.formatDate(message.createdAt)),
