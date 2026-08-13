@@ -3,6 +3,7 @@ import { env } from './config/env';
 import { logger } from './config/logger';
 import { BlogCommentStatus, type BlogPostStatus } from './libs/enums/blog.enum';
 import { TourDepartureStatus, type TourStatus } from './libs/enums/tour.enum';
+import { RATING_MAX, buildRatingBreakdown } from './libs/rating';
 import AuditLog from './schema/AuditLog.model';
 import BlogComment from './schema/BlogComment.model';
 import BlogPost from './schema/BlogPost.model';
@@ -133,6 +134,25 @@ const tourCommentTemplates = [
   'The scenery was even better in person, especially during the quieter morning stops.',
   'A well-organized experience with a great balance of culture, food, and free time.',
 ];
+/**
+ * Star values for the seeded reviews, drawn from the tour's own histogram rather
+ * than added on top of it, so re-seeding never inflates the review count.
+ */
+function ratingsFromBreakdown(breakdown: number[], count: number): number[] {
+  const total = breakdown.reduce((sum, slotCount) => sum + slotCount, 0);
+  if (total === 0) return Array.from({ length: count }, () => RATING_MAX);
+
+  return Array.from({ length: count }, (_, index) => {
+    const position = Math.floor(((index + 0.5) * total) / count);
+    let cumulative = 0;
+    for (let slot = 0; slot < breakdown.length; slot += 1) {
+      cumulative += breakdown[slot] as number;
+      if (position < cumulative) return RATING_MAX - slot;
+    }
+    return RATING_MAX;
+  });
+}
+
 const indexedModels: Model<unknown>[] = [
   Member,
   NewsletterSubscriber,
@@ -162,7 +182,11 @@ async function seed(): Promise<void> {
       updateOne: {
         filter: { _id: tour._id },
         update: {
-          $set: { ...tour, publishedAt: new Date(tour.publishedAt) },
+          $set: {
+            ...tour,
+            publishedAt: new Date(tour.publishedAt),
+            ratingBreakdown: buildRatingBreakdown(tour.ratingAverage, tour.reviewCount),
+          },
           $setOnInsert: {
             viewCount: 240 + tour.reviewCount * 11 + (tour._id % 7) * 73,
           },
@@ -234,8 +258,13 @@ async function seed(): Promise<void> {
   });
   await BlogComment.bulkWrite(commentOperations);
 
-  const tourCommentOperations = seedData.tours.flatMap((tour) =>
-    Array.from({ length: 7 }, (_, index) => {
+  const tourCommentOperations = seedData.tours.flatMap((tour) => {
+    const ratings = ratingsFromBreakdown(
+      buildRatingBreakdown(tour.ratingAverage, tour.reviewCount),
+      tourCommentTemplates.length,
+    );
+
+    return Array.from({ length: tourCommentTemplates.length }, (_, index) => {
       const name = commentAuthors[(tour._id + index * 2) % commentAuthors.length] as string;
       const email = `demo-tour-${tour._id}-comment-${index + 1}@example.com`;
       return {
@@ -245,6 +274,7 @@ async function seed(): Promise<void> {
             $set: {
               name,
               body: tourCommentTemplates[index] as string,
+              rating: ratings[index] as number,
               status: BlogCommentStatus.APPROVED,
             },
             $setOnInsert: { tourId: tour._id, email },
@@ -252,8 +282,8 @@ async function seed(): Promise<void> {
           upsert: true,
         },
       };
-    }),
-  );
+    });
+  });
   await BlogComment.bulkWrite(tourCommentOperations);
 
   await Faq.bulkWrite(

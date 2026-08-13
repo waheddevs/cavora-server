@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { TourStatus } from '../libs/enums/tour.enum';
+import { RATING_MAX, emptyRatingBreakdown } from '../libs/rating';
 import type { Tour, TourItineraryItem } from '../libs/types/tour';
 
 const itineraryItemSchema = new Schema<TourItineraryItem>(
@@ -98,6 +99,18 @@ const tourSchema = new Schema<Tour>(
       required: true,
       min: 0,
       default: 0,
+    },
+    // Guest ratings per star, five stars first. `ratingAverage` and `reviewCount`
+    // are derived from these counts, so the storefront breakdown always adds up.
+    ratingBreakdown: {
+      type: [Number],
+      default: (): number[] => emptyRatingBreakdown(),
+      validate: {
+        validator: (counts: number[]): boolean =>
+          counts.length === RATING_MAX &&
+          counts.every((count) => Number.isInteger(count) && count >= 0),
+        message: 'ratingBreakdown must hold five non-negative counts.',
+      },
     },
     viewCount: {
       type: Number,

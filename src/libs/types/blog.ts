@@ -32,6 +32,7 @@ export interface BlogComment {
   name: string;
   email: string;
   body: string;
+  rating?: number;
   status: BlogCommentStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -68,6 +69,7 @@ export interface BlogCommentView {
   memberId?: string;
   name: string;
   body: string;
+  rating?: number;
   createdAt: string;
 }
 
@@ -145,6 +147,7 @@ export interface AdminBlogCommentView {
   name: string;
   email: string;
   body: string;
+  rating?: number;
   status: BlogCommentStatus;
   createdAt: string;
   updatedAt: string;

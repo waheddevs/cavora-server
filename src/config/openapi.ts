@@ -900,6 +900,12 @@ const sectionEightSchemas = {
       id: { type: 'string' },
       name: { type: 'string' },
       body: { type: 'string' },
+      rating: {
+        type: 'integer',
+        minimum: 1,
+        maximum: 5,
+        description: 'Stars given by the guest. Present on tour reviews only.',
+      },
       memberId: { type: 'string' },
       createdAt: { type: 'string', format: 'date-time' },
     },
@@ -920,6 +926,17 @@ const sectionEightSchemas = {
       name: { type: 'string', minLength: 1, maxLength: 160 },
       email: { type: 'string', format: 'email', maxLength: 254 },
       body: { type: 'string', minLength: 2, maxLength: 5000 },
+    },
+  },
+  TourCommentInput: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['name', 'email', 'body', 'rating'],
+    properties: {
+      name: { type: 'string', minLength: 1, maxLength: 160 },
+      email: { type: 'string', format: 'email', maxLength: 254 },
+      body: { type: 'string', minLength: 2, maxLength: 5000 },
+      rating: { type: 'integer', minimum: 1, maximum: 5 },
     },
   },
   ContactMessageInput: {
@@ -2238,13 +2255,16 @@ export const openApiDocument = {
       },
       post: {
         operationId: 'submitTourComment',
-        summary: 'Publish a tour comment',
+        summary: 'Publish a tour review',
+        description:
+          'Publishes a comment with its star rating, which is folded into the tour ' +
+          'rating breakdown, average and review count.',
         tags: ['Tours'],
         parameters: [{ $ref: '#/components/parameters/TourId' }],
         requestBody: {
           required: true,
           content: {
-            'application/json': { schema: { $ref: '#/components/schemas/BlogCommentInput' } },
+            'application/json': { schema: { $ref: '#/components/schemas/TourCommentInput' } },
           },
         },
         responses: {
@@ -2694,8 +2714,22 @@ export const openApiDocument = {
           { $ref: '#/components/schemas/TourSummary' },
           {
             type: 'object',
-            required: ['overview', 'highlights', 'itinerary', 'included', 'notIncluded'],
+            required: [
+              'ratingBreakdown',
+              'overview',
+              'highlights',
+              'itinerary',
+              'included',
+              'notIncluded',
+            ],
             properties: {
+              ratingBreakdown: {
+                type: 'array',
+                description: 'Guest ratings per star, five stars first, summing to reviewCount.',
+                minItems: 5,
+                maxItems: 5,
+                items: { type: 'integer', minimum: 0 },
+              },
               overview: { type: 'string' },
               highlights: { type: 'array', items: { type: 'string' } },
               itinerary: {

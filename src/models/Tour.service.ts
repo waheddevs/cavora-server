@@ -4,6 +4,13 @@ import { AppError } from '../common/errors/app-error';
 import { ErrorCode, HttpCode } from '../common/errors/error-codes';
 import { TourDepartureStatus, TourStatus } from '../libs/enums/tour.enum';
 import { BlogCommentStatus } from '../libs/enums/blog.enum';
+import {
+  averageFromBreakdown,
+  buildRatingBreakdown,
+  normalizeRatingBreakdown,
+  ratingSlot,
+  reviewCountFromBreakdown,
+} from '../libs/rating';
 import type { BlogComment, BlogCommentView, PaginatedBlogComments } from '../libs/types/blog';
 import type {
   AvailabilityInquiry,
@@ -160,6 +167,7 @@ class TourService {
       {
         $project: {
           ...(summaryProjectionStage().$project as Record<string, unknown>),
+          ratingBreakdown: 1,
           overview: 1,
           highlights: 1,
           itinerary: 1,
@@ -172,7 +180,15 @@ class TourService {
     if (!tour) {
       throw new AppError(HttpCode.NOT_FOUND, ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
     }
-    return tour;
+    // A tour stored before the histogram existed keeps its average and review count
+    // but has no per-star counts; shape them on read so the breakdown still lines up
+    // with the headline. The stored counts take over once a review is posted.
+    const stored = normalizeRatingBreakdown(tour.ratingBreakdown);
+    const ratingBreakdown =
+      reviewCountFromBreakdown(stored) === 0 && tour.reviewCount > 0
+        ? buildRatingBreakdown(tour.ratingAverage, tour.reviewCount)
+        : stored;
+    return { ...tour, ratingBreakdown };
   }
 
   public async getComments(inquiry: TourCommentInquiry): Promise<PaginatedBlogComments> {
@@ -195,6 +211,7 @@ class TourService {
         id: comment._id.toString(),
         name: comment.name,
         body: comment.body,
+        ...(comment.rating ? { rating: comment.rating } : {}),
         ...(comment.memberId ? { memberId: comment.memberId.toString() } : {}),
         createdAt: comment.createdAt.toISOString(),
       })),
@@ -207,12 +224,57 @@ class TourService {
     };
   }
 
+  /**
+   * Folds a freshly posted review into the tour's histogram, then republishes the
+   * average and the review count from it so the three figures never drift apart.
+   */
+  private async countRating(tourId: number, rating: number): Promise<void> {
+    const tour = await Tour.findById(tourId)
+      .select({ ratingAverage: 1, ratingBreakdown: 1, reviewCount: 1 })
+      .lean()
+      .exec();
+    if (!tour) return;
+
+    // A tour stored before the histogram existed carries an average and a count but no
+    // per-star counts; spread them across the stars first, then add the new review. This
+    // also guarantees the field is a five-slot array, which `$inc` by index requires.
+    if (reviewCountFromBreakdown(tour.ratingBreakdown ?? []) === 0) {
+      await Tour.updateOne(
+        { _id: tourId },
+        { $set: { ratingBreakdown: buildRatingBreakdown(tour.ratingAverage, tour.reviewCount) } },
+      ).exec();
+    }
+
+    const counted = await Tour.findByIdAndUpdate(
+      tourId,
+      { $inc: { [`ratingBreakdown.${ratingSlot(rating)}`]: 1 } },
+      { new: true },
+    )
+      .select({ ratingBreakdown: 1 })
+      .lean()
+      .exec();
+    if (!counted) return;
+
+    const breakdown = normalizeRatingBreakdown(counted.ratingBreakdown);
+    await Tour.updateOne(
+      { _id: tourId },
+      {
+        $set: {
+          ratingBreakdown: breakdown,
+          ratingAverage: averageFromBreakdown(breakdown),
+          reviewCount: reviewCountFromBreakdown(breakdown),
+        },
+      },
+    ).exec();
+  }
+
   public async submitComment(input: TourCommentInput): Promise<TourCommentSubmission> {
     await this.assertPublishedTour(input.tourId);
     const comment = await BlogCommentModel.create({
       ...input,
       status: BlogCommentStatus.APPROVED,
     });
+    await this.countRating(input.tourId, input.rating);
     return {
       id: comment._id.toString(),
       status: BlogCommentStatus.APPROVED,

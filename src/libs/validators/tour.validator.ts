@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { RATING_MAX, RATING_MIN } from '../rating';
 import { paginationFields } from './common.validator';
 
 const optionalDate = z
@@ -10,6 +11,16 @@ const optionalDate = z
 export const tourIdParamsSchema = z
   .object({
     id: z.coerce.number().int().positive(),
+  })
+  .strict();
+
+// A tour comment is a review, so it carries a star rating the blog form has no use for.
+export const tourCommentBodySchema = z
+  .object({
+    name: z.string().trim().min(1).max(160),
+    email: z.string().trim().toLowerCase().email().max(254),
+    body: z.string().trim().min(2).max(5_000),
+    rating: z.coerce.number().int().min(RATING_MIN).max(RATING_MAX),
   })
   .strict();
 

@@ -9,6 +9,13 @@ import { BookingStatus } from '../libs/enums/booking.enum';
 import { ContactMessageStatus } from '../libs/enums/engagement.enum';
 import { faqSectionTitles } from '../libs/enums/faq.enum';
 import { TourStatus } from '../libs/enums/tour.enum';
+import {
+  averageFromBreakdown,
+  buildRatingBreakdown,
+  normalizeRatingBreakdown,
+  ratingSlot,
+  reviewCountFromBreakdown,
+} from '../libs/rating';
 import type {
   AdminBlogCommentInquiry,
   AdminBlogCommentView,
@@ -216,6 +223,7 @@ function toBlogCommentView(comment: BlogCommentEntity): AdminBlogCommentView {
     name: comment.name,
     email: comment.email,
     body: comment.body,
+    ...(comment.rating ? { rating: comment.rating } : {}),
     status: comment.status,
     createdAt: comment.createdAt.toISOString(),
     updatedAt: comment.updatedAt.toISOString(),
@@ -356,7 +364,10 @@ class AdminService {
   ): Promise<AdminTourView> {
     this.assertAdmin(auth);
     return mongoose.connection.transaction(async (session) => {
-      const payload = this.withTourPublishingDate(input);
+      const payload = {
+        ...this.withTourPublishingDate(input),
+        ratingBreakdown: buildRatingBreakdown(input.ratingAverage, input.reviewCount),
+      };
       let tour: Tour;
       try {
         const [created] = await TourModel.create([payload], { session });
@@ -388,14 +399,25 @@ class AdminService {
       return await mongoose.connection.transaction(async (session) => {
         const { _id, ...changes } = input;
         const update = this.withTourPublishingDate(changes);
-        const tour = await TourModel.findByIdAndUpdate(
-          _id,
-          { $set: update },
-          { new: true, session },
-        )
+        let tour = await TourModel.findByIdAndUpdate(_id, { $set: update }, { new: true, session })
           .lean<Tour>()
           .exec();
         if (!tour) throw notFound(ErrorCode.TOUR_NOT_FOUND, 'Tour not found.');
+
+        // Editing the headline rating or review count reshapes the star histogram
+        // behind it, otherwise the storefront breakdown would contradict the card.
+        if (changes.ratingAverage !== undefined || changes.reviewCount !== undefined) {
+          const rescored = await TourModel.findByIdAndUpdate(
+            _id,
+            {
+              $set: { ratingBreakdown: buildRatingBreakdown(tour.ratingAverage, tour.reviewCount) },
+            },
+            { new: true, session },
+          )
+            .lean<Tour>()
+            .exec();
+          if (rescored) tour = rescored;
+        }
         await this.writeAudit(
           auth,
           'admin.tour_updated',
@@ -1418,6 +1440,42 @@ class AdminService {
     await removeUpload(removedUrl);
   }
 
+  /**
+   * Takes a deleted review back out of its tour's histogram and republishes the
+   * average and review count from what is left. Tours whose histogram was never
+   * filled in are left alone: there is no slot to take the star out of.
+   */
+  private async uncountRating(
+    tourId: number,
+    rating: number,
+    session: ClientSession,
+  ): Promise<void> {
+    const tour = await TourModel.findById(tourId)
+      .select({ ratingBreakdown: 1 })
+      .session(session)
+      .lean<Tour>()
+      .exec();
+    if (!tour) return;
+
+    const breakdown = normalizeRatingBreakdown(tour.ratingBreakdown);
+    const slot = ratingSlot(rating);
+    const counted = breakdown[slot] ?? 0;
+    if (counted === 0) return;
+    breakdown[slot] = counted - 1;
+
+    await TourModel.updateOne(
+      { _id: tourId },
+      {
+        $set: {
+          ratingBreakdown: breakdown,
+          ratingAverage: averageFromBreakdown(breakdown),
+          reviewCount: reviewCountFromBreakdown(breakdown),
+        },
+      },
+      { session },
+    ).exec();
+  }
+
   public async deleteComment(
     auth: AuthContext,
     commentId: string,
@@ -1429,6 +1487,9 @@ class AdminService {
         .lean()
         .exec();
       if (!comment) throw notFound(ErrorCode.BLOG_COMMENT_NOT_FOUND, 'Comment not found.');
+      if (comment.tourId && comment.rating) {
+        await this.uncountRating(comment.tourId, comment.rating, session);
+      }
       await this.writeAudit(
         auth,
         'admin.comment_deleted',

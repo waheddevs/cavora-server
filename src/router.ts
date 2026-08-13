@@ -22,6 +22,7 @@ import { validate } from './common/middleware/validate';
 import { uploadAccountImage, uploadImage } from './common/middleware/upload';
 import {
   availabilityQuerySchema,
+  tourCommentBodySchema,
   tourIdParamsSchema,
   tourListQuerySchema,
   tourViewBodySchema,
@@ -216,7 +217,7 @@ router.post(
   '/tours/:id/comments',
   optionalAuth,
   requireCsrfIfAuthenticated,
-  validate({ params: tourIdParamsSchema, body: blogCommentBodySchema }),
+  validate({ params: tourIdParamsSchema, body: tourCommentBodySchema }),
   tourController.submitComment,
 );
 router.post(

@@ -21,6 +21,7 @@ export interface Tour {
   currency: string;
   ratingAverage: number;
   reviewCount: number;
+  ratingBreakdown: number[];
   viewCount: number;
   durationDays: number;
   maxGroupSize: number;
@@ -38,7 +39,9 @@ export interface Tour {
   updatedAt: Date;
 }
 
-export type TourInput = Omit<Tour, 'createdAt' | 'updatedAt' | 'viewCount'>;
+// `ratingBreakdown` is never supplied by a client: the service derives it from the
+// rating average and review count so the histogram and the headline never disagree.
+export type TourInput = Omit<Tour, 'createdAt' | 'updatedAt' | 'viewCount' | 'ratingBreakdown'>;
 
 export interface TourUpdateInput extends Partial<Omit<TourInput, '_id'>> {
   _id: number;
@@ -125,6 +128,7 @@ export interface TourViewResult {
 }
 
 export interface TourDetail extends TourSummary {
+  ratingBreakdown: number[];
   overview: string;
   highlights: string[];
   itinerary: TourItineraryItem[];
@@ -150,6 +154,7 @@ export interface TourCommentInput {
   name: string;
   email: string;
   body: string;
+  rating: number;
 }
 
 export interface TourCommentInquiry {
@@ -216,9 +221,10 @@ export interface HomepageSelectionsView {
   spotlightTourId?: number;
 }
 
+// The histogram is derived, never edited by hand, so the admin views leave it out.
 export interface AdminTourView extends Omit<
   Tour,
-  '_id' | 'createdAt' | 'publishedAt' | 'updatedAt'
+  '_id' | 'createdAt' | 'publishedAt' | 'ratingBreakdown' | 'updatedAt'
 > {
   id: number;
   publishedAt?: string;
