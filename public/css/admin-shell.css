@@ -154,16 +154,8 @@ a {
   background: var(--sidebar);
 }
 
-.admin-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 8px 24px;
-  text-decoration: none;
-}
-
-/* Sidebar account identity (admin pages). The .admin-brand rules below are
-   still used by the signed-out auth pages, which must keep Cavora branding. */
+/* Sidebar account identity (admin pages). Signed-out branding lives with the
+   other .auth-* rules further down. */
 .admin-sidebar__profile {
   display: grid;
   justify-items: center;
@@ -272,43 +264,6 @@ a {
 .admin-sidebar__logout:disabled {
   cursor: wait;
   opacity: 0.65;
-}
-
-.admin-brand--dark {
-  padding: 0;
-  color: var(--text);
-}
-
-.admin-brand__mark {
-  display: grid;
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
-  color: var(--sidebar);
-  background: var(--accent);
-  border-radius: 8px;
-  place-items: center;
-  font-weight: 800;
-}
-
-.admin-brand--dark .admin-brand__mark {
-  color: var(--sidebar);
-  background: var(--accent);
-}
-
-.admin-brand strong,
-.admin-brand small {
-  display: block;
-}
-
-.admin-brand strong {
-  letter-spacing: 0.01em;
-}
-
-.admin-brand small {
-  margin-top: 1px;
-  color: var(--sidebar-muted);
-  font-size: 0.75rem;
 }
 
 .admin-nav {
@@ -1393,6 +1348,28 @@ a {
 .auth-header {
   display: flex;
   justify-content: center;
+}
+
+/* Signed-out branding: the wordmark on top, its role caption underneath. */
+.auth-brand {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.auth-brand__logo {
+  width: auto;
+  height: 34px;
+}
+
+.auth-brand small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .auth-main {
