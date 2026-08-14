@@ -1345,9 +1345,11 @@ a {
   padding: 28px clamp(20px, 5vw, 64px);
 }
 
+/* The signed-out pages are short, so the roomy top gap is deliberate. */
 .auth-header {
   display: flex;
   justify-content: center;
+  padding-top: clamp(24px, 7vh, 64px);
 }
 
 /* Signed-out branding: the wordmark on top, its role caption underneath. */
@@ -1366,10 +1368,10 @@ a {
 
 .auth-brand small {
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 0.88rem;
   font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-transform: capitalize;
 }
 
 .auth-main {

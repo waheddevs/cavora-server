@@ -48,7 +48,7 @@ const adminViewController = {
       renderAdminPage(res, {
         activePage: 'signup',
         layoutMode: 'auth',
-        pageTitle: 'Admin Signup',
+        pageTitle: 'Signup',
         scriptName: 'signup',
         viewName: 'signup',
       });
