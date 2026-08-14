@@ -5,11 +5,51 @@ import { TourStatus } from '../libs/enums/tour.enum';
 import type { TourSummary } from '../libs/types/tour';
 import Tour from '../schema/Tour.model';
 
+// "Discover Tours" on the storefront shows the newest published tours, so it fills
+// its four cards straight from `publishedAt` instead of a curated rank.
+const LATEST_TOUR_LIMIT = 4;
+
 interface HomeTour extends TourSummary {
-  featuredRank?: number;
   homepageSpotlight?: boolean;
   popularityRank?: number;
 }
+
+const imageLookupStage: PipelineStage = {
+  $lookup: {
+    from: 'tour_images',
+    let: { currentTourId: '$_id' },
+    pipeline: [
+      { $match: { $expr: { $eq: ['$tourId', '$$currentTourId'] } } },
+      { $sort: { position: 1 } },
+      { $project: { _id: 0, url: 1, altText: 1, position: 1 } },
+    ],
+    as: 'images',
+  },
+};
+
+const tourProjectStage: PipelineStage = {
+  $project: {
+    _id: 0,
+    id: '$_id',
+    slug: 1,
+    country: 1,
+    place: 1,
+    title: 1,
+    location: 1,
+    type: 1,
+    priceCents: 1,
+    oldPriceCents: 1,
+    currency: 1,
+    ratingAverage: 1,
+    reviewCount: 1,
+    viewCount: 1,
+    durationDays: 1,
+    maxGroupSize: 1,
+    images: 1,
+    homepageSpotlight: 1,
+    popularityRank: 1,
+  },
+};
 
 function toTourSummary(tour: HomeTour): TourSummary {
   return {
@@ -35,12 +75,11 @@ function toTourSummary(tour: HomeTour): TourSummary {
 class HomeService {
   public async getHome(): Promise<HomeResult> {
     const galleryTourSlugs = galleryImages.map((image) => image.tourSlug);
-    const pipeline: PipelineStage[] = [
+    const selectionPipeline: PipelineStage[] = [
       {
         $match: {
           status: TourStatus.PUBLISHED,
           $or: [
-            { featuredRank: { $exists: true } },
             { popularityRank: { $exists: true } },
             { homepageSpotlight: true },
             { slug: spotlightContent.tourSlug },
@@ -48,48 +87,21 @@ class HomeService {
           ],
         },
       },
-      {
-        $lookup: {
-          from: 'tour_images',
-          let: { currentTourId: '$_id' },
-          pipeline: [
-            { $match: { $expr: { $eq: ['$tourId', '$$currentTourId'] } } },
-            { $sort: { position: 1 } },
-            { $project: { _id: 0, url: 1, altText: 1, position: 1 } },
-          ],
-          as: 'images',
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          id: '$_id',
-          slug: 1,
-          country: 1,
-          place: 1,
-          title: 1,
-          location: 1,
-          type: 1,
-          priceCents: 1,
-          oldPriceCents: 1,
-          currency: 1,
-          ratingAverage: 1,
-          reviewCount: 1,
-          viewCount: 1,
-          durationDays: 1,
-          maxGroupSize: 1,
-          images: 1,
-          featuredRank: 1,
-          homepageSpotlight: 1,
-          popularityRank: 1,
-        },
-      },
+      imageLookupStage,
+      tourProjectStage,
     ];
-    const tours = await Tour.aggregate<HomeTour>(pipeline).exec();
-    const featuredTours = tours
-      .filter((tour) => tour.featuredRank !== undefined)
-      .sort((left, right) => (left.featuredRank ?? 0) - (right.featuredRank ?? 0))
-      .map(toTourSummary);
+    const latestPipeline: PipelineStage[] = [
+      { $match: { status: TourStatus.PUBLISHED } },
+      { $sort: { publishedAt: -1, _id: -1 } },
+      { $limit: LATEST_TOUR_LIMIT },
+      imageLookupStage,
+      tourProjectStage,
+    ];
+    const [tours, latestTours] = await Promise.all([
+      Tour.aggregate<HomeTour>(selectionPipeline).exec(),
+      Tour.aggregate<HomeTour>(latestPipeline).exec(),
+    ]);
+    const featuredTours = latestTours.map(toTourSummary);
     const popularTours = tours
       .filter((tour) => tour.popularityRank !== undefined)
       .sort((left, right) => (left.popularityRank ?? 0) - (right.popularityRank ?? 0))
