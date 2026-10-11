@@ -93,11 +93,14 @@
   profileForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!admin.validateForm(profileForm)) return;
+    // Read the fields before setBusy disables them: a disabled control is
+    // left out of FormData, so a later read would send an empty body.
+    const raw = admin.values(profileForm);
     admin.setBusy(profileForm, true);
     try {
       const payload = await admin.request('/cavora/users/me', {
         method: 'PATCH',
-        body: admin.values(profileForm),
+        body: raw,
       });
       render(payload?.data ?? {});
       admin.feedback(profileForm, 'Profile updated.', 'success');
