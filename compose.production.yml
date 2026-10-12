@@ -1,0 +1,93 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    command: ['mongod', '--replSet', 'cavora-prod', '--bind_ip_all']
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'mongosh --quiet --eval "try { quit(db.adminCommand(''ping'').ok === 1 ? 0 : 1) } catch (error) { quit(1) }"',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - cavora_mongo_data:/data/db
+    networks:
+      - cavora_internal
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  mongo-init:
+    image: mongo:7
+    restart: 'no'
+    depends_on:
+      mongo:
+        condition: service_healthy
+    entrypoint: ['/bin/bash', '-c']
+    command:
+      - >
+        mongosh --host mongo:27017 --quiet --eval
+        "try { rs.status() } catch (error) {
+        rs.initiate({_id:'cavora-prod',members:[{_id:0,host:'mongo:27017'}]}) }"
+    networks:
+      - cavora_internal
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3008
+      SERVER_HOST: 0.0.0.0
+      TRUST_PROXY: 1
+      MONGO_URL: mongodb://mongo:27017/cavora?replicaSet=cavora-prod
+    ports:
+      - '127.0.0.1:3100:3008'
+    volumes:
+      - cavora_uploads:/app/src/uploads
+    networks:
+      cavora_internal:
+      edge:
+        aliases:
+          - cavora-api
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3008/cavora/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+networks:
+  cavora_internal:
+    internal: true
+  edge:
+    external: true
+    name: edge
+
+volumes:
+  cavora_mongo_data:
+  cavora_uploads:

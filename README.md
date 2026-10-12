@@ -42,6 +42,28 @@ npm run lint
 npm run format
 ```
 
+## Production container deployment
+
+`compose.production.yml` runs Cavora as an isolated Compose project. MongoDB is available only on
+the private `cavora_internal` network, while the API is reachable from the host at
+`127.0.0.1:3100` and from the shared external Caddy network as `cavora-api:3008`.
+
+Before starting it, create the external `edge` network if the host does not already provide one,
+copy `.env.production.example` to `.env`, and replace every placeholder with production values.
+
+```bash
+docker compose -p cavora -f compose.production.yml config
+docker compose -p cavora -f compose.production.yml up -d --build
+docker compose -p cavora -f compose.production.yml ps
+curl --fail http://127.0.0.1:3100/cavora/health
+```
+
+Seed the stable tour, blog, and FAQ records only after the API is healthy:
+
+```bash
+docker compose -p cavora -f compose.production.yml exec api node dist/seed.js
+```
+
 ## Security and browser integration
 
 - The React origin must equal `FRONTEND_ORIGIN` and send requests with credentials enabled.

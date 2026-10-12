@@ -4,3 +4,16 @@ coverage
 dist
 node_modules
 npm-debug.log
+src/uploads/**
+!src/uploads/admin/
+!src/uploads/user/
+!src/uploads/tours/
+!src/uploads/blog/
+!src/uploads/admin/.gitkeep
+!src/uploads/user/.gitkeep
+!src/uploads/tours/.gitkeep
+!src/uploads/blog/.gitkeep
+!src/uploads/tours/seed/
+!src/uploads/tours/seed/**
+!src/uploads/blog/seed/
+!src/uploads/blog/seed/**

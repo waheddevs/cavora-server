@@ -4,6 +4,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY tsconfig.json ./
+COPY scripts ./scripts
+COPY public ./public
 COPY src ./src
 RUN npm run build
 
@@ -15,7 +17,10 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/src/views ./src/views
-COPY public ./public
+COPY --from=build /app/src/uploads ./src/uploads
+COPY --from=build /app/public ./public
+
+RUN chown -R node:node /app/src/uploads
 
 USER node
 EXPOSE 3008
