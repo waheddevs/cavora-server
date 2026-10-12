@@ -3,9 +3,9 @@ FROM node:20-alpine AS build
 WORKDIR /app
 RUN apk add --no-cache python3 make g++
 COPY package.json package-lock.json ./
+COPY scripts ./scripts
 RUN npm ci
 COPY tsconfig.json ./
-COPY scripts ./scripts
 COPY public ./public
 COPY src ./src
 RUN npm run build
