@@ -46,7 +46,10 @@ npm run format
 
 `compose.production.yml` runs Cavora as an isolated Compose project. MongoDB is available only on
 the private `cavora_internal` network, while the API is reachable from the host at
-`127.0.0.1:3100` and from the shared external Caddy network as `cavora-api:3008`.
+`${API_BIND_HOST:-127.0.0.1}:${API_PUBLISHED_PORT:-3100}` and from the shared external Caddy
+network as `cavora-api:3008`. Keep the default loopback binding when Caddy is configured. For a
+temporary direct IP-and-port deployment, set `API_BIND_HOST=0.0.0.0` in `.env` and allow only the
+selected published port through the host firewall.
 
 Before starting it, create the external `edge` network if the host does not already provide one,
 copy `.env.production.example` to `.env`, and replace every placeholder with production values.

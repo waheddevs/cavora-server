@@ -54,7 +54,7 @@ services:
       TRUST_PROXY: 1
       MONGO_URL: mongodb://mongo:27017/cavora?replicaSet=cavora-prod
     ports:
-      - '127.0.0.1:3100:3008'
+      - '${API_BIND_HOST:-127.0.0.1}:${API_PUBLISHED_PORT:-3100}:3008'
     volumes:
       - cavora_uploads:/app/src/uploads
     networks:
