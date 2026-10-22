@@ -20,8 +20,8 @@ function renderAdminPage(res: Response, options: AdminPageOptions): void {
     csrfCookieName: cookieNamesFor('admin').csrf,
     layoutMode: options.layoutMode ?? 'admin',
     pageTitle: options.pageTitle,
-    scriptPath: `/assets/js/${options.scriptName}.js`,
-    stylesheetPath: `/assets/css/${options.scriptName}.css`,
+    scriptPath: `/admin-assets/js/${options.scriptName}.js`,
+    stylesheetPath: `/admin-assets/css/${options.scriptName}.css`,
   });
 }
 

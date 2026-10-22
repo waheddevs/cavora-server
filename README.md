@@ -80,3 +80,8 @@ docker compose -p cavora -f compose.production.yml exec api node dist/seed.js
 
 The operational administrator interface is server-rendered from `src/views/admin` and consumes the
 same protected REST APIs used by other trusted clients.
+
+The public reverse proxy must send `/admin`, `/admin/`, and `/admin-assets/` to
+`cavora-api:3008` before applying the frontend SPA fallback. A ready-to-include nginx server-block
+snippet is available at `deploy/nginx/cavora-admin.locations.conf`. Admin assets intentionally use
+the `/admin-assets` prefix so they do not collide with the React application's `/assets` files.

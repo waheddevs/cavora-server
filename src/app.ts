@@ -85,7 +85,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(preventMutationCaching);
 app.use(globalRateLimiter);
 app.use(
-  '/assets',
+  '/admin-assets',
   express.static(path.join(projectRoot, 'public'), {
     etag: true,
     index: false,
