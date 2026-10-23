@@ -6,6 +6,8 @@
   const avatarInput = document.querySelector('[data-avatar-input]');
   const removeButton = document.querySelector('[data-avatar-remove]');
   const resetButton = document.querySelector('[data-profile-reset]');
+  const maximumAvatarBytes = 5 * 1024 * 1024;
+  const acceptedAvatarTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
   if (
     !admin ||
     !(profileForm instanceof HTMLFormElement) ||
@@ -160,6 +162,17 @@
   avatarInput.addEventListener('change', async () => {
     const file = avatarInput.files?.[0];
     if (!file) return;
+
+    if (!acceptedAvatarTypes.has(file.type)) {
+      avatarInput.value = '';
+      admin.feedback(avatarForm, 'Choose a JPG, PNG, WEBP, or AVIF image.', 'error');
+      return;
+    }
+    if (file.size > maximumAvatarBytes) {
+      avatarInput.value = '';
+      admin.feedback(avatarForm, 'Image must be 5 MB or smaller.', 'error');
+      return;
+    }
 
     const body = new FormData();
     body.append('image', file);
